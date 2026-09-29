@@ -7,6 +7,29 @@
 
 ---
 
+## 证据边界：哪些是研究结论，哪些是本培训的工程建议
+
+本章设计基线已经在 2026-09-30 按学术论文、官方产品文档和成熟开源实现重新核验。
+
+后续统一区分四类表述：
+
+- **论文/Benchmark 结论**：例如 BEIR 说明 BM25 是稳健 baseline，Dense Retrieval 并非跨域场景下永远占优；
+- **官方产品事实**：例如 Cherry Studio 当前允许 Embedding=None 使用 BM25，Open WebUI 当前支持 Hybrid / Full Context / Agentic Knowledge；
+- **本培训工程建议**：例如技术资料优先维护 Markdown 镜像、部门共享知识源与检索索引分离；
+- **待内网实测**：例如中文工程资料上 BM25 vs Dense vs Hybrid 的实际提升、Rerank 收益、ACL 和 no-answer 效果。
+
+因此，本章不再把“Markdown 优先”“代码默认不向量化”“表格不向量化”等工程经验写成普适研究结论。
+
+专项证据基线：
+
+`docs/references/knowledge-base-rag-evidence-2026-09.md`
+
+当前成熟度：
+
+> **需求与架构已有研究/成熟实现支撑；具体检索参数与技术路线仍必须由本部门语料 Benchmark 决定。**
+
+---
+
 # 一、先重新定义部门知识库
 
 知识库不应该等同于：
@@ -56,9 +79,9 @@ Open WebUI / Cherry / Agent
 | 制度 / 流程 / 标准 / 手册 | 管理制度、规范、产品手册 | DMS / Wiki / Git + 原始 Office/PDF | Hybrid RAG | 建议 |
 | 技术设计文档 | 方案、架构、测试报告 | Git / DMS，优先保留 Markdown/可解析文档 | BM25 + Vector | 建议或可选 |
 | 项目 Markdown / ADR | README、方案决策、会议结论 | Git | grep/BM25 + Vector | 可选 |
-| 源代码 | Python、JS、C/C++、配置 | Git Repo | rg/grep/LSP/Git | 默认不必 |
+| 源代码 | Python、JS、C/C++、配置 | Git Repo | rg/grep/LSP/Git 为主，语义代码搜索按需补充 | 不是默认必需，需按任务实测 |
 | API / 协议 | OpenAPI、JSON Schema、接口文档 | Git + YAML/JSON | 结构化解析 + grep | 可选 |
-| 表格数据 | Excel、CSV、测试记录、BOM | XLSX/CSV/数据库 | 表格查询 / Python / SQL | 一般不作为主方法 |
+| 表格数据 | Excel、CSV、测试记录、BOM | XLSX/CSV/数据库 | 精确筛选/聚合优先表格查询 / Python / SQL；文本列可检索 | 向量检索可作为补充，不应替代结构化查询 |
 | 实时数据 | Metrics、监控、业务状态 | API / DB / 时序数据库 | API / SQL | 不建议 |
 | 日志 | 服务日志、测试日志 | 日志平台 / 文件 | Exact / Regex / grep | 通常不需要 |
 | FAQ / 固定问答 | 常见问题 | Markdown / Wiki / Q&A | BM25 + Vector + Rerank | 建议 |
@@ -110,9 +133,9 @@ Markdown / TXT / CSV / YAML / JSON
 
 # 四、推荐文档格式规范
 
-## 4.1 Markdown：技术知识优先格式
+## 4.1 工程建议：适合 Git 管理的技术知识优先考虑 Markdown
 
-技术方案、API 说明、操作手册、FAQ、设计记录、项目规则等优先推荐 Markdown。
+对技术方案、API 说明、操作手册、FAQ、设计记录、项目规则等，如果业务流程允许，建议同步维护 Markdown 或其他稳定的机器可读文本版本。
 
 原因：
 
@@ -135,9 +158,9 @@ Markdown / TXT / CSV / YAML / JSON
 - 正文层级；
 - 变更记录。
 
-## 4.2 PDF：适合作为发布版，不适合作为唯一机器知识源
+## 4.2 PDF：可以作为知识源，但必须验证解析结果并保留原件
 
-文本型 PDF 一般可以解析。
+文本型、版式简单的 PDF 可以直接进入知识库；风险主要来自扫描件、复杂多栏、表格、公式和图示。
 
 扫描型 PDF 必须：
 
@@ -171,9 +194,9 @@ PPT 尤其要注意：
 
 ## 4.4 XLSX / CSV
 
-大量数值表格不建议直接当普通文本做 Vector RAG。
+当任务涉及精确筛选、聚合、排序、计算或行列关系时，不应只把大量数值表格转成普通文本后依赖 Vector RAG。
 
-更推荐：
+更推荐把结构化查询作为主路径：
 
 ~~~text
 XLSX / CSV
@@ -183,7 +206,7 @@ Python / SQL / Data Tool
 Agent 分析
 ~~~
 
-另外维护数据字典和指标口径 Markdown 供 RAG 查询。
+另外维护数据字典和指标口径 Markdown 供 RAG 查询。对于表头、字段说明、备注、故障描述等自然语言内容，仍可以按需建立文本/向量索引。
 
 ## 4.5 图片 / 原理图 / 架构图
 
@@ -323,12 +346,12 @@ BM25 + Vector + Rerank → Context → LLM
 
 Vector Search 很有价值。
 
-## 可以不向量化
+## 优先不依赖向量化，但可按需补充
 
-典型：
+典型包括：
 
-- 代码；
-- 配置；
+- 代码中的标识符、函数名和路径；
+- 配置键；
 - API Path；
 - 错误码；
 - 型号；
@@ -337,16 +360,18 @@ Vector Search 很有价值。
 - 精确术语；
 - 很短且可以直接放进 Context 的文档。
 
-## 不建议主要依赖向量化
+这些内容通常先用 BM25 / grep / LSP / Full Context 获得更可控的精确匹配；如果存在大量“自然语言描述 → 代码/配置位置”的语义查找需求，可以再增加 Semantic Code Search 或 Vector Index，并用测试集决定是否保留。
+
+## 不建议把向量索引作为实时事实主源
 
 - 实时 Metrics；
 - 时序数据；
-- BOM；
--数据库记录；
--当前服务器状态；
--实时资产状态。
+- BOM 的精确数量/版本状态；
+- 数据库记录；
+- 当前服务器状态；
+- 实时资产状态。
 
-这类数据应该直接通过 API / SQL / Tool 获取。
+这类数据的“当前事实”应优先通过 API / SQL / Tool 获取；其字段说明、历史分析结论和自然语言备注仍可进入知识检索层。
 
 ---
 
@@ -1512,3 +1537,24 @@ demos/knowledge-retrieval/README.md
 - 多种文档抽取/OCR引擎；
 - 增量 Knowledge Sync；
 - API 与访问控制。
+
+
+---
+
+# 附：本章证据与实测状态
+
+完整论文、官方文档、成熟实现和结论审计见：
+
+`docs/references/knowledge-base-rag-evidence-2026-09.md`
+
+当前仍待完成的部门实测包括：
+
+- Cherry Studio：BM25 vs Dense vs Rerank；
+- Open WebUI：Hybrid Retrieval；
+- Full Context vs RAG 的质量、TTFT 和 Token 成本；
+- Agentic Knowledge / kb_exec 对内网 qwen3.6 的稳定性；
+- 复杂 PDF / PPT / XLSX 解析；
+- 版本冲突、no-answer、ACL 回归测试；
+- 中文 Embedding / Reranker 的模型与资源选型。
+
+在这些测试完成之前，讲义中的检索方案均应表述为“**候选设计 / 推荐验证顺序**”，而不是“部门已验证最佳方案”。
