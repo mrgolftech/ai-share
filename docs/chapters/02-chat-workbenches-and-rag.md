@@ -1232,6 +1232,213 @@ grep "KV Cache"
 
 ---
 
+# 二十四、Coding Agent 里的 Agentic Retrieval 到底是什么
+
+对 Coding Agent 来说，Agentic Retrieval 通常不是“先建一个向量知识库再问答”，而是：
+
+~~~text
+任务目标
+  ↓
+模型判断当前缺什么上下文
+  ↓
+glob / tree / list
+  ↓
+grep / search
+  ↓
+read file
+  ↓
+根据结果调整下一次搜索
+  ↓
+找到足够证据
+  ↓
+edit / shell / test
+~~~
+
+例如用户说：
+
+~~~text
+把 API 超时时间默认改成 30 秒，并运行相关测试。
+~~~
+
+Agent 不一定预先知道配置在哪。
+
+它可能：
+
+~~~text
+1. grep "timeout"
+2. 发现多个命中
+3. read config 文件
+4. read 对应测试
+5. 判断真正配置入口
+6. edit
+7. run tests
+~~~
+
+这里前 1～5 步就是典型的 Agentic Retrieval。
+
+## 24.1 为什么这和传统 RAG 很像
+
+两者都在解决：
+
+> **模型当前缺少哪些外部上下文，应该怎样找到？**
+
+传统 Pipeline RAG 通常是：
+
+~~~text
+Query
+→ Retrieval System 自动 Top-K
+→ 把结果塞给模型
+→ 模型回答
+~~~
+
+Coding Agent 则更常见：
+
+~~~text
+Goal
+→ Model
+→ Search Tool
+→ Observe
+→ 改写搜索策略
+→ Read
+→ 再 Search
+→ 足够以后执行
+~~~
+
+因此：
+
+> **Agentic Retrieval 可以看成“把 Retrieval 本身纳入 Agent Loop”。**
+
+## 24.2 但不是所有 Agent 工具都叫 Retrieval
+
+要分清两类工具。
+
+### Retrieval / Context Tools
+
+目的是：
+
+> 找到模型下一步判断所需要的信息。
+
+例如：
+
+- glob；
+- grep；
+- ripgrep；
+- search_files；
+- read_file；
+- semantic code search；
+- file search；
+- web search；
+- knowledge search；
+- session search；
+- memory search。
+
+### Action / Execution Tools
+
+目的是：
+
+> 改变外部世界或者验证结果。
+
+例如：
+
+- edit / patch；
+- shell；
+- git commit；
+- npm test；
+- docker；
+- browser click；
+- SSH；
+- API POST；
+- deploy。
+
+真实 Agent Loop 通常是：
+
+~~~text
+Retrieve
+→ Reason
+→ Act
+→ Observe
+→ Retrieve More
+→ Act Again
+→ Verify
+~~~
+
+所以更准确的说法不是：
+
+> “Agent 工具都是 Agentic Retrieval。”
+
+而是：
+
+> **现代 Agent Harness 通常包含 Agentic Retrieval，再配合 Action Tools 完成闭环。**
+
+## 24.3 前面那些 Coding Agent 是否都采用这种思路
+
+整体上：
+
+> **是，主流 Coding Agent 大多采用“模型主动搜索 / 读取 Workspace 上下文”的 Agentic Retrieval 思路。**
+
+但实现方式并不完全一样。
+
+例如 OpenCode 官方工具中就有：
+
+- glob；
+- grep；
+- read；
+- shell；
+- edit。
+
+官方示例任务明确是让模型自己选择 grep / glob → read → edit → shell。
+
+Codex 的官方 Prompt Guidance 同样明确建议使用：
+
+- rg；
+- read_file；
+- list_dir；
+- glob_file_search；
+
+来搜索文件和文本，再执行修改。
+
+Hermes 也把：
+
+- search_files；
+- read_file；
+- web_search；
+- web_extract；
+- session_search；
+
+作为模型可主动调用的核心工具。
+
+因此它们都体现了 Agentic Retrieval。
+
+但要注意：
+
+> **一个 Agent 内部可以同时存在多种上下文注入方式。**
+
+例如：
+
+~~~text
+AGENTS.md / CLAUDE.md
+→ 启动时自动注入
+
+当前打开文件
+→ UI 自动提供
+
+Embedding Top-K
+→ Pipeline Retrieval
+
+grep / read / web_search
+→ Agentic Retrieval
+~~~
+
+所以“用了 Agent”并不意味着：
+
+> 所有 Context 都必须由 Agent 自己搜。
+
+最好的 Harness 往往是：
+
+> **固定上下文 + 自动 Retrieval + Agentic Retrieval 混合使用。**
+
+---
+
 # 二十四、两类 RAG 不应该叫“搜索 RAG vs 向量 RAG”这么简单
 
 建议培训做一个二维图。
