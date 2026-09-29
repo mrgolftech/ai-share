@@ -112,7 +112,7 @@ Cherry Studio 同样从多模型对话、知识库和桌面助手体验出发，
 
 ---
 
-## 四、八个代表性 Coding Agent：不要只看界面，要看 Harness
+## 四、九个代表性 Agent：不要只看界面，要看 Harness
 
 本培训至少覆盖：
 
@@ -123,7 +123,8 @@ Cherry Studio 同样从多模型对话、知识库和桌面助手体验出发，
 - DeepSeek Harness（DSH）；
 - Pi；
 - Cline；
-- Kilo Code。
+- Kilo Code；
+- Hermes Agent。
 
 ### 4.1 一张表先建立认识
 
@@ -139,6 +140,8 @@ Cherry Studio 同样从多模型对话、知识库和桌面助手体验出发，
 | Kilo Code | Multi-surface agentic platform | MIT | 非常容易 | VS Code / JetBrains / CLI、多模式、Subagents、Marketplace、多 Provider |
 
 “自有 API 接入难易”不是综合能力评分，只看企业自建 / 第三方模型服务接入门槛。
+
+Hermes 需要单独强调：它不只是 Coding Agent，而是带持久 Memory、Skills、自学习循环、Cron、Messaging Gateway 和多 Terminal Backend 的通用长期 Agent。官方支持任意 OpenAI-compatible Custom Endpoint，因此也适合接部门内网 qwen3.6。
 
 完整对比、开源许可、Provider 配置和资料来源见：
 
@@ -177,7 +180,8 @@ docs/references/coding-agent-comparison-2026-09.md
 - Claude Code 更偏 Anthropic-compatible API；
 - OpenCode / DSH / Cline / Kilo 对自定义 Provider 更直接；
 - ZCode 支持第三方 OpenAI / Anthropic 协议；
-- Pi 对标准协议配置简单，特殊协议可通过 Extension 扩展。
+- Pi 对标准协议配置简单，特殊协议可通过 Extension 扩展；
+- Hermes 支持 Custom OpenAI-compatible Endpoint、OPENAI_BASE_URL，以及 vLLM / Ollama / LM Studio 等自托管路径。
 
 ### 4.3 公开 Harness Benchmark：FrontierHarness Eval
 
@@ -198,8 +202,9 @@ v1.0 使用同一个 Kimi K3，覆盖 30 个软件工程任务、12 个 Harness 
 | DSH Standard | 0.1.0-rc.8 | 60.0% |
 | DSH Minimal | 0.1.0-rc.8 | 56.7% |
 | OpenCode | 1.18.19 | 50.0% |
+| Hermes | 0.20.4 | 50.0% |
 
-ZCode、Cline、Kilo 没有进入 v1.0 这组冻结测试，不人为补分数。
+ZCode、Cline、Kilo 没有进入 v1.0 这组冻结测试，不人为补分数。Hermes 已经进入该测试，冻结版本为 v0.20.4。
 
 这一页真正要讲的不是：
 
@@ -250,6 +255,12 @@ Agent Effectiveness
 DSH 展示“Everything is a Plugin”；Pi 展示“Minimal Harness”。
 
 二者一繁一简，最适合解释 Harness 到底由什么组成。
+
+**长期运行的通用 Agent：**
+
+- Hermes Agent。
+
+Hermes 用来展示 Coding Agent 向更广义 Agent 的扩展：持久记忆、技能沉淀、定时任务、多平台消息入口、Subagent 和多运行后端。
 
 ---
 
