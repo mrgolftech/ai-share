@@ -706,7 +706,11 @@ Cherry Studio 当前官方知识库支持：
 - Cherry Studio：个人 Knowledge Workspace；
 - Coding / General Agent：跨 Git、Workspace、文件、API、DB、共享 KB 的 Agentic Retrieval 与任务执行层。
 
-详细讲义：
+教学主讲义：
+
+docs/chapters/03-department-knowledge-base-teaching.md
+
+完整技术稿 / 深入阅读：
 
 docs/chapters/03-department-knowledge-base.md
 
@@ -2039,7 +2043,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已完成 Chat→Agent 过渡和鹈鹕 Demo；9 个 Agent 横向对比、FrontierHarness Benchmark 与 Harness 共性已迁入独立 Agent 共性机制专题；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，并新增 `docs/references/knowledge-base-rag-evidence-2026-09.md`；已补入 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，新增 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget 设计；已将 Markdown/PDF/表格/代码向量化等过强表述降级为条件化工程建议；当前优先完成基于研究和成熟实践的设计/构建讲义，BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 对比实测后置）
+- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；知识库现采用“双稿制”：`docs/chapters/03-department-knowledge-base-teaching.md` 为培训主讲教学版，按“问题→例子→原理→结论”重构并预留 KB-01～KB-22 截图/图示占位；`docs/chapters/03-department-knowledge-base.md` 保留为完整技术稿和深入阅读材料；架构文档为 `docs/architecture/department-knowledge-architecture.md`；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，证据基线为 `docs/references/knowledge-base-rag-evidence-2026-09.md`，涵盖 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，以及 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget；当前阶段优先继续打磨教学版讲义和后续截图/图示，BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 对比实测后置）
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；9 个 Agent 横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
