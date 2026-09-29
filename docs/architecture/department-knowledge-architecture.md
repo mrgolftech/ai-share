@@ -6,6 +6,20 @@
 
 ---
 
+## 证据与验证状态
+
+本架构于 2026-09-30 完成一次专项证据核验。设计依据分为：学术检索研究、成熟产品/开源实现、本项目工程建议和后续内网实测四层。完整证据矩阵见：
+
+`docs/references/knowledge-base-rag-evidence-2026-09.md`
+
+需要特别说明：
+
+> **本文件定义的是部门知识架构候选基线，不代表 BM25 / Dense / Hybrid / Rerank / Agentic Retrieval 的具体组合已经在部门内网语料上证明最优。**
+
+最终技术参数必须由真实问题集、Retrieval Benchmark、no-answer、版本冲突和 ACL 测试决定。
+
+---
+
 # 1. 核心判断
 
 部门知识库不应该定义为：
