@@ -949,6 +949,45 @@ Goal → 创建文件 → 启动页面 → 浏览器验证 → 修复 → 再验
 
 ---
 
+# 专题桥梁：把 Agent 拆开看——Agent 的共同结构
+
+在进入 File、Shell、Git、Browser、SSH 等具体工具之前，先建立一个跨产品的统一 Agent 心智模型。
+
+核心不是继续介绍 Codex、Hermes、OpenCode、Claude Code、Cline、Pi 等产品，而是回答：
+
+- Agent Harness 到底是什么；
+- System / Identity / Persona 与项目规则是什么关系；
+- AGENTS.md / CLAUDE.md / SOUL.md / MEMORY.md 分别在解决什么问题；
+- Workspace、Context、Plan、Memory 分别是什么；
+- Tool、API、MCP、Skill 的边界；
+- Browser Use、Computer Use、Playwright 的区别；
+- Permission / Sandbox / Verification 为什么是 Agent 的核心机制；
+- Sub-agent 如何隔离任务与上下文；
+- CLI / GUI / IDE / Web 为什么只是不同 Surface，应该如何选择。
+
+统一抽象：
+
+> **Agent = Model + Harness；Harness = Instructions + Context + Workspace + State + Tools + Permission + Verification + Interface。**
+
+强调：
+
+> **不同产品的文件名和 UI 会变化，但它们解决的是同一组底层问题。**
+
+例如：
+
+- Codex 原生支持层级 AGENTS.md；
+- Hermes 把 Identity、User、Persistent Memory、Project Context 分别映射为 SOUL.md、USER.md、MEMORY.md、AGENTS.md / .hermes.md；
+- Claude Code 使用 CLAUDE.md 等机制承载项目 / 用户上下文；
+- 其他 Agent 也可能使用 Rules、Memory Store、Plan Mode、Task State 等不同实现。
+
+完整讲义：
+
+docs/chapters/04-agent-common-mechanisms.md
+
+本专题结束后再进入模块三，让学员带着同一套框架理解 File / Shell / Git / Browser / SSH / API，而不是把后续内容看成一堆孤立工具。
+
+---
+
 # 模块三：Agent 如何操作真实世界
 
 ## 5.1 要回答的核心问题
@@ -1985,6 +2024,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 ## 待建设
 
 - 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；待补实际 BM25/Vector/Hybrid/Agentic Retrieval 运行结果、截图与内网 qwen3.6 同模型 Harness 实测）
+- Agent 共性机制专题（已有初稿：docs/chapters/04-agent-common-mechanisms.md，已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser Use、Computer Use、Permission/Sandbox、Verification、Sub-agent 与 CLI/GUI/IDE 选择；待补跨 Agent 实测截图和统一对比 Demo）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
