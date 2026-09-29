@@ -1282,7 +1282,173 @@ Rerank 应解决：
 
 ---
 
-# 二十九、培训中要留下的结论
+# 二十九、统一演示设计：同一知识源，三种使用层次
+
+这一部分统一使用同一批真实 Qwen 资料，不为 Cherry、Open WebUI 和 Agent 分别准备三套事实。
+
+资料包括：
+
+- docs/chapters/01-intranet-qwen-api.md
+- api/qwen/README.md
+- api/qwen/reports/qwen36_api_test_report_20260929.md
+- api/qwen/results/20260929_v2/evidence.md
+- api/qwen/results/20260929_105316/evidence.md
+
+这样可以固定：
+
+> **Source of Truth 不变，只改变 Retrieval、Governance 和 Orchestration。**
+
+统一准备三类问题：
+
+1. 精确事实：qwen3.6 当前服务配置的 max_model_len 是多少？
+2. 语义改写：为什么复杂推理任务跑完以后，后面的简单请求有时也会突然变慢？
+3. 综合判断：当前 qwen3.6 是否已经适合部门 Agent 连续任务？区分已验证能力、已观察风险和未验证项，并给出来源。
+
+## Demo A：Cherry Studio —— 知识怎么建
+
+Cherry 负责演示：
+
+~~~text
+Source
+→ Parse
+→ Chunk
+→ BM25
+→ Embedding
+→ Rerank
+→ Retrieval Test
+~~~
+
+先设置 Embedding=None，用问题 1 做 BM25 Retrieval Test。
+
+再用问题 2 观察关键词检索效果，然后配置 Embedding 并重新索引，比较语义召回。
+
+如果正确 Chunk 已经召回但排序不理想，再加入 Rerank。
+
+最后把同一个 Knowledge Base 绑定到 Cherry Agent，使用问题 3 做综合问答。
+
+要讲清：
+
+> **Cherry Agent 可以承接 Cherry 自己的 RAG KB；RAG 与 Agent 并不是互斥路线。**
+
+## Demo B：Open WebUI —— 知识怎么共享和治理
+
+Open WebUI 不再重复完整的建库教学。
+
+重点展示：
+
+- 平台管理员统一 Parser / Embedding / Rerank / Hybrid Search；
+- 建立共享 Knowledge Base；
+- Group / ACL；
+- Workspace Model 绑定 Knowledge；
+- 普通用户通过共享 Model 使用统一知识；
+- 没有 KB Read 权限的用户不能通过共享 Model 绕过底层权限。
+
+如果当前部署支持 Native Knowledge Tools，再展示同一 Shared KB 的两种使用：
+
+~~~text
+Pipeline / Focused Retrieval
+vs
+Agentic Knowledge Tool
+~~~
+
+Open WebUI 当前还提供 Knowledge API 和 server-side tool calling。
+
+因此它不仅可以作为 Chat Portal，也可以成为外部 Agent 的 Shared Retrieval Service：
+
+~~~text
+External Agent
+   ↓
+Open WebUI Knowledge API / Tool Service
+   ↓
+Shared Knowledge Base
+~~~
+
+## Demo C：Agent —— 承接原始知识和 RAG 知识
+
+Agent 不应该再演示成第三套互斥知识库。
+
+更准确的定位是：
+
+> **Knowledge Orchestrator。**
+
+推荐任务：
+
+> 基于部门共享知识库和当前 Git Repo，分析 qwen3.6 是否适合部门 Agent 连续任务。先检索共享知识库获得总体结论，再读取 Git 中的原始测试报告进行核验；需要实时信息时说明还应查询哪些 Metrics/API。所有结论必须给出来源，不允许根据模型名称推测。
+
+预期过程：
+
+~~~text
+Goal
+ ↓
+Shared RAG KB
+ ↓
+得到候选结论
+ ↓
+Agent 判断需要原始证据
+ ↓
+grep / read Git
+ ↓
+交叉核验
+ ↓
+必要时 API / Metrics
+ ↓
+Final Answer
+~~~
+
+这说明 Agent 可以同时承接：
+
+- Open WebUI 一类共享 RAG KB；
+- Cherry Agent 内绑定的个人 KB；
+- Git / Workspace 原始文件；
+- API / DB / Metrics 实时知识。
+
+但对于外部 Codex/OpenCode/Hermes 等 Agent：
+
+> **不要默认它们可以直接读取 Cherry 的本地知识索引。**
+
+更稳定的方式是：
+
+- 访问相同 Source of Truth；
+- 或调用有正式 API / MCP 的共享 Retrieval Service，例如 Open WebUI Shared KB。
+
+## 为什么同一套资料更适合演示
+
+因为固定了：
+
+~~~text
+Source = Same
+~~~
+
+只改变：
+
+~~~text
+Cherry
+→ Retrieval Algorithm
+
+Open WebUI
+→ Shared Retrieval + Governance
+
+Agent
+→ Retrieval Orchestration + Multi-source
+~~~
+
+这样学员看到的差异可以归因于工具和工作方式，而不是资料本身不同。
+
+但不建议三个工具机械重复完全相同的问题。
+
+推荐：
+
+- 问题 1：三种工具都问，作为可比基线；
+- 问题 2：重点由 Cherry 演示 BM25 / Vector / Rerank；
+- 问题 3：重点由 Open WebUI 和 Agent 演示 Shared Knowledge 与 Agentic Retrieval。
+
+完整 Demo 规范：
+
+demos/knowledge-retrieval/README.md
+
+---
+
+# 三十、培训中要留下的结论
 
 第一：
 
@@ -1310,7 +1476,7 @@ Rerank 应解决：
 
 ---
 
-# 三十、当前官方参考
+# 三十一、当前官方参考
 
 ## Cherry Studio
 
