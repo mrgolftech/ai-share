@@ -4,10 +4,14 @@ on:
   push:
     paths:
       - "api/qwen/qwen_api_training_test.py"
+      - "api/qwen/qwen_api_training_test_v2.py"
+      - "api/qwen/qwen_failed_retest.py"
       - ".github/workflows/api-test-script-check.yml"
   pull_request:
     paths:
       - "api/qwen/qwen_api_training_test.py"
+      - "api/qwen/qwen_api_training_test_v2.py"
+      - "api/qwen/qwen_failed_retest.py"
       - ".github/workflows/api-test-script-check.yml"
 
 jobs:
@@ -18,5 +22,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Compile training test script
-        run: python -m py_compile api/qwen/qwen_api_training_test.py
+      - name: Install compile-time dependencies
+        run: pip install requests pillow
+      - name: Compile API training scripts
+        run: |
+          python -m py_compile api/qwen/qwen_api_training_test.py
+          python -m py_compile api/qwen/qwen_api_training_test_v2.py
+          python -m py_compile api/qwen/qwen_failed_retest.py

@@ -16,3 +16,12 @@
 - 增加材料成熟度状态：规划中 → 已有素材 → 已有初稿 → 已有实测证据 → 可用于培训 → 可用于 PPT。
 - 明确培训内容 Source of Truth：实测/代码事实 > 培训大纲 > AGENTS.md > 章节文档 > 外部资料 > 历史聊天。
 - 新增 `docs/project-instructions-v2.md`，用于 ChatGPT Project Instructions 的稳定协作规则。
+
+- 增加 Qwen3.6 v2 全面 API / Agent / Vision 实测与失败项专项复测。
+- OpenAI Chat、Responses、Anthropic 三套 Tool Result 基础闭环均确认通过。
+- 多模态单图、Vision SSE、多图、Anthropic Image、Vision + Tool Calling 形成实测证据。
+- 修正旧结论：Anthropic Tool Use 实际可用，主要兼容异常为 thinking.type=disabled 未生效。
+- 修正两类测试假失败：Thinking 判定器 bug、Vision Tool Schema 语义不清。
+- Responses Vision 改为“待按 OpenAPI 必填 detail 字段修正后复测”，不再误判为不支持。
+- 记录 Thinking ON 43～299 秒长尾及重任务后简单推理暂时变慢现象。
+- 模块一材料成熟度提升为“可用于培训”。

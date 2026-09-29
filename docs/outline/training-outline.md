@@ -200,7 +200,10 @@
 - Context Window：131072；
 - 支持工具调用；
 - 支持 Thinking 开关；
-- 当前部署描述：两个华为昇腾节点。
+- 当前部署描述：两个华为昇腾节点；
+- 当前多模态实测：OpenAI Chat 单图、SSE、多图、Vision + Tool Calling 均通过；
+- Anthropic Base64 Image 已通过；
+- Responses Vision 因旧测试请求漏 detail 必填字段，待按 OpenAPI Schema 修正后复测。
 
 注意：
 
@@ -276,13 +279,16 @@
 - `/version`
 - `/metrics`
 - `/openapi.json`
+- `/v1/messages/count_tokens`
 
 并验证：
 
 - 非流式；
 - 流式；
 - Thinking On / Off；
-- Tool Calling。
+- Tool Calling；
+- Tool Result 回灌闭环；
+- 单图 / 多图 / Vision SSE / Vision + Tool Calling。
 
 ---
 
@@ -320,6 +326,11 @@
 培训目标不是记住三套 JSON，而是理解：
 
 > **同一个模型服务可以通过不同兼容协议接入不同客户端和 Agent。**
+
+当前实测基线：
+- OpenAI Chat：文本 / SSE / Thinking / Tool Loop / Vision PASS；
+- Responses：文本 / SSE / Tool Loop PASS，Vision 待按 OpenAPI Schema 修正复测；
+- Anthropic：文本 / SSE / count_tokens / Tool Loop / Vision PASS，但 thinking.type=disabled 未观察到生效。
 
 ---
 
@@ -446,7 +457,7 @@
 
 状态：
 
-> **模块一已有较完整的第一批证据和讲义基础，后续主要补图、演示脚本、性能数据和 PPT 视觉化。**
+> **模块一已达到“可用于培训”：文本 API、三协议 Tool Loop、多模态 Vision、Thinking 专项复测均有实测证据；后续主要补 Responses Vision 修正版、长上下文/性能专项数据、截图和 PPT 视觉化。**
 
 ---
 
@@ -1638,7 +1649,9 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Qwen API 自动测试脚本（已有实测证据）
 - Qwen API 实测结果（已有实测证据）
 - Qwen API 实测报告（已有实测证据）
-- 第一章 API 培训讲义（已有初稿，待继续打磨为“可用于培训”）
+- 第一章 API 培训讲义（可用于培训）
+- Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
+- Thinking 失败项专项复测（已有实测证据）
 - API 官方参考资料（已有素材）
 
 ## 待建设
