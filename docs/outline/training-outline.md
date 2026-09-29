@@ -636,13 +636,28 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 ---
 
-## 4.7 ZCode / Codex / OpenCode / DSH / Pi：先找 Harness 共性
+## 4.7 八个代表性 Coding Agent：先横向比较，再收束到 Harness 共性
 
-不逐个介绍菜单，也不评选“哪个 Agent 最好”。
+培训至少覆盖：
+
+- ZCode；
+- Codex；
+- Claude Code；
+- OpenCode；
+- DeepSeek Harness（DSH）；
+- Pi；
+- Cline；
+- Kilo Code。
+
+不逐个介绍菜单，也不做简单“谁最好”的排名。
 
 统一从以下维度理解：
 
+- 产品定位：Terminal / IDE / Desktop / Workspace / Cloud；
+- 是否开源以及开源范围；
 - Model / Provider；
+- 接企业自有 API 的难易程度；
+- 是否支持 OpenAI Chat / Responses / Anthropic 等协议；
 - System Prompt / 项目规则；
 - Workspace；
 - Context / Session / Compaction；
@@ -656,6 +671,87 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 - Test / Verification / Trace；
 - Windows / Linux / Remote 使用方式。
 
+详细资料统一维护在：
+
+`docs/references/coding-agent-comparison-2026-09.md`
+
+### 4.7.1 三种代表路线
+
+**厂商旗舰 Harness：**
+
+- Codex；
+- Claude Code；
+- ZCode。
+
+观察模型厂商如何围绕自家模型做深度 Harness 联调。
+
+**模型中立的开源 Harness：**
+
+- OpenCode；
+- Cline；
+- Kilo Code。
+
+观察 Provider 抽象、BYOK、本地模型和企业内网 API 接入。
+
+**Harness 架构路线：**
+
+- DeepSeek Harness；
+- Pi。
+
+DSH 体现“Everything is a Plugin”，Pi 体现 Minimal Harness，一繁一简，用于解释 Harness 本身。
+
+### 4.7.2 用公开实验说明 Harness 真的影响结果
+
+引入 FrontierHarness Eval v1.0：
+
+> **固定同一个 Kimi K3、相同任务和运行环境，只替换 Harness。**
+
+该实验覆盖 30 个软件工程任务、12 个 Harness 配置、360 次 Evaluation。
+
+与培训相关的冻结结果中，Codex、DSH Creator、Claude Code、Pi、OpenCode 等在 Pass Rate、成本和运行时间上存在明显差异。
+
+必须同时说明边界：
+
+- 它是特定模型、特定任务和特定版本下的受控实验；
+- 不是“Agent 永久排行榜”；
+- ZCode、Cline、Kilo Code 没有进入该 v1.0 冻结测试，不能自行补分数；
+- 不同模型、任务、配置下，排序可能改变。
+
+因此真正要传递的是：
+
+> **Agent Effectiveness = Model × Harness × Task × Configuration × Runtime**
+
+### 4.7.3 对部门内网模型再做一次我们自己的固定模型实验
+
+公网 Benchmark 只作为证据和方法参考。
+
+后续应固定：
+
+- 同一个内网 qwen3.6；
+- 同一个 Git 仓库；
+- 同一个任务；
+- 同一个 AGENTS.md；
+- 同一时间限制；
+- 同一权限范围；
+
+分别接入 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo。
+
+记录：
+
+- 任务完成情况；
+- 人工介入次数；
+- Tool Call 数；
+- 输入 / 输出 Token；
+- TTFT 和总耗时；
+- 是否主动运行测试；
+- 是否主动修复；
+- 最终 Git Diff；
+- 是否错误声称“已完成”。
+
+这样可以把“公网 Harness Benchmark”转换成与部门实际部署直接相关的证据。
+
+### 4.7.4 最后收束到 Agent Harness
+
 培训引入统一概念：
 
 > **Agent Harness**
@@ -664,9 +760,9 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 Instructions + Context + Loop + Tools + State + Permission + Verification + UI
 
-DeepSeek Harness 官方当前直接使用“Agent = Model + Harness”，Pi 官方也直接定位为 minimal agent harness。
+DeepSeek Harness 官方当前直接使用“Agent = Model + Harness”，Pi 官方定位为 minimal agent harness。
 
-因此重点不是记住五个产品，而是理解：
+因此重点不是记住八个产品，而是理解：
 
 > **界面和实现会变化，Harness 要解决的问题高度相似。**
 
@@ -1738,7 +1834,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent（已有初稿：docs/chapters/02-chat-to-agent-harness.md；Harness 共性与鹈鹕 Demo 已补，待加入实测截图）
+- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已覆盖 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo 横向对比、FrontierHarness 固定模型 Benchmark、Harness 共性和鹈鹕 Demo；详细参考：`docs/references/coding-agent-comparison-2026-09.md`；待完成内网 qwen3.6 同模型 Harness 实测和截图）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
