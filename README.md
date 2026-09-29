@@ -2,6 +2,13 @@
 
 面向部门技术人员的 AI 大模型与 Agent 工程实践培训材料。
 
+## 培训基线
+
+- [AI 大模型与 Agent 工程实践培训大纲（Baseline）](docs/outline/training-outline.md)
+- [项目协作规则与内容原则](AGENTS.md)
+
+后续培训讲义、案例、Demo、素材和 PPT 均以这份大纲为组织基线，并随实测结果和材料成熟度持续迭代。
+
 ## 当前已落盘
 
 ### 内网 Qwen3.6 API
