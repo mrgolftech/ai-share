@@ -1,4 +1,4 @@
-# 2026 Coding Agent 横向对比：ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo
+# 2026 Agent 横向对比：ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes / Hermes
 
 > 用途：AI 大模型与 Agent 工程实践培训参考资料
 > 核实日期：2026-09-29
@@ -27,7 +27,7 @@
 
 ---
 
-## 2. 一张表先看懂八个 Agent
+## 2. 一张表先看懂九个 Agent
 
 > “自有 API 接入”主要指企业自建或第三方模型服务，而不是产品自带账号订阅。
 
@@ -41,6 +41,7 @@
 | **Pi** | Minimal terminal coding harness | **是，MIT** | **容易** | 极简核心；默认只有 read/write/edit/bash；Extension / Skill / Prompt / SDK；适合研究 Harness | 有意不内置复杂 Plan/Subagent；高级能力靠扩展，开箱即用程度低于大而全产品 |
 | **Cline** | IDE-first Agent | **是，Apache-2.0** | **非常容易** | VS Code / CLI；Plan/Act；文件/命令/Browser；MCP；BYOK；人机确认感强 | IDE 中交互较重；大任务自主循环风格与 terminal-first Harness 不完全相同 |
 | **Kilo Code** | Multi-surface Agentic Engineering Platform | **是，MIT** | **非常容易** | VS Code / JetBrains / CLI；Code/Plan/Debug/Ask；Subagents；Browser；Marketplace；大量模型 | 2026 年重构后当前架构与早期 Roo/Cline 派生版本不同，培训需以当前版本为准 |
+| **Hermes Agent** | 通用自主 Agent / Coding + Automation + Personal Agent | **是，MIT** | **非常容易** | TUI/Desktop/Web/Gateway；Memory；Skills；MCP；Subagents；Cron；Browser；多种 Terminal Backend；Provider-neutral | 能力面比纯 Coding Agent 更宽，做编码 Benchmark 时要区分“通用 Agent 能力”和“Coding Harness 优化程度” |
 
 ---
 
@@ -163,6 +164,35 @@ Kilo 当前 Custom Provider 支持：
 
 因此它在自有 API 接入方面也很友好。
 
+### 3.9 Hermes Agent
+
+Hermes Agent 当前官方 Provider 文档支持多种云端和本地模型来源，也明确支持：
+
+- OpenAI API；
+- OpenRouter；
+- Anthropic；
+- DeepSeek；
+- Gemini；
+- Qwen OAuth；
+- LM Studio；
+- Ollama / vLLM / llama.cpp 等本地或自托管服务；
+- Custom Endpoint；
+- OPENAI_BASE_URL + OPENAI_API_KEY。
+
+官方开发文档明确说明：
+
+> 任何 OpenAI-compatible endpoint 都可以直接通过 Custom Provider 路径接入，不需要专门写 Provider 插件。
+
+因此对于部门内网 Qwen：
+
+> **Hermes 是非常自然的接入对象。**
+
+只需配置自定义 OpenAI-compatible Base URL、API Key 和 Model，即可使用；如果需要进一步做 Vision、Compression、Title Generation 等辅助模型，也可以分别配置 Provider / Model / Base URL。
+
+Hermes 的差异点是：
+
+> **它不只把自己定位成 Coding Agent，而是一个可以长期运行、拥有 Memory、Skills、自动化和多平台 Gateway 的通用自主 Agent。**
+
 ---
 
 ## 4. 如果只针对“部门内网 Qwen”，接入便利度怎么判断
@@ -179,6 +209,7 @@ Kilo 当前 Custom Provider 支持：
 | **Pi** | ★★★★☆ | 标准 API 配置简单；极端兼容问题需要 models.json / Extension |
 | **Cline** | ★★★★★ | OpenAI Compatible 三字段即可接入 |
 | **Kilo Code** | ★★★★★ | Chat / Responses / Anthropic 三种自定义 Provider 路径齐全 |
+| **Hermes Agent** | ★★★★★ | 原生支持 Custom OpenAI-compatible Endpoint、OPENAI_BASE_URL，本地 vLLM / Ollama / LM Studio 等路径也完整 |
 
 注意：
 
@@ -245,6 +276,21 @@ Roo Code
 ~~~
 
 因此不要拿 2025 年的 Kilo/Roo 架构直接描述 2026 年当前 Kilo。
+
+### Hermes Agent
+
+Nous Research 官方 `NousResearch/hermes-agent` 仓库为 MIT License，源码公开。
+
+它同时提供：
+
+- CLI / TUI；
+- Hermes Desktop；
+- Web / Dashboard；
+- Messaging Gateway；
+- Native Windows / Linux / macOS / WSL；
+- ACP Server 等多种使用界面。
+
+因此它可以作为“同一个 Agent Core 如何服务多种交互 Surface”的案例。
 
 ---
 
@@ -333,6 +379,28 @@ Kilo 当前覆盖 VS Code、JetBrains、CLI、Code / Plan / Debug / Ask、Subage
 
 > **开源 Coding Agent 正从“VS Code 插件”演变为完整 Agentic Engineering Platform。**
 
+### Hermes：从 Coding Agent 扩展到“长期运行的通用 Agent”
+
+Hermes 最值得培训讲的不是“又一个会改代码的 Agent”，而是它把很多长期 Agent 能力放在同一个核心里：
+
+- 跨 Session 持久 Memory；
+- 从经验中创建和改进 Skills；
+- MCP；
+- Subagents / Parallel Work；
+- Browser / Vision / Web；
+- 内置 Cron 自动化；
+- Telegram / Discord / Slack / WhatsApp / Signal 等 Gateway；
+- Local / Docker / SSH / Modal / Daytona / Vercel Sandbox 等 Terminal Backend；
+- CLI / TUI / Desktop / Web / IDE ACP 多种 Surface。
+
+因此 Hermes 很适合用来回答：
+
+> **如果 Agent 不只是“写完一次代码就退出”，而是长期运行、记住经验、定时工作、通过多个入口协作，会变成什么？**
+
+它与 Codex / Claude Code / OpenCode 的对比重点不应只放在编码完成率，而应放在：
+
+> **Coding Harness vs General-purpose Persistent Agent**
+
 ---
 
 ## 7. 你记得的 Harness Benchmark：FrontierHarness Eval
@@ -367,8 +435,9 @@ FrontierHarness Eval v1.0 做了一个关键控制：
 | DSH Standard | 0.1.0-rc.8 | **60.0%** | $3.46 | 6m17s |
 | DSH Minimal | 0.1.0-rc.8 | **56.7%** | $4.72 | 5m41s |
 | OpenCode | 1.18.19 | **50.0%** | $3.24 | 6m27s |
+| Hermes | 0.20.4 | **50.0%** | $2.90 | 6m58s |
 
-Cline、Kilo、ZCode **没有进入 FrontierHarness v1.0 的这组冻结测试**，所以不要自己补分数。
+Cline、Kilo、ZCode **没有进入 FrontierHarness v1.0 的这组冻结测试**，所以不要自己补分数。Hermes 已经在该测试中，冻结版本为 v0.20.4。
 
 ### 7.2 这组数据真正说明什么
 
@@ -439,6 +508,16 @@ Pi > Oh My Pi > OpenCode > Codex
 
 > Agent Harness 到底由什么组成，以及“全部插件化”和“核心极简化”两种设计哲学。
 
+### 第四类：长期运行的通用自主 Agent
+
+- Hermes Agent
+
+讲：
+
+> **Coding Agent 如何进一步扩展为有 Memory、Skills、Cron、Messaging Gateway 和多运行后端的长期 Agent。**
+
+这也能帮助学员理解：Agent 的应用边界并不止于软件开发。
+
 ---
 
 ## 9. 推荐现场 Demo
@@ -498,14 +577,16 @@ Different Pass Rate / Cost / Cache / Runtime
 - DSH；
 - Cline；
 - Kilo；
-- ZCode。
+- ZCode；
+- Hermes。
 
 如果目标是研究 Harness 设计，重点看：
 
 - DSH；
 - Pi；
 - Codex；
-- OpenCode。
+- OpenCode；
+- Hermes。
 
 如果目标是看成熟旗舰 Agent 体验，重点看：
 
@@ -613,3 +694,10 @@ ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo
 - Docs: https://kilo.ai/docs/
 - GitHub: https://github.com/Kilo-Org/kilocode
 - OpenAI Compatible: https://kilo.ai/docs/ai-providers/openai-compatible
+
+### Hermes Agent
+
+- Docs: https://hermes-agent.nousresearch.com/docs/
+- GitHub: https://github.com/NousResearch/hermes-agent
+- Providers: https://hermes-agent.nousresearch.com/docs/integrations/providers/
+- Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
