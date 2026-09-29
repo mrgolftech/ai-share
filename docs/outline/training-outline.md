@@ -657,6 +657,53 @@ Cherry Studio 当前官方知识库支持：
 
 ---
 
+## 4.3.1 专题：部门知识库怎么设计、怎么建、怎么用
+
+由于部门知识库即将进入实际建设和使用阶段，本专题不只介绍 RAG 概念，而要回答实际建设问题：
+
+1. 部门有哪些知识资产类型；
+2. 哪些资产应该保留在 Git / Wiki / DMS / DB / API；
+3. 哪些文档优先使用 Markdown，哪些需要保留 PDF / DOCX / PPTX / XLSX 原件；
+4. 扫描 PDF、表格、图片、音视频如何进入知识体系；
+5. Metadata、版本、Owner、有效期和数据分级怎样设计；
+6. RAG 与向量化是什么关系，哪些资料需要向量化、哪些不需要；
+7. BM25、Embedding、Rerank 分别解决什么问题；
+8. Chunk 应怎样按文档逻辑结构设计；
+9. Cherry Studio、Open WebUI、Coding/General Agent 的 Retrieval 方式有什么差异；
+10. Pipeline RAG 与 Agentic Retrieval 分别适合什么任务；
+11. Full Context 什么时候反而比 RAG 更合适；
+12. 知识如何同步、更新、失效和重新索引；
+13. ACL 为什么必须发生在 Retrieval 之前；
+14. 如何提供文件、章节、页码、Commit、Version 等可追溯引用；
+15. 如何处理重复、冲突和过期知识；
+16. 如何建立 Retrieval Test Set 和知识库回归测试；
+17. 如何测试“无答案时不编”；
+18. 部门近期应该怎样从一个可控专题开始试点。
+
+统一架构原则：
+
+> **Source 是长期知识资产；Index 是可重建派生资产；Retrieval Tool 是访问方式；Client / Agent 是可替换入口。**
+
+推荐工具定位：
+
+- Open WebUI：部门共享 Knowledge Service / AI Portal；
+- Cherry Studio：个人 Knowledge Workspace；
+- Coding / General Agent：跨 Git、Workspace、文件、API、DB、共享 KB 的 Agentic Retrieval 与任务执行层。
+
+详细讲义：
+
+docs/chapters/03-department-knowledge-base.md
+
+架构文档：
+
+docs/architecture/department-knowledge-architecture.md
+
+建议后续形成知识库专项 Demo：
+
+> 同一批真实资料 + 同一批问题，比较 BM25 Only / Vector Only / Hybrid + Rerank / Agentic Retrieval。
+
+---
+
 ## 4.4 Agent 的核心变化
 
 Agent 的基本组成：
@@ -1918,7 +1965,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已新增 `docs/chapters/02-chat-workbenches-and-rag.md`，覆盖 Open WebUI / Cherry Studio 设置、Assistant/Model Preset、Thinking、Vision/Image、知识库、Embedding、Rerank、BM25/Vector/Hybrid RAG 与 Agentic Retrieval；已新增 `docs/architecture/department-knowledge-architecture.md`，明确 Source / Index / Retrieval Tool / Client 分层以及 Open WebUI、Cherry、Agent 在部门知识体系中的不同角色；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补 Cherry RAG 实测截图与内网 qwen3.6 同模型 Harness 实测）
+- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补知识库 Retrieval Benchmark、实测截图与内网 qwen3.6 同模型 Harness 实测）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
