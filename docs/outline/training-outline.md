@@ -562,21 +562,82 @@ Agent：Goal → 写文件 → 运行 → Browser 观察 → 修改 → 再验�
 
 ---
 
-## 4.3 Open WebUI / Cherry Studio：不要再简单等同于“纯 Chat”
+## 4.3 Open WebUI / Cherry Studio：从 Chat 工作台走向 Knowledge、RAG 与 Agent
 
-到 2026 年，Open WebUI 和 Cherry Studio 都已经加入明显的 Agent 能力，例如 Tool Calling、MCP、文件 / 知识库、Workspace，以及 Terminal / 命令执行等能力（以具体版本为准）。
+到 2026 年，Open WebUI 和 Cherry Studio 都不能再简单等同于“纯 Chat”。
 
-因此不再使用：
+培训用它们展示能力递进：
 
-OpenWebUI / Cherry Studio = Chat；Codex / OpenCode = Agent
+~~~text
+Raw Model
+→ Chat
+→ Assistant / Model Preset
+→ File / Knowledge
+→ RAG
+→ Web / MCP / Tools
+→ Agentic Retrieval / Agent
+~~~
 
-这种绝对二分。
+### Open WebUI
 
-更准确的理解是：
+定位：
 
-> **Open WebUI / Cherry Studio 默认更偏“对话优先的模型工作台”；Coding Agent 默认更偏“Workspace / Repository 优先的工程执行环境”。**
+> **更适合作为部门统一 AI 门户 / 集中式模型工作台。**
 
-它们处在 Chat → Agent 的连续谱上，功能正在相互靠近。
+需要演示：
+
+- OpenAI-compatible Provider 接入；
+- Workspace Model；
+- System Prompt 与参数；
+- Thinking 显示与后端真实 Thinking 参数的区别；
+- Vision 与 Image Generation 的区别；
+- Knowledge Base；
+- Vector Retrieval；
+- BM25 + Vector + Rerank Hybrid RAG；
+- Native Knowledge Tools / kb_exec Agentic Retrieval。
+
+### Cherry Studio
+
+定位：
+
+> **更适合作为工程师个人桌面多模型 AI 工作台。**
+
+需要演示：
+
+- Custom Provider；
+- Assistant / Topic；
+- Assistant Prompt；
+- 模型参数与 Thinking；
+- Vision / Drawing；
+- Knowledge Base；
+- Embedding；
+- Rerank；
+- Embedding=None 时的 BM25 检索；
+- Knowledge 绑定 Agent；
+- MCP / Web Search / Work。
+
+### 用 Cherry Studio 解释“RAG 不等于向量数据库”
+
+Cherry Studio 当前官方知识库支持：
+
+> **Embedding Model = None → 使用 BM25 关键词检索。**
+
+因此培训统一采用：
+
+> **RAG = Retrieval → Context Augmentation → Generation。**
+
+进一步区分两个独立维度：
+
+1. Retrieval Algorithm：BM25 / Vector / Hybrid / grep / Search Engine；
+2. Retrieval Control：Pipeline RAG / Agentic Retrieval。
+
+所以：
+
+> **Agentic Retrieval 与 Vector Retrieval 不是二选一；Agent 可以主动调用 BM25、向量、Hybrid 或全文搜索。**
+
+完整讲义：
+
+`docs/chapters/02-chat-workbenches-and-rag.md`
 
 ---
 
@@ -1664,7 +1725,7 @@ AI 编码质量很大程度取决于：
 | MCP | GitHub / 外部服务连接 |
 | Skill | 项目验收流程 Skill |
 | AGENTS.md | 本仓库根目录 `AGENTS.md` |
-| RAG | 文档检索案例 |
+| RAG | Cherry Studio BM25 vs Embedding 召回对比；Open WebUI Hybrid/Agentic Retrieval |
 | CI/CD | GitHub Actions |
 | 旗舰模型价值 | IPsec VPN 数据分析 |
 
@@ -1841,7 +1902,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已覆盖 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes 横向对比、FrontierHarness 固定模型 Benchmark、Harness 共性和鹈鹕 Demo；详细参考：`docs/references/coding-agent-comparison-2026-09.md`；待完成内网 qwen3.6 同模型 Harness 实测和截图）
+- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已新增 `docs/chapters/02-chat-workbenches-and-rag.md`，覆盖 Open WebUI / Cherry Studio 设置、Assistant/Model Preset、Thinking、Vision/Image、知识库、Embedding、Rerank、BM25/Vector/Hybrid RAG 与 Agentic Retrieval；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补 Cherry RAG 实测截图与内网 qwen3.6 同模型 Harness 实测）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
