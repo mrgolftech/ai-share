@@ -1,0 +1,22 @@
+name: API Test Script Check
+
+on:
+  push:
+    paths:
+      - "api/qwen/qwen_api_training_test.py"
+      - ".github/workflows/api-test-script-check.yml"
+  pull_request:
+    paths:
+      - "api/qwen/qwen_api_training_test.py"
+      - ".github/workflows/api-test-script-check.yml"
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile training test script
+        run: python -m py_compile api/qwen/qwen_api_training_test.py
