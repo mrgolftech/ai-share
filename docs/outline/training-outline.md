@@ -639,6 +639,22 @@ Cherry Studio 当前官方知识库支持：
 
 `docs/chapters/02-chat-workbenches-and-rag.md`
 
+部门级知识架构进一步采用：
+
+> **Source of Truth 与 Retrieval Index 分离。**
+
+知识原文保留在 Git / Wiki / 文件库 / DB / API 等权威来源；BM25、Vector、Rerank 作为可重建检索层；Open WebUI、Cherry Studio 和 Agent 作为不同消费入口。
+
+推荐定位：
+
+- Open WebUI：部门共享 Knowledge Service / AI Portal；
+- Cherry Studio：个人 Knowledge Workspace；
+- Coding / General Agent：跨 Repo、文件、API、DB、共享 KB 的 Agentic Retrieval 与任务执行层。
+
+详细架构：
+
+`docs/architecture/department-knowledge-architecture.md`
+
 ---
 
 ## 4.4 Agent 的核心变化
@@ -1902,7 +1918,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已新增 `docs/chapters/02-chat-workbenches-and-rag.md`，覆盖 Open WebUI / Cherry Studio 设置、Assistant/Model Preset、Thinking、Vision/Image、知识库、Embedding、Rerank、BM25/Vector/Hybrid RAG 与 Agentic Retrieval；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补 Cherry RAG 实测截图与内网 qwen3.6 同模型 Harness 实测）
+- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已新增 `docs/chapters/02-chat-workbenches-and-rag.md`，覆盖 Open WebUI / Cherry Studio 设置、Assistant/Model Preset、Thinking、Vision/Image、知识库、Embedding、Rerank、BM25/Vector/Hybrid RAG 与 Agentic Retrieval；已新增 `docs/architecture/department-knowledge-architecture.md`，明确 Source / Index / Retrieval Tool / Client 分层以及 Open WebUI、Cherry、Agent 在部门知识体系中的不同角色；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补 Cherry RAG 实测截图与内网 qwen3.6 同模型 Harness 实测）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
