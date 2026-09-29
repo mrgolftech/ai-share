@@ -25,3 +25,7 @@
 - Responses Vision 改为“待按 OpenAPI 必填 detail 字段修正后复测”，不再误判为不支持。
 - 记录 Thinking ON 43～299 秒长尾及重任务后简单推理暂时变慢现象。
 - 模块一材料成熟度提升为“可用于培训”。
+
+- 集成开源 Token 输出速率体感 Demo：基于 `aaravchour/token-speed-visualiser`（Apache-2.0）进行培训版改造。
+- Demo 去除外部 CDN/字体依赖，改为离线可运行；去掉容易过时的固定模型速度标签，保留单速率和 Race Mode。
+- 模块一讲义新增 TTFT / Tokens/s / Total Latency 的现场体感演示环节。

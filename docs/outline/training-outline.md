@@ -264,7 +264,32 @@
 - SSE；
 - event / data；
 - 为什么聊天界面能够“一个字一个字”显示；
-- 为什么 TTFT 对体验非常重要。
+- 为什么 TTFT 对体验非常重要；
+- 用离线 HTML Demo 直观看不同 Tokens/s 的主观体验。
+
+### Demo：Token 输出速率体感
+
+文件：
+
+`demos/token-output-speed/index.html`
+
+来源：
+
+`aaravchour/token-speed-visualiser`（Apache-2.0），培训仓库只做中文化、离线化和通用速率预设改造。
+
+现场建议：
+
+`5 → 20 → 50 → 100 tok/s`
+
+然后使用 Race Mode 对比：
+
+`5 / 30 / 120 tok/s`
+
+重点不是把演示值当成真实模型 Benchmark，而是建立：
+
+`TTFT → Tokens/s → Total Latency`
+
+三者的区别。
 
 ---
 
@@ -1529,7 +1554,7 @@ AI 编码质量很大程度取决于：
 | SSE | Qwen 流式请求 |
 | Thinking | Thinking On / Off API 对比 |
 | Context | model-metric 长上下文测试 |
-| TTFT / Tokens/s | model-metric |
+| TTFT / Tokens/s | Token 输出速率体感 HTML Demo + model-metric |
 | Chat vs Agent | 修改 Web 项目小任务 |
 | Shell / Git | 真实仓库修改闭环 |
 | Browser | Playwright Visual QA |
@@ -1708,6 +1733,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 第一章 API 培训讲义（可用于培训）
 - Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
 - Thinking 失败项专项复测（已有实测证据）
+- Token 输出速率体感 Demo（可用于培训，基于 Apache-2.0 开源项目改造，可离线运行）
 - API 官方参考资料（已有素材）
 
 ## 待建设

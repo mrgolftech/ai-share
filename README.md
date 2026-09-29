@@ -23,6 +23,7 @@
 - [第一版 API 测试脚本](api/qwen/qwen_api_training_test.py)
 - [全面 API / Agent / Vision 测试脚本](api/qwen/qwen_api_training_test_v2.py)
 - [失败项专项重测脚本](api/qwen/qwen_failed_retest.py)
+- [Token 输出速率体感 Demo](demos/token-output-speed/index.html) — 基于开源项目改造，支持单速率与并排对比
 
 材料原则：以官方资料、源代码和本地实测为证据，明确区分“官方能力”“当前部署配置”“协议存在”和“我们实测”。
 

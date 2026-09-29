@@ -146,7 +146,60 @@ Request → 生成 → SSE chunk → SSE chunk → DONE
 
 因此 TTFT 和总耗时是两个不同指标。
 
-## 五、Token 和 Context
+## 五、Tokens/s：先让大家直接感受“吐字速度”
+
+这一段不先讲公式，先现场打开：
+
+`demos/token-output-speed/index.html`
+
+这是基于 GitHub 开源项目 `aaravchour/token-speed-visualiser`（Apache-2.0）做的培训版，不从零重复实现。保留了上游的单速率模拟和 Race Mode，只做中文化、离线化和培训场景调整。
+
+建议现场先点：
+
+~~~text
+5 tok/s
+→ 明显能跟着它一个片段一个片段地读
+
+20 tok/s
+→ 已经比较流畅
+
+50 tok/s
+→ 文本快速铺开
+
+100 tok/s
+→ 对聊天阅读来说已经非常快
+~~~
+
+再切到“并排对比”，同时观察：
+
+~~~text
+5 tok/s
+30 tok/s
+120 tok/s
+~~~
+
+这个 Demo 的目的不是测模型，而是先建立一个直觉：
+
+> **Tokens/s 描述的是模型开始生成以后，内容往外输出有多快。**
+
+一定要和 TTFT 分开：
+
+~~~text
+TTFT
+= 多久开始出第一个 Token
+
+Tokens/s
+= 开始生成以后，每秒能输出多少 Token
+
+Total Latency
+= 整个请求多久结束
+~~~
+
+因此一个模型即使有 100 tok/s，如果 TTFT 要等 30 秒，用户依然会觉得慢；Agent 又会多轮调用模型和工具，这些等待还会连续叠加。
+
+演示页中的“Token”只是视觉近似片段，不是真实 Qwen tokenizer，也不是性能 Benchmark。真实性能数据仍然来自 API 实测和 model-metric。
+
+## 六、Token 和 Context
 
 /tokenize 将文本变为 Token IDs，/detokenize 可以还原文本。
 
@@ -307,7 +360,7 @@ Thinking ON：298.6 s
 - DeepSeek-R1：https://github.com/deepseek-ai/DeepSeek-R1
 - Qwen3 Thinking / Non-Thinking：https://qwenlm.github.io/blog/qwen3/
 
-## 七、Tool Calling：从 Chat 走向 Agent
+## 八、Tool Calling：从 Chat 走向 Agent
 
 模型并不直接执行天气接口。
 
@@ -346,7 +399,7 @@ Final Answer
 
 所以我们测试的不再只是“会不会输出函数名”，而是完整回灌后能不能继续回答。
 
-## 八、三套协议是一张能力矩阵
+## 九、三套协议是一张能力矩阵
 
 | 能力 | OpenAI Chat | Responses | Anthropic |
 |---|---|---|---|
@@ -359,7 +412,7 @@ Final Answer
 
 兼容不是 Yes / No，而是 Endpoint、Schema、Streaming、Thinking、Tool Calling、Tool Result 等逐项验证。
 
-## 九、Anthropic 真正的问题
+## 十、Anthropic 真正的问题
 
 旧测试里 Tool Use 没有形成，是因为 Thinking 持续消耗输出预算。
 
@@ -379,7 +432,7 @@ final answer ✅
 
 这就是“协议能跑通”和“体验好不好”之间的差别。
 
-## 十、多模态现在已经是现网实测能力
+## 十一、多模态现在已经是现网实测能力
 
 测试图不是随机照片，而是带标准答案：
 
@@ -404,7 +457,7 @@ AI TEST 2026
 
 > 当前内网 qwen3.6 已实测具备图片理解和多图输入能力，并能把视觉结果转换为结构化 Tool Call。
 
-## 十一、Vision + Tool Calling 的假失败
+## 十二、Vision + Tool Calling 的假失败
 
 第一次工具字段叫 text。
 
@@ -432,7 +485,7 @@ description = 必须逐字 OCR 顶部英文
 
 > Tool Schema 本身也是 Prompt。字段名和 description 写得差，也会制造“模型失败”。
 
-## 十二、Responses Vision 为什么还不能下结论
+## 十三、Responses Vision 为什么还不能下结论
 
 专项重测连续 HTTP 400，一开始很容易说“不支持图片”。
 
@@ -454,7 +507,7 @@ description = 必须逐字 OCR 顶部英文
 
 而不是“模型不支持”。
 
-## 十三、自动化测试本身也会错
+## 十四、自动化测试本身也会错
 
 本轮有两个典型假失败：
 
@@ -469,7 +522,7 @@ description = 必须逐字 OCR 顶部英文
 
 > 模型负责判断和生成，工具负责执行，自动测试负责验证，人负责目标、约束和最终判断。
 
-## 十四、/metrics：从“能用”走向“好用”
+## 十五、/metrics：从“能用”走向“好用”
 
 初始 Metrics 快照可看到 running、waiting、KV Cache、Prompt Tokens 等指标，并显示 Prefix Cache 未启用。
 
@@ -483,7 +536,7 @@ Metrics + 压测回答：
 
 这就是后续 Model-Metric 案例的入口。
 
-## 十五、当前内网模型的统一表述
+## 十六、当前内网模型的统一表述
 
 推荐培训中这样说：
 
