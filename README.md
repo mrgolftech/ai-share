@@ -6,6 +6,7 @@
 
 - [AI 大模型与 Agent 工程实践培训大纲（Baseline）](docs/outline/training-outline.md)
 - [项目协作规则与内容原则](AGENTS.md)
+- [ChatGPT Project Instructions v2](docs/project-instructions-v2.md)
 
 后续培训讲义、案例、Demo、素材和 PPT 均以这份大纲为组织基线，并随实测结果和材料成熟度持续迭代。
 
