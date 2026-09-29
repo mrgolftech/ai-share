@@ -1537,6 +1537,54 @@ Agentic Retrieval
 
 ---
 
+# 二十五、从“知识库产品”上升到“部门 Knowledge Architecture”
+
+这一部分培训要再往前走一步：
+
+> **部门知识库不应该绑定在 Cherry Studio、Open WebUI 或某一个 Agent 上。**
+
+更合理的架构是：
+
+~~~text
+Source of Truth
+Git / Wiki / 文件库 / DB / API
+        ↓
+Parse / Metadata / ACL
+        ↓
+BM25 / Full-text / Vector Index
+        ↓
+Rerank / Search / grep / read / SQL / API
+        ↓
+Open WebUI / Cherry Studio / Agent
+~~~
+
+其中：
+
+- Source 是长期资产；
+- Index 是可以重建的派生资产；
+- Retrieval Tool 是访问方式；
+- Client / Agent 是可替换入口。
+
+因此三个工具在部门知识体系中的推荐定位是：
+
+| 工具 | 推荐角色 | 主要知识形态 | 主要 Retrieval |
+|---|---|---|---|
+| Open WebUI | 部门共享 Knowledge Service / AI Portal | 同步后的共享 Knowledge + ACL | Hybrid RAG、Native Knowledge Tools、grep、kb_exec |
+| Cherry Studio | 个人 Knowledge Workspace | 专题文件、Notes、Folder、Link、本地 KB | BM25 起步，按需 Embedding / Rerank，绑定 Agent |
+| Coding / General Agent | 工程与研究任务执行层 | Repo、Workspace、Git、API、DB、共享 KB | rg/grep/read/LSP/Git/API/MCP + 可选语义检索 |
+
+因此：
+
+> **部门知识建设的对象应该是“知识源 + 元数据 + 权限 + 检索测试集”，而不是某个客户端生成的 Embedding。**
+
+完整架构文档：
+
+~~~text
+docs/architecture/department-knowledge-architecture.md
+~~~
+
+---
+
 # 二十五、非常适合现场做的 Cherry RAG Demo
 
 准备三份我们自己的真实材料：
