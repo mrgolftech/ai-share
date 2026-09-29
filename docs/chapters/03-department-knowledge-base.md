@@ -535,6 +535,106 @@ Chat / Workspace Model / Native Agent
 
 ---
 
+## 11.1 Open WebUI 中哪些知识库配置是管理员做，哪些可以下放给普通用户
+
+Open WebUI 要区分两层权限。
+
+### 平台级 RAG 配置：管理员负责
+
+例如：
+
+- Embedding Provider / Embedding Model；
+- Rerank Model；
+- Chunk Size / Overlap；
+- Document Extraction / OCR Engine；
+- Hybrid Search；
+- Full Context 默认行为；
+- External Knowledge Source；
+- 上传大小等全局限制。
+
+这些位于：
+
+~~~text
+Settings → Admin → Documents
+~~~
+
+属于实例级配置。
+
+### Knowledge Base 的创建和使用：可以下放给普通用户
+
+普通 User 默认受 RBAC 控制。
+
+管理员可以在：
+
+~~~text
+Admin Panel
+→ Users
+→ Groups
+→ Default Permissions / Group Permissions
+~~~
+
+开放：
+
+~~~text
+Workspace → Knowledge Access
+~~~
+
+获得该权限后，普通用户可以进入：
+
+~~~text
+Workspace → Knowledge
+~~~
+
+创建和管理自己的 Knowledge Base。
+
+新创建的 Knowledge Base 默认是私有资源。
+
+如果需要共享，还应单独配置：
+
+- Knowledge Sharing；
+- Knowledge Public Sharing；
+- Share to specific users / groups；
+- Read / Write Access。
+
+因此：
+
+> **Open WebUI 不是“只有管理员才能建知识库”，而是“平台参数由管理员集中治理，知识库创建权限可通过 RBAC 下放”。**
+
+这与部门场景非常匹配：
+
+~~~text
+平台管理员
+→ 统一 Parser / Embedding / Rerank / 安全策略
+
+知识库管理员 / Power User
+→ 建部门或项目 KB、维护资料、做 Retrieval Test
+
+普通用户
+→ 查询已授权 Knowledge Base
+~~~
+
+需要特别注意：
+
+> **把 Knowledge Base 绑定到一个共享 Model，并不会自动把底层 Knowledge 权限授给所有使用该 Model 的用户。**
+
+用户仍然需要对该 Knowledge Base 拥有 Read 权限，否则 Knowledge Tool 查询会返回空结果。
+
+### 对培训 Demo 的建议
+
+Open WebUI 不必承担“现场从零搭一个个人知识库”的主要演示。
+
+更适合演示：
+
+1. 管理员统一设置 Embedding / Rerank / Hybrid Search；
+2. 创建一个共享 Knowledge Base；
+3. 将 KB 授权给 Engineering Group；
+4. 普通用户通过共享 Model / Chat 使用 KB；
+5. 展示同一个 KB 在 Focused Retrieval / Agentic Knowledge Tool 下的使用；
+6. 说明 ACL 如何限制不同用户看到的知识。
+
+而“从零创建 KB → 添加文件 → BM25 → Embedding → Retrieval Test”的快速演示优先放在 Cherry Studio。
+
+
 # 十二、Agent 中的知识库是什么形式
 
 Coding / General Agent 的知识观不同于传统 Chat 知识库。
