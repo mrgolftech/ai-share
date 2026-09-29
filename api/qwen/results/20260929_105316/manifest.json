@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-09-29T10:54:50+08:00",
+  "base_url": "http://<INTRANET_API_HOST>:<PORT>",
+  "model": "qwen3.6",
+  "declared_context_length": 131072,
+  "deployment_note": "两个华为昇腾节点部署 Qwen3.6-35B-A3B-w8a8-ascend（以现场部署信息为准）",
+  "results": [
+    {"seq":1,"name":"models","category":"基础接口","method":"GET","endpoint":"/v1/models","status":"PASS","http_status":200,"elapsed_ms":34.38,"notes":"找到模型 qwen3.6，max_model_len=131072","record_file":"01_models.json","stream_file":null},
+    {"seq":2,"name":"version","category":"基础接口","method":"GET","endpoint":"/version","status":"PASS","http_status":200,"elapsed_ms":5.86,"notes":"version 接口可访问","record_file":"02_version.json","stream_file":null},
+    {"seq":3,"name":"metrics","category":"基础接口","method":"GET","endpoint":"/metrics","status":"PASS","http_status":200,"elapsed_ms":24.75,"notes":"Prometheus metrics 可读取","record_file":"03_metrics.json","stream_file":null},
+    {"seq":4,"name":"openapi","category":"基础接口","method":"GET","endpoint":"/openapi.json","status":"PASS","http_status":200,"elapsed_ms":29.14,"notes":"OpenAPI 可读取；发现关键路径: /v1/models, /v1/chat/completions, /v1/responses, /v1/messages, /tokenize, /detokenize, /version, /metrics","record_file":"04_openapi.json","stream_file":null},
+    {"seq":5,"name":"tokenize","category":"Tokenizer","method":"POST","endpoint":"/tokenize","status":"PASS","http_status":200,"elapsed_ms":8.27,"notes":"tokenize 成功，count=20，max_model_len=131072","record_file":"05_tokenize.json","stream_file":null},
+    {"seq":6,"name":"detokenize","category":"Tokenizer","method":"POST","endpoint":"/detokenize","status":"PASS","http_status":200,"elapsed_ms":6.5,"notes":"detokenize 与原文完全一致","record_file":"06_detokenize.json","stream_file":null},
+    {"seq":7,"name":"chat_nonstream","category":"OpenAI Chat","method":"POST","endpoint":"/v1/chat/completions","status":"PASS","http_status":200,"elapsed_ms":806.02,"notes":"OpenAI Chat Completions 非流式结构正常","record_file":"07_chat_nonstream.json","stream_file":null},
+    {"seq":8,"name":"chat_stream","category":"OpenAI Chat","method":"POST","endpoint":"/v1/chat/completions","status":"PASS","http_status":200,"elapsed_ms":833.21,"notes":"流式协议与完成事件符合预期","record_file":"08_chat_stream.json","stream_file":"08_chat_stream.sse.txt"},
+    {"seq":9,"name":"chat_thinking_off","category":"OpenAI Chat","method":"POST","endpoint":"/v1/chat/completions","status":"PASS","http_status":200,"elapsed_ms":5963.22,"notes":"Thinking OFF：直接返回 content，reasoning 为空","record_file":"09_chat_thinking_off.json","stream_file":null},
+    {"seq":10,"name":"chat_thinking_on","category":"OpenAI Chat","method":"POST","endpoint":"/v1/chat/completions","status":"PASS","http_status":200,"elapsed_ms":48459.36,"notes":"Thinking ON：检测到 reasoning/think 内容","record_file":"10_chat_thinking_on.json","stream_file":null},
+    {"seq":11,"name":"chat_tool_call","category":"OpenAI Chat","method":"POST","endpoint":"/v1/chat/completions","status":"PASS","http_status":200,"elapsed_ms":1443.19,"notes":"OpenAI Chat tool_calls 结构正常","record_file":"11_chat_tool_call.json","stream_file":null},
+    {"seq":12,"name":"responses_nonstream","category":"Codex / Responses","method":"POST","endpoint":"/v1/responses","status":"PASS","http_status":200,"elapsed_ms":915.18,"notes":"OpenAI Responses 非流式结构正常","record_file":"12_responses_nonstream.json","stream_file":null},
+    {"seq":13,"name":"responses_stream","category":"Codex / Responses","method":"POST","endpoint":"/v1/responses","status":"PASS","http_status":200,"elapsed_ms":962.55,"notes":"流式协议与完成事件符合预期","record_file":"13_responses_stream.json","stream_file":"13_responses_stream.sse.txt"},
+    {"seq":14,"name":"responses_tool_call","category":"Codex / Responses","method":"POST","endpoint":"/v1/responses","status":"PASS","http_status":200,"elapsed_ms":1618.87,"notes":"Responses function_call 结构正常","record_file":"14_responses_tool_call.json","stream_file":null},
+    {"seq":15,"name":"anthropic_nonstream","category":"Claude / Anthropic","method":"POST","endpoint":"/v1/messages","status":"PASS","http_status":200,"elapsed_ms":6572.18,"notes":"Anthropic Messages 非流式结构正常","record_file":"15_anthropic_nonstream.json","stream_file":null},
+    {"seq":16,"name":"anthropic_stream","category":"Claude / Anthropic","method":"POST","endpoint":"/v1/messages","status":"PASS","http_status":200,"elapsed_ms":7493.6,"notes":"流式协议与完成事件符合预期","record_file":"16_anthropic_stream.json","stream_file":"16_anthropic_stream.sse.txt"},
+    {"seq":17,"name":"anthropic_tool_use","category":"Claude / Anthropic","method":"POST","endpoint":"/v1/messages","status":"FAIL","http_status":200,"elapsed_ms":18434.22,"notes":"未返回 content[].type=tool_use；stop_reason=max_tokens","record_file":"17_anthropic_tool_use.json","stream_file":null}
+  ],
+  "support_matrix":[
+    {"protocol":"OpenAI Chat Completions","status":"PASS","basis":"models + 非流式 chat + 流式 chat + tool_calls"},
+    {"protocol":"Codex / OpenAI Responses","status":"PASS","basis":"Responses 非流式 + Responses SSE + function_call"},
+    {"protocol":"Claude / Anthropic Messages","status":"PARTIAL","basis":"Messages 非流式 + Messages SSE + tool_use"}
+  ]
+}
