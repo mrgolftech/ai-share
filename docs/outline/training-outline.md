@@ -678,11 +678,27 @@ Cherry Studio 当前官方知识库支持：
 15. 如何处理重复、冲突和过期知识；
 16. 如何建立 Retrieval Test Set 和知识库回归测试；
 17. 如何测试“无答案时不编”；
-18. 部门近期应该怎样从一个可控专题开始试点。
+18. 为什么“检索到了”不等于 LLM 一定能在长 Context 中使用好；
+19. 标称 Context Window 与 Effective Context 有什么区别；
+20. 为什么 Top-K 不是越大越好，如何用 Rerank / Metadata / 去重 / Evidence Budget 控制最终 Context；
+21. Full Context、Pipeline RAG 和 Agentic Retrieval 应该怎样按资料规模与问题类型路由；
+22. 部门近期应该怎样从一个可控专题开始试点。
 
 统一架构原则：
 
 > **Source 是长期知识资产；Index 是可重建派生资产；Retrieval Tool 是访问方式；Client / Agent 是可替换入口。**
+
+同时新增一条 Context 原则：
+
+> **Retriever 找到正确资料只是第一关；检索结果进入 Prompt 后，还存在 LLM 的 In-context Retrieval / Context Utilization 问题。Context Window 是容量上限，不是有效知识容量保证。**
+
+因此知识库链路应包含：
+
+`Candidate Recall → Rerank / Filter → Evidence Budget → Context Packing → LLM`
+
+而不是简单：
+
+`Top-K 越大 → 塞得越多 → 回答越好`。
 
 推荐工具定位：
 
@@ -2023,7 +2039,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已完成 Chat→Agent 过渡和鹈鹕 Demo；9 个 Agent 横向对比、FrontierHarness Benchmark 与 Harness 共性已迁入独立 Agent 共性机制专题；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，并新增 `docs/references/knowledge-base-rag-evidence-2026-09.md`；已将 Markdown/PDF/表格/代码向量化等过强表述降级为条件化工程建议；待补实际 BM25/Vector/Hybrid/Agentic Retrieval 运行结果、no-answer/版本冲突/ACL 测试、截图与内网 qwen3.6 实测）
+- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已完成 Chat→Agent 过渡和鹈鹕 Demo；9 个 Agent 横向对比、FrontierHarness Benchmark 与 Harness 共性已迁入独立 Agent 共性机制专题；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，并新增 `docs/references/knowledge-base-rag-evidence-2026-09.md`；已补入 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，新增 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget 设计；已将 Markdown/PDF/表格/代码向量化等过强表述降级为条件化工程建议；当前优先完成基于研究和成熟实践的设计/构建讲义，BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 对比实测后置）
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；9 个 Agent 横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
