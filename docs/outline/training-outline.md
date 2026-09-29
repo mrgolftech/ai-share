@@ -698,9 +698,28 @@ docs/chapters/03-department-knowledge-base.md
 
 docs/architecture/department-knowledge-architecture.md
 
-建议后续形成知识库专项 Demo：
+知识库专项 Demo 统一采用同一批真实 Qwen 资料，按三层递进：
 
-> 同一批真实资料 + 同一批问题，比较 BM25 Only / Vector Only / Hybrid + Rerank / Agentic Retrieval。
+~~~text
+Cherry Studio
+→ 演示知识怎么建：Parse / Chunk / BM25 / Embedding / Rerank
+
+Open WebUI
+→ 演示知识怎么共享治理：Shared KB / Group / ACL / Workspace Model
+
+Agent
+→ 演示知识怎么被编排：Shared RAG KB + Git / File + API / Metrics
+~~~
+
+这里 Agent 不是第三套互斥知识库，而是更上层的 Knowledge Orchestrator：
+
+> **Agent 可以把 RAG 知识库、全文搜索、Git、API 和数据库都作为 Retrieval Tools 统一调用。**
+
+统一 Demo 规范：
+
+demos/knowledge-retrieval/README.md
+
+同时使用固定问题集对 BM25 Only / Vector / Hybrid + Rerank / Agentic Retrieval 做可比验证。
 
 ---
 
@@ -1965,7 +1984,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；待补知识库 Retrieval Benchmark、实测截图与内网 qwen3.6 同模型 Harness 实测）
+- 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；已新增知识库专题讲义 `docs/chapters/03-department-knowledge-base.md` 和架构文档 `docs/architecture/department-knowledge-architecture.md`，覆盖知识资产分类、文档格式、Metadata、Chunk、向量化判断、BM25/Embedding/Rerank、Full Context、Open WebUI/Cherry/Agent 使用方式、Pipeline RAG vs Agentic Retrieval、权限、版本、引用、评测和近期试点方案；同时已覆盖 9 个 Agent 横向对比、FrontierHarness Benchmark、Harness 共性和鹈鹕 Demo；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；待补实际 BM25/Vector/Hybrid/Agentic Retrieval 运行结果、截图与内网 qwen3.6 同模型 Harness 实测）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
