@@ -373,18 +373,26 @@
 
 ---
 
-## 3.9 Thinking / COT
+## 3.9 Thinking / CoT
 
 重点回答：
 
-1. Thinking 是什么；
-2. 为什么复杂任务可能受益于更多推理；
-3. 为什么 Thinking 通常会增加 Token 和响应时间；
-4. 哪些任务不需要高强度推理。
+1. CoT（Chain-of-Thought）是什么；
+2. 2022 年 CoT Prompting / Zero-shot CoT 已系统提出，CoT 不是从 DeepSeek-R1 才出现；
+3. 2024 年 o1、2025 年 DeepSeek-R1 为什么让“长推理 / reasoning model”成为大众显著感知的产品形态；
+4. Qwen 的 Thinking / Non-Thinking 与 CoT 是什么关系；
+5. 为什么复杂任务可能受益于更多 test-time compute；
+6. 为什么 Thinking 会增加 Token、TTFT、总耗时和尾延迟；
+7. 哪些任务应该开 Thinking，哪些任务应优先快速回答；
+8. 为什么可见 reasoning 文本不能等同于绝对可信的“模型内部执行日志”。
 
-避免将 COT 理解成“模型真的像人一样逐步思考”。
+培训中结合内网 Thinking On / Off 实测，建立：
 
-培训中以可观察的 API 行为、Token 和延迟为重点，不依赖不可验证的内部机制推断。
+> **Thinking 是一种推理预算；不是所有任务都应该默认把预算拉满。**
+
+工程建议：
+
+> **简单任务优先快速模型 / Non-Thinking；复杂分析、疑难 Debug、系统设计等节点再升级推理预算。**
 
 ---
 
@@ -393,13 +401,20 @@
 需要回答：
 
 - MoE 是什么；
-- 为什么模型可以总参数较大但每次只激活部分专家；
-- Active Parameters 和 Total Parameters 的区别；
-- MoE 对模型能力与部署效率意味着什么。
+- Router / Gate 如何为 Token 选择 Experts；
+- Total Parameters 与 Activated Parameters 的区别；
+- 为什么总参数可以很大，但每 Token 只执行部分专家；
+- MoE 主要节省的是每 Token 的有效计算量，而不是简单把模型权重显存降到 Active Parameters 的规模；
+- 为什么仍然需要考虑总权重驻留 / 分布、Expert Parallel、All-to-All 通信和 Load Balance；
+- 为什么 KV Cache、长 Context 和并发不会因为“A3B”自动按 3/35 比例下降。
+
+结合 Qwen3.6-35B-A3B：
+
+> **35B 是总参数容量，A3B 是约 3B 激活参数；官方模型卡当前给出 256 Experts，每 Token 8 Routed + 1 Shared。**
 
 与本培训核心关联：
 
-> **模型名称中的参数量不能直接等价为每 Token 都执行相同规模的计算。**
+> **模型名称中的参数量不能直接等价为每 Token 都执行相同规模的计算；Active Parameters 也不能直接等价为部署所需权重内存。**
 
 ---
 
@@ -424,18 +439,35 @@
 
 统一使用：
 
-> **生成一个鹈鹕骑自行车的 SVG 动画网页**
+> **创建一个单文件 HTML，用 SVG、CSS 和 JavaScript 生成一只鹈鹕骑自行车的循环动画。**
 
-作为不同模型或不同工作方式的能力展示。
+为什么选它：
 
-对比时不只看“能不能生成”，还关注：
+- 任务短，适合现场；
+- “鹈鹕 + 自行车”属于非典型组合，不只是套常见网页模板；
+- 同时涉及自然语言理解、SVG 几何、CSS / JS、空间组合和动画；
+- 结果高度可视化，学员无需阅读大量代码也能发现问题；
+- 生成后必须真正运行，非常适合引出 Agent 的执行与验证闭环。
 
-- 第一次完成度；
-- SVG / CSS / JS 正确性；
-- 动画自然程度；
-- 是否需要迭代；
-- 是否能自己运行和验证；
-- Chat 与 Agent 完成同一任务的差异。
+Demo 分两轮：
+
+### A. 不同模型，同一种 Chat 工作方式
+
+固定 Prompt 和运行条件，观察指令遵循、可执行性、构图、动画逻辑和一次完成度，用于展示 Model Capability。
+
+### B. 同一个模型，Chat vs Agent
+
+Chat：Prompt → 代码 → 人复制/运行/发现问题/再提问。
+
+Agent：Goal → 写文件 → 运行 → Browser 观察 → 修改 → 再验证 → Deliver。
+
+用于展示 Harness Capability。
+
+注意：
+
+> **这是教学演示题，不是严肃模型 Benchmark。单题结果不得外推成模型综合排名。**
+
+完整规范：demos/pelican-bicycle/README.md
 
 ---
 
@@ -450,6 +482,8 @@
 已存在：
 
 - `docs/chapters/01-intranet-qwen-api.md`
+- `docs/chapters/02-chat-to-agent-harness.md`
+- `demos/pelican-bicycle/README.md`
 - `api/qwen/qwen_api_training_test.py`
 - `api/qwen/reports/`
 - `api/qwen/results/`
@@ -503,23 +537,21 @@
 
 ---
 
-## 4.3 WebUI / Cherry Studio 的位置
+## 4.3 Open WebUI / Cherry Studio：不要再简单等同于“纯 Chat”
 
-重点解释：
+到 2026 年，Open WebUI 和 Cherry Studio 都已经加入明显的 Agent 能力，例如 Tool Calling、MCP、文件 / 知识库、Workspace，以及 Terminal / 命令执行等能力（以具体版本为准）。
 
-WebUI / Cherry Studio 更接近：
+因此不再使用：
 
-> **模型的人机交互客户端。**
+OpenWebUI / Cherry Studio = Chat；Codex / OpenCode = Agent
 
-它们可以非常适合：
+这种绝对二分。
 
-- 聊天；
-- 切换模型；
-- 上传文件；
-- 知识库；
-- 日常模型调用。
+更准确的理解是：
 
-但不能把“有聊天界面”直接等同于“Agent”。
+> **Open WebUI / Cherry Studio 默认更偏“对话优先的模型工作台”；Coding Agent 默认更偏“Workspace / Repository 优先的工程执行环境”。**
+
+它们处在 Chat → Agent 的连续谱上，功能正在相互靠近。
 
 ---
 
@@ -579,40 +611,64 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 ---
 
-## 4.7 ZCode / Codex / OpenCode / DSH / Pi 的讲法
+## 4.7 ZCode / Codex / OpenCode / DSH / Pi：先找 Harness 共性
 
-不逐个介绍菜单。
+不逐个介绍菜单，也不评选“哪个 Agent 最好”。
 
 统一从以下维度理解：
 
-- 使用什么模型；
-- Workspace 如何组织；
-- Shell / File 能力；
-- Browser / Computer 能力；
+- Model / Provider；
+- System Prompt / 项目规则；
+- Workspace；
+- Context / Session / Compaction；
+- Agent Loop；
+- Shell / File / Git；
+- Browser / Computer；
+- Tool Registry / Tool Schema；
 - MCP / Plugin / Skill；
-- 项目规则文件；
-- Sub-agent；
-- 权限与安全边界；
-- Git 工作流；
+- Sub-agent / Task Delegation；
+- Permission / Approval / Sandbox；
+- Test / Verification / Trace；
 - Windows / Linux / Remote 使用方式。
 
-重点总结共同工作方法，而不是评选“哪个 Agent 最好”。
+培训引入统一概念：
+
+> **Agent Harness**
+
+可以把它理解为模型外面的运行与工程环境：
+
+Instructions + Context + Loop + Tools + State + Permission + Verification + UI
+
+DeepSeek Harness 官方当前直接使用“Agent = Model + Harness”，Pi 官方也直接定位为 minimal agent harness。
+
+因此重点不是记住五个产品，而是理解：
+
+> **界面和实现会变化，Harness 要解决的问题高度相似。**
 
 ---
 
 ## 4.8 本模块短案例
 
-建议现场用一个非常小的真实任务演示：
+优先复用“鹈鹕骑自行车”统一 Demo，使用同一个模型对比：
 
 ### Chat
 
-“告诉我怎样修改这个 Web 应用。”
+Prompt → 返回 HTML → 人负责保存、运行、观察和继续提问。
 
 ### Agent
 
+Goal → 创建文件 → 启动页面 → 浏览器验证 → 修复 → 再验证 → Git Diff。
+
+这样可以把变量拆开：
+
+- 不同模型，同一 Chat 流程 → 看 Model Capability；
+- 同一模型，Chat vs Agent → 看 Harness Capability。
+
+另外可补一个真实仓库小任务：
+
 “读取项目 → 找到文件 → 修改 → 启动 → 浏览器验证 → 修复 → Git Diff。”
 
-通过任务链直接说明差异。
+通过两种任务链说明差异。
 
 ---
 
@@ -1656,7 +1712,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent
+- 模块二：Chat → Agent（已有初稿：docs/chapters/02-chat-to-agent-harness.md；Harness 共性与鹈鹕 Demo 已补，待加入实测截图）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
