@@ -53,7 +53,47 @@
 | Gao et al., **ALCE / Enabling LLMs to Generate Text with Citations**, EMNLP 2023 | 引用质量可独立评测；当时最佳系统仍存在大量 citation support 缺失 | “有引用按钮”不等于引用完整/正确；要测试 Citation Correctness / Completeness | 同行评审 |
 | Edge et al., **From Local to Global: GraphRAG**, 2024 | 普通 chunk retrieval 对全语料全局问题存在局限；图+社区摘要对特定全局 sensemaking 问题有优势 | GraphRAG 应作为特殊问题类型的扩展，而不是部门知识库默认第一阶段 | Microsoft Research / preprint |
 
-### 2.1 重要边界
+### 2.1 长上下文不是“检索命中以后就解决了”
+
+知识库系统实际上存在两次不同意义上的“召回/利用”：
+
+```text
+用户问题
+  ↓
+外部 Retrieval
+  ↓
+候选 Chunk / Document
+  ↓
+Rerank / Filter / Context Packing
+  ↓
+LLM Context
+  ↓
+模型在上下文中再次定位、关联、理解证据
+  ↓
+生成答案
+```
+
+为了避免概念混淆，培训中建议区分：
+
+1. **External Retrieval Recall**：Retriever 有没有把正确资料找出来；
+2. **In-context Retrieval / Context Utilization**：正确资料已经进入 Prompt 后，LLM 能否在长上下文和干扰内容中稳定找到并使用它。
+
+已有研究表明第二层同样会失败：
+
+- **Lost in the Middle（TACL 2024）**：相关信息在长上下文中的位置会显著影响模型使用效果，常见现象是开头/结尾优于中间；其开放域 QA case study 中，把检索文档从 20 增加到 50，Retriever Recall 继续提升，但 Reader 最终性能只得到约 1%–1.5% 的边际提升。这直接说明“多召回一些文档”不等于“模型能有效利用更多文档”。
+- **RULER（2024）**：把简单 Needle-in-a-Haystack 扩展到多 needle、多跳和聚合任务。论文测试的 17 个长上下文模型虽然很多在简单 NIAH 上接近满分，但随着长度和复杂度增加几乎都明显下降；支持的“标称 Context Window”不能等同于“有效可用 Context”。
+- **NoLiMa（ICML 2025）**：去掉 query 与 needle 之间的直接字面匹配后，长上下文检索明显变难；论文测试的 13 个至少支持 128K Context 的模型中，32K 时有 11 个跌到其短上下文强基线的 50% 以下。
+- **LongBench v2（ACL 2025）**：将长上下文评估扩展到更真实的单/多文档 QA、代码仓库、结构化数据等任务，说明真实长上下文问题远比简单 NIAH 更难。
+- **Context Length Alone Hurts LLM Performance Despite Perfect Retrieval（Findings of EMNLP 2025）**：进一步控制“相关信息已经被完美检索”的条件，在 5 个开放/闭源模型的数学、QA、代码任务上仍观察到随着输入变长而出现 13.9%–85% 的性能下降。它说明问题不只是 Retriever 找不找得到，Context Length 本身也可能影响后续推理和利用。
+- **Context Rot（Chroma Technical Report, 2025）**：对包括 GPT-4.1、Claude 4、Gemini 2.5、Qwen3 在内的 18 个模型做控制实验，观察到输入增长时可靠性并非均匀保持。该项属于产业技术报告而非同行评审论文，应作为“最新实践证据”，不能与 ACL/ICML 论文同级表述。
+
+因此知识库设计必须加入一个独立概念：
+
+> **Context Budget / Evidence Budget：不是检索到多少就塞多少，而是在覆盖必要证据的前提下，尽量减少无关、重复、冲突和低价值 Context。**
+
+这也是为什么 Top-K、Similarity Threshold、Rerank、Metadata Filter、去重、上下文压缩、分阶段读取和 Agentic Retrieval 都不仅是“节省 Token”的优化，也是在控制 LLM 最终需要处理的信息负荷。
+
+### 2.2 重要边界
 
 - Lewis 2020 的原始 RAG 实现使用 Dense Vector Index，但今天工程实践中的 “RAG” 已广泛指 **Retrieval → Context Augmentation → Generation** 的系统范式；因此可以使用 BM25、Hybrid、SQL/API 等检索方式，但培训应说明这是工程上扩展后的概念用法。
 - DPR 在其 open-domain QA 数据集上的优势不能外推成“Dense 永远优于 BM25”；BEIR 正好说明跨域泛化中 BM25 仍然很强。
@@ -391,24 +431,34 @@ GraphRAG 官方项目将其定义为区别于 naive semantic-search RAG 的结�
     https://arxiv.org/abs/2312.10997
 13. Edge et al. 2024, From Local to Global: A Graph RAG Approach to Query-Focused Summarization  
     https://arxiv.org/abs/2404.16130
+14. Hsieh et al. 2024, RULER: What's the Real Context Size of Your Long-Context Language Models?  
+    https://arxiv.org/abs/2404.06654
+15. Modarressi et al. 2025, NoLiMa: Long-Context Evaluation Beyond Literal Matching  
+    https://proceedings.mlr.press/v267/modarressi25a.html
+16. Bai et al. 2025, LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks  
+    https://aclanthology.org/2025.acl-long.183/
+17. Du et al. 2025, Context Length Alone Hurts LLM Performance Despite Perfect Retrieval  
+    https://aclanthology.org/2025.findings-emnlp.1264/
+18. Hong et al. 2025, Context Rot: How Increasing Input Tokens Impacts LLM Performance（Chroma Technical Report）  
+    https://www.trychroma.com/research/context-rot
 
 ### 官方实现
 
-14. Cherry Studio Knowledge Base  
+19. Cherry Studio Knowledge Base  
     https://cherryai.com/docs/en/knowledge-base/knowledge-base/
-15. Open WebUI Knowledge  
+20. Open WebUI Knowledge  
     https://docs.openwebui.com/features/workspace/knowledge/
-16. Open WebUI RAG  
+21. Open WebUI RAG  
     https://docs.openwebui.com/features/chat-conversations/rag/
-17. Open WebUI Knowledge Base Sync (oikb)  
+22. Open WebUI Knowledge Base Sync (oikb)  
     https://docs.openwebui.com/ecosystem/knowledge-base-sync/
-18. Azure AI Search Hybrid Search  
+23. Azure AI Search Hybrid Search  
     https://learn.microsoft.com/azure/search/hybrid-search-overview
-19. Azure AI Search Document-Level Access Control  
+24. Azure AI Search Document-Level Access Control  
     https://learn.microsoft.com/en-us/azure/search/search-document-level-access-overview
-20. RAGFlow Ingestion Pipeline / Retrieval Configuration  
+25. RAGFlow Ingestion Pipeline / Retrieval Configuration  
     https://ragflow.io/docs/v0.27.2/category/ingestion-pipeline
-21. Microsoft GraphRAG  
+26. Microsoft GraphRAG  
     https://microsoft.github.io/graphrag/
 
 ---
