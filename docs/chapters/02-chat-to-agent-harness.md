@@ -112,25 +112,144 @@ Cherry Studio 同样从多模型对话、知识库和桌面助手体验出发，
 
 ---
 
-## 四、ZCode / Codex / OpenCode / DSH / Pi 不按功能菜单比较
+## 四、八个代表性 Coding Agent：不要只看界面，要看 Harness
 
-这些工具变化很快，不建议培训做成“功能对照表大全”。
+本培训至少覆盖：
 
-更稳定的比较方法是统一看 Harness 的组成。
+- ZCode；
+- Codex；
+- Claude Code；
+- OpenCode；
+- DeepSeek Harness（DSH）；
+- Pi；
+- Cline；
+- Kilo Code。
 
-| 工具 | 更适合在培训中观察什么 |
-|---|---|
-| ZCode | Workspace、文件引用、命令执行、长任务和持续代码修改 |
-| Codex | Repository 工作、Shell/文件修改、项目规则、Sandbox/Approval、验证闭环 |
-| OpenCode | 多模型 Coding Agent、工具权限、MCP、Skill、Sub-agent |
-| DSH | “Everything is a Plugin”的 Harness 架构；模型、工具、技能、会话、沙箱、循环等如何组合 |
-| Pi | 极简 Harness 思路；把核心做小，再通过 Extension、Skill、Prompt、动态上下文扩展 |
+### 4.1 一张表先建立认识
 
-这一页不评选“谁最好”。
+| Agent | 主要定位 | 开源 | 自有 API 接入 | 最值得观察的特点 |
+|---|---|---|---|---|
+| ZCode | ADE / Workspace-first | Apache-2.0 | 很容易 | Desktop / Browser / Terminal、Goal Mode、AGENTS.md、长任务 |
+| Codex | Terminal / IDE / App / Cloud | CLI/Harness Apache-2.0 | 中等 | Sandbox/Approval、Shell/Git、AGENTS.md、MCP/Skill/Plugin |
+| Claude Code | Terminal-first | 否，专有 | 一般 | CLAUDE.md、Hooks、Skills、MCP、Subagents、成熟模型-Harness 联调 |
+| OpenCode | Provider-neutral open agent | MIT | 非常容易 | 75+ Provider、本地模型、自定义 OpenAI-compatible、高度可配置 |
+| DSH | 可组合 Agent Harness | MIT | 非常容易 | Everything is a Plugin，适合解释 Harness 架构本身 |
+| Pi | Minimal terminal harness | MIT | 容易 | 默认 read/write/edit/bash，Extension / Skill / SDK，核心极简 |
+| Cline | IDE-first Agent | Apache-2.0 | 非常容易 | Plan/Act、Browser、Terminal、MCP、BYOK、人机批准 |
+| Kilo Code | Multi-surface agentic platform | MIT | 非常容易 | VS Code / JetBrains / CLI、多模式、Subagents、Marketplace、多 Provider |
 
-真正要让学员看到的是：
+“自有 API 接入难易”不是综合能力评分，只看企业自建 / 第三方模型服务接入门槛。
 
-> **界面不同，底层都在解决相似问题：如何给模型上下文、工具、状态、权限和循环。**
+完整对比、开源许可、Provider 配置和资料来源见：
+
+~~~text
+docs/references/coding-agent-comparison-2026-09.md
+~~~
+
+### 4.2 对部门内网 Qwen，最值得比较的不是“能不能接”，而是“接上以后 Harness 表现如何”
+
+我们当前内网模型已经实测：
+
+- OpenAI Chat；
+- OpenAI Responses；
+- Anthropic Messages；
+- Streaming；
+- Tool Loop。
+
+因此八个 Agent 中，多数已经具备可行的接入路径。
+
+更值得实测：
+
+- Tool Schema 兼容；
+- Thinking 行为；
+- Context 管理；
+- Compaction；
+- Prompt Cache；
+- 文件修改策略；
+- 是否主动 Test；
+- 错误恢复；
+- Token / TTFT / 总耗时；
+- 人工介入次数。
+
+其中：
+
+- Codex 当前自定义 Provider 更偏 Responses；
+- Claude Code 更偏 Anthropic-compatible API；
+- OpenCode / DSH / Cline / Kilo 对自定义 Provider 更直接；
+- ZCode 支持第三方 OpenAI / Anthropic 协议；
+- Pi 对标准协议配置简单，特殊协议可通过 Extension 扩展。
+
+### 4.3 公开 Harness Benchmark：FrontierHarness Eval
+
+2026 年的 FrontierHarness Eval 很适合本培训引用，因为它控制了关键变量：
+
+> **Same Model + Same Tasks + Same Runtime，只改变 Harness。**
+
+v1.0 使用同一个 Kimi K3，覆盖 30 个软件工程任务、12 个 Harness 配置、360 次 Evaluation。
+
+与本培训相关的冻结结果：
+
+| Harness | Frozen Version | Pass Rate |
+|---|---:|---:|
+| Codex | 0.148.0 | 66.7% |
+| DSH Creator | 0.1.0-rc.8 | 63.3% |
+| Claude Code | 2.1.237 | 63.3% |
+| Pi | 0.84.2 | 60.0% |
+| DSH Standard | 0.1.0-rc.8 | 60.0% |
+| DSH Minimal | 0.1.0-rc.8 | 56.7% |
+| OpenCode | 1.18.19 | 50.0% |
+
+ZCode、Cline、Kilo 没有进入 v1.0 这组冻结测试，不人为补分数。
+
+这一页真正要讲的不是：
+
+> “Codex 永远第一。”
+
+而是：
+
+> **同一个模型，只换 Harness，任务完成率、Token 成本、Cache 和耗时都会变。**
+
+而且不同 Benchmark / 模型下排序可能变化，因此更准确的公式是：
+
+~~~text
+Agent Effectiveness
+= Model
+× Harness
+× Task
+× Configuration
+× Runtime
+~~~
+
+### 4.4 八个 Agent 在培训中的分工
+
+不要连续做八段软件介绍。
+
+建议分成三类：
+
+**厂商旗舰 Harness：**
+
+- Codex；
+- Claude Code；
+- ZCode。
+
+用来观察模型厂商如何把模型和 Harness 联调成完整产品。
+
+**模型中立的开源 Harness：**
+
+- OpenCode；
+- Cline；
+- Kilo。
+
+用来解释 Provider 抽象、BYOK 和企业内网 API 接入。
+
+**Harness 架构路线：**
+
+- DSH；
+- Pi。
+
+DSH 展示“Everything is a Plugin”；Pi 展示“Minimal Harness”。
+
+二者一繁一简，最适合解释 Harness 到底由什么组成。
 
 ---
 
