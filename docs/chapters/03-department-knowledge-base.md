@@ -462,6 +462,396 @@ Document
 
 ---
 
+## 9.1 检索命中，不等于 LLM 一定能把证据用好
+
+这是知识库设计中非常容易漏掉的一层。
+
+传统 RAG 图经常画成：
+
+~~~text
+Question
+→ Retrieval
+→ Top-K
+→ LLM
+→ Answer
+~~~
+
+这张图容易造成一种错觉：
+
+> Retriever 只要把正确 Chunk 找出来，后面的事情就解决了。
+
+实际上至少存在两层不同问题：
+
+~~~text
+第一层：外部检索
+Question
+→ Retriever
+→ 正确资料有没有进入候选集？
+
+第二层：上下文内利用
+Retrieved Context
+→ LLM
+→ 模型能不能在长上下文中重新定位、关联并正确使用证据？
+~~~
+
+培训中建议明确区分：
+
+- **External Retrieval Recall**：搜索系统有没有把正确资料找出来；
+- **In-context Retrieval / Context Utilization**：正确资料已经放进 Prompt 后，模型能不能稳定使用。
+
+这两层都会失败。
+
+### 9.1.1 为什么不能把 Context Window 当成“有效知识容量”
+
+模型声明：
+
+~~~text
+128K / 256K / 1M Context
+~~~
+
+首先表示的是：
+
+> **接口允许接收多长输入。**
+
+它不自动意味着：
+
+> **模型可以在整个窗口内，对任意位置、任意复杂度的信息保持同等可靠的定位、关联和推理能力。**
+
+已有研究给出了比较一致的风险证据。
+
+#### Lost in the Middle（TACL 2024）
+
+Liu 等人的实验显示：
+
+- 相关信息在 Context 中的位置会影响回答效果；
+- 多个模型常表现出开头 / 结尾优于中间的现象；
+- 在开放域 QA case study 中，继续增加检索文档可以提升 Retriever Recall，但 Reader 的最终收益很快趋于饱和；
+- 论文报告从 20 篇检索文档增加到 50 篇时，GPT-3.5-Turbo 与 Claude-1.3 的最终表现只得到约 1%–1.5% 的边际提升。
+
+这说明：
+
+> **检索更多 ≠ 模型有效使用更多。**
+
+#### RULER（2024）
+
+RULER 专门指出简单 Needle-in-a-Haystack 测试不足以代表真实长上下文能力。
+
+它增加：
+
+- 多个 needle；
+- multi-hop tracing；
+- aggregation；
+- 更复杂的 Context 任务。
+
+论文测试的 17 个长上下文模型中，即使很多模型在简单 NIAH 上接近满分，随着 Context Length 和任务复杂度增加仍出现明显下降。
+
+因此：
+
+> **标称 Context Size ≠ Effective Context Size。**
+
+#### NoLiMa（ICML 2025）
+
+NoLiMa 去掉 Query 与答案证据之间明显的字面匹配，要求模型通过语义关系找到证据。
+
+论文测试 13 个声称至少支持 128K Context 的模型：
+
+> 在 32K 输入时，其中 11 个模型已经跌到各自短上下文强基线的 50% 以下。
+
+这与企业知识库很相关，因为真实用户经常不会使用文档中的原词提问。
+
+#### 2025：即使“完美检索”，长 Context 仍然可能伤害结果
+
+Findings of EMNLP 2025 的：
+
+> **Context Length Alone Hurts LLM Performance Despite Perfect Retrieval**
+
+进一步控制了一个关键变量：
+
+> 正确证据已经完整提供给模型，不存在 Retriever 漏召回。
+
+但论文在 5 个开放/闭源模型、数学、QA、代码任务上仍然观察到：
+
+> 随输入增长，任务表现出现 13.9%–85% 的下降。
+
+这个结果对知识库设计尤其重要：
+
+> **知识库系统不能只优化 Recall，还要控制最终交给 LLM 的 Context。**
+
+#### 2025 Context Rot：最新产业实验也看到类似现象
+
+Chroma 在 2025 年技术报告中，对包括 GPT-4.1、Claude 4、Gemini 2.5、Qwen3 在内的 18 个模型进行了长上下文控制实验，报告输入增长时模型表现并非均匀稳定。
+
+这不是同行评审论文，因此培训中应标为：
+
+> **产业实测 / Technical Report**
+
+但它说明长上下文问题并没有随着 2025 年新模型完全消失。
+
+### 9.1.2 因此知识库需要的不只是 Context Window，而是 Context Budget
+
+知识库设计建议引入：
+
+> **Context Budget / Evidence Budget**
+
+也就是：
+
+> **不是检索到多少就塞多少，而是在覆盖必要证据的前提下，只把最相关、最可靠、最有信息量的内容交给模型。**
+
+可以把完整流程画成：
+
+~~~text
+                Knowledge Source
+                       ↓
+              Candidate Retrieval
+              BM25 / Vector / Hybrid
+                       ↓
+                 Broad Recall
+                       ↓
+                    Rerank
+                       ↓
+            Metadata / ACL / Version
+                       ↓
+           Deduplicate / Merge / Filter
+                       ↓
+               Context Selection
+                 Evidence Budget
+                       ↓
+              Context Packing
+                       ↓
+                     LLM
+                       ↓
+          Grounded Answer + Citation
+~~~
+
+这里：
+
+- Retrieval 负责“不要漏”；
+- Rerank / Filter 负责“把最有价值的排前面”；
+- Context Selection 负责“不要把所有候选都塞进去”；
+- LLM 负责基于最终证据理解和生成。
+
+所以 **Recall 越高不代表最终答案一定越好**。
+
+### 9.1.3 Top-K 不是越大越好
+
+Top-K 本质上是：
+
+> **Recall 与 Context Pollution 之间的权衡。**
+
+Top-K 太小：
+
+- 可能漏证据；
+- 跨文档问题可能缺少必要上下文。
+
+Top-K 太大：
+
+- 无关 Chunk 增多；
+- 重复内容增多；
+- 新旧版本可能同时进入；
+- Context 变长；
+- TTFT / Token Cost 增加；
+- LLM 在上下文中定位和综合证据的负担增加。
+
+成熟系统本身就在暴露这类控制参数。
+
+例如 Open WebUI 当前提供：
+
+- `RAG_TOP_K`；
+- `RAG_TOP_K_RERANKER`；
+- `RAG_RELEVANCE_THRESHOLD`；
+- Hybrid Search；
+- Agentic Knowledge Tools。
+
+其 `kb_exec` 还默认限制单次 Tool 输出量，并明确说明限制的目的之一是避免 Tool Result 挤占 Context Window。
+
+RAGFlow 当前官方 Retrieval Configuration 也明确说明：
+
+> Top N 增大可以提供更多 Context，但会增加 Context Length、响应时间和成本，应根据数据集与检索效果调节。
+
+因此培训中不要给出类似：
+
+> “Top-K 固定设成 5 / 10 就最好。”
+
+更合理的是：
+
+> **Top-K 是 Dataset + Query Type + Model + Context Budget 的联合参数。**
+
+### 9.1.4 Rerank 的意义不只是提高搜索分数
+
+Rerank 还有一个很重要的工程价值：
+
+> **让较大的 Candidate Recall 集合，在进入 LLM 之前压缩成更小、更高质量的 Evidence Set。**
+
+例如：
+
+~~~text
+Hybrid Search
+→ 召回 30 个候选
+→ Rerank
+→ 留下 5 个高相关 Chunk
+→ 去重 / 合并相邻片段
+→ LLM
+~~~
+
+这通常比：
+
+~~~text
+召回 30 个
+→ 30 个全部塞进 Prompt
+~~~
+
+更符合长上下文风险控制思路。
+
+Anthropic 2024 的 Contextual Retrieval 工程实验也采用：
+
+> BM25 + Embedding → Candidate Retrieval → Reranking → Top-K Context
+
+并报告其数据集上加入 Contextual Retrieval 和 Reranking 后，Top-20 Chunk retrieval failure rate 显著下降。
+
+需要注意：
+
+> 这是 Anthropic 自己实验数据，不应当成所有部门语料都会得到同样提升幅度。
+
+### 9.1.5 Chunk 设计与 Context Budget 是连在一起的
+
+Chunk 太大不仅影响 Retrieval Precision，也直接增加最终 Context。
+
+Chunk 太小则可能导致：
+
+- 一个事实被拆碎；
+- 前提与结论分离；
+- 表头与数据分离；
+- Retrieval 找到局部，但 LLM 缺乏解释它的上下文。
+
+因此更合理的是：
+
+~~~text
+小范围 Candidate Retrieval
+        ↓
+找到目标 Chunk
+        ↓
+按需要扩展 Parent / Neighbor Context
+        ↓
+只把必要局部交给 LLM
+~~~
+
+而不是：
+
+> 为了防止切碎，把每个 Chunk 做得非常大。
+
+对于 Markdown / HTML / 技术文档，可以优先保留：
+
+- Heading Path；
+- Parent Section；
+- Previous / Next Chunk；
+- Document ID；
+- Version。
+
+让系统可以：
+
+> **先精确找到，再按需扩展。**
+
+### 9.1.6 多文档问题尤其要防止“Context Pollution”
+
+实际知识库很容易出现：
+
+~~~text
+同一制度 v1
+同一制度 v2
+旧会议纪要
+新的正式决定
+个人笔记
+重复 PDF
+不同部门复制件
+~~~
+
+即使 Retriever 每一条都“相关”，同时塞给模型也会产生：
+
+- 冲突；
+- 冗余；
+- 版本判断困难；
+- 对注意力和推理造成额外负担。
+
+所以 Metadata / Version / Status 的价值不仅是方便管理，还可以在进入 Context 前：
+
+> **先过滤错误证据。**
+
+正确思路：
+
+~~~text
+Retrieve Broadly
+→ ACL
+→ Version / Status Filter
+→ Rerank
+→ Deduplicate
+→ Context Budget
+→ LLM
+~~~
+
+### 9.1.7 Agentic Retrieval 为什么在复杂长文档场景有价值
+
+传统 Pipeline 往往一次性：
+
+~~~text
+Top-K
+→ 全部注入
+→ Answer
+~~~
+
+Agentic Retrieval 可以改成：
+
+~~~text
+Search
+→ 看少量结果
+→ Read 某个 Section
+→ 判断还缺什么
+→ 再 Search
+→ 再 Read
+→ Evidence 足够
+→ Answer
+~~~
+
+这实际上是在用：
+
+> **多轮、逐步取证**
+
+替代：
+
+> **一次性塞大量 Context。**
+
+所以 Agentic Retrieval 一个很重要的价值不是“搜索算法更先进”，而是：
+
+> **把 Context Allocation 也交给任务过程动态控制。**
+
+代价是：
+
+- Tool Call 更多；
+- Token 更多；
+- 延迟更长；
+- 对模型工具调用能力要求更高。
+
+因此仍然不能替代所有 Pipeline RAG。
+
+### 9.1.8 这一节最终让学员记住三个数字不是重点，三个概念才是重点
+
+第一：
+
+> **Context Window 是容量上限，不是有效利用能力保证。**
+
+第二：
+
+> **Retriever 找到了 ≠ LLM 一定能用好。**
+
+第三：
+
+> **知识库追求的是“足够且高质量的证据”，不是“尽可能多的 Context”。**
+
+完整研究证据：
+
+`docs/references/knowledge-base-rag-evidence-2026-09.md`
+
+---
+
 # 十、Cherry Studio 中如何使用部门知识
 
 Cherry 当前官方 Knowledge Base 支持：
@@ -806,7 +1196,32 @@ Open WebUI 当前正式提供 Full Context Mode，与 Focused Retrieval 并列�
 
 建议：
 
-> **短而关键 → Full Context；大而稀疏使用 → Retrieval。**
+> **短而关键 → 可以优先考虑 Full Context；大而稀疏使用 → 优先 Retrieval。**
+
+但这里不能只看“是否塞得进模型 Context Window”。
+
+还必须考虑：
+
+- 问题需要使用多少份证据；
+- 无关内容比例；
+- 文档是否存在重复/冲突；
+- 模型对当前长度的实际利用能力；
+- TTFT / Token / 成本。
+
+因此更准确的决策不是：
+
+~~~text
+能塞进去？
+→ 能
+→ 全塞
+~~~
+
+而是：
+
+~~~text
+资料规模 + 问题类型 + 证据密度 + Context 利用能力 + 成本
+→ Full Context / RAG / Agentic Retrieval
+~~~
 
 ---
 
