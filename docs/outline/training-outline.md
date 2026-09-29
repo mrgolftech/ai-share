@@ -636,7 +636,7 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 ---
 
-## 4.7 八个代表性 Coding Agent：先横向比较，再收束到 Harness 共性
+## 4.7 九个代表性 Agent：先横向比较，再收束到 Harness 共性
 
 培训至少覆盖：
 
@@ -647,7 +647,8 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 - DeepSeek Harness（DSH）；
 - Pi；
 - Cline；
-- Kilo Code。
+- Kilo Code；
+- Hermes Agent。
 
 不逐个介绍菜单，也不做简单“谁最好”的排名。
 
@@ -700,6 +701,12 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 DSH 体现“Everything is a Plugin”，Pi 体现 Minimal Harness，一繁一简，用于解释 Harness 本身。
 
+**长期运行的通用自主 Agent：**
+
+- Hermes Agent。
+
+Hermes 用于展示 Agent 从“完成一次编码任务”继续扩展到持久 Memory、Skills、自学习循环、Cron、多平台 Gateway、Subagent 和多运行后端。
+
 ### 4.7.2 用公开实验说明 Harness 真的影响结果
 
 引入 FrontierHarness Eval v1.0：
@@ -708,7 +715,7 @@ DSH 体现“Everything is a Plugin”，Pi 体现 Minimal Harness，一繁一�
 
 该实验覆盖 30 个软件工程任务、12 个 Harness 配置、360 次 Evaluation。
 
-与培训相关的冻结结果中，Codex、DSH Creator、Claude Code、Pi、OpenCode 等在 Pass Rate、成本和运行时间上存在明显差异。
+与培训相关的冻结结果中，Codex、DSH Creator、Claude Code、Pi、OpenCode、Hermes 等在 Pass Rate、成本、缓存和运行时间上存在明显差异；Hermes v0.20.4 在该实验中 Pass Rate 为 50.0%。
 
 必须同时说明边界：
 
@@ -734,7 +741,7 @@ DSH 体现“Everything is a Plugin”，Pi 体现 Minimal Harness，一繁一�
 - 同一时间限制；
 - 同一权限范围；
 
-分别接入 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo。
+分别接入 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes。
 
 记录：
 
@@ -1834,7 +1841,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 待建设
 
-- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已覆盖 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo 横向对比、FrontierHarness 固定模型 Benchmark、Harness 共性和鹈鹕 Demo；详细参考：`docs/references/coding-agent-comparison-2026-09.md`；待完成内网 qwen3.6 同模型 Harness 实测和截图）
+- 模块二：Chat → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`；已覆盖 ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes 横向对比、FrontierHarness 固定模型 Benchmark、Harness 共性和鹈鹕 Demo；详细参考：`docs/references/coding-agent-comparison-2026-09.md`；待完成内网 qwen3.6 同模型 Harness 实测和截图）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
