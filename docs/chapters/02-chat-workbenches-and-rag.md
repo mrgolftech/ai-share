@@ -1439,6 +1439,67 @@ grep / read / web_search
 
 ---
 
+# 二十四、Coding Agent 其实大量使用 Agentic Retrieval
+
+对于 ZCode、Codex、Claude Code、OpenCode、DSH、Pi、Cline、Kilo、Hermes 这类 Agent，要理解一个关键点：
+
+> **它们在理解代码库和工作区时，通常都会采用“模型主动检索 → 读取 → 判断 → 再检索”的 Agentic Retrieval 思路。**
+
+但这不意味着它们都依赖“向量知识库”。
+
+典型 Coding Agent 更常见的是：
+
+~~~text
+用户：
+修复请求超时问题
+
+Agent：
+1. 先搜索 timeout / request timeout
+2. grep / rg / glob 找到候选文件
+3. read 关键代码
+4. 根据 import / 调用关系继续查
+5. 需要时查 Git / LSP / 文档
+6. 修改代码
+7. 运行测试
+8. 根据错误再次搜索和读取
+~~~
+
+所以 Coding Agent 中常见的 Retrieval 工具有：
+
+- grep / ripgrep；
+- glob / find；
+- 文件读取；
+- Git Search / Diff / History；
+- LSP definition / references；
+- 文档搜索；
+- Web Search；
+- MCP Search；
+- 有些产品还会叠加 Semantic Code Search / Vector Index。
+
+这里一定要区分：
+
+> **Retrieval Tool 是“找资料”的工具；Edit / Shell / Test / Browser 等是“执行动作”的工具。**
+
+因此不能说“Agent 的所有工具都是 Agentic Retrieval”。
+
+更准确是：
+
+> **Agent Harness 会把 Retrieval Tools 和 Action Tools 都交给模型；其中检索相关工具通常由模型在循环中主动、迭代地调用，这部分就是 Agentic Retrieval。**
+
+对 Coding Agent 来说，很多场景甚至不需要预先做 Embedding：
+
+~~~text
+grep / rg
+→ read
+→ follow references
+→ read more
+→ act
+~~~
+
+就已经能很好地完成代码库检索。
+
+---
+
 # 二十四、两类 RAG 不应该叫“搜索 RAG vs 向量 RAG”这么简单
 
 建议培训做一个二维图。
