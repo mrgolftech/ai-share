@@ -66,49 +66,87 @@ Open WebUI 已经支持服务端 Tool Loop、MCP、OpenAPI Tool Server 和 Open 
 
 ---
 
-## 三、Open WebUI / Cherry Studio 应该怎样讲
+## 三、Open WebUI / Cherry Studio：从 Chat 工作台走向 Knowledge、RAG 与 Agent
+
+这一部分不再只介绍两个产品，而是用它们解释能力如何逐层叠加：
+
+~~~text
+Raw Model
+→ Chat
+→ Assistant / Model Preset
+→ Files / Knowledge
+→ RAG
+→ Web / MCP / Tools
+→ Agentic Retrieval / Agent
+~~~
 
 ### 3.1 Open WebUI
 
-Open WebUI 的默认体验仍然非常适合：
+更适合作为：
 
-- 多模型聊天；
-- 文件和知识库问答；
-- Web Search；
-- 日常模型入口。
+> **部门统一 AI 门户 / 集中式模型工作台。**
 
-但它现在也可以把工具接入模型，包括：
+重点演示：
 
-- Workspace Tools；
-- MCP；
-- OpenAPI Tool Server；
-- Open Terminal；
-- 服务端 Tool Calling Loop。
-
-因此它已经不是“纯聊天壳”。
-
-培训中更适合把它定义为：
-
-> **对话优先、逐步扩展 Agent 能力的模型工作台。**
+- OpenAI-compatible Provider 接入；
+- Workspace Model；
+- System Prompt 与参数；
+- Vision / Image Generation 的区别；
+- Thinking UI 与真实后端 Thinking 参数的区别；
+- Knowledge Base；
+- Vector RAG；
+- BM25 + Vector + Rerank Hybrid RAG；
+- Native Knowledge Tools / kb_exec Agentic Retrieval。
 
 ### 3.2 Cherry Studio
 
-Cherry Studio 同样从多模型对话、知识库和桌面助手体验出发，但当前也已经提供：
+更适合作为：
 
-- Agent；
-- Workspace；
-- 文件读取；
-- 命令执行；
-- MCP；
-- Skill。
+> **工程师个人桌面多模型 AI 工作台。**
 
-因此它也处在 Chat → Agent 的连续谱上。
+重点演示：
 
-培训中可以这样说：
+- Custom Provider；
+- Assistant 与 Topic；
+- Assistant Prompt / 默认模型 / 参数；
+- Thinking Depth；
+- Vision / Drawing；
+- Knowledge Base；
+- Embedding Model；
+- Rerank Model；
+- Embedding=None 时的 BM25 Knowledge Retrieval；
+- Knowledge 绑定 Agent；
+- MCP / Web Search / Work。
 
-> **Open WebUI / Cherry Studio 更适合从“模型入口”理解；Coding Agent 更适合从“工程执行环境”理解。**
+### 3.3 用 Cherry Studio 纠正“RAG = 向量数据库”
 
-两类产品正在互相靠近，但默认工作方式仍然不同。
+当前 Cherry Studio 官方知识库允许：
+
+> **Embedding Model = None。**
+
+此时主要使用 BM25 关键词索引与检索。
+
+所以：
+
+> **RAG 的本质是 Retrieval → Context Augmentation → Generation；向量检索只是 Retrieval 的一种方法。**
+
+培训进一步区分：
+
+~~~text
+检索算法：
+BM25 / Vector / Hybrid / grep / Search Engine
+
+检索控制：
+Pipeline RAG / Agentic Retrieval
+~~~
+
+因此 Agentic RAG 与 Vector RAG 不是互斥概念。
+
+详细讲义：
+
+~~~text
+docs/chapters/02-chat-workbenches-and-rag.md
+~~~
 
 ---
 
@@ -159,7 +197,7 @@ docs/references/coding-agent-comparison-2026-09.md
 - Streaming；
 - Tool Loop。
 
-因此八个 Agent 中，多数已经具备可行的接入路径。
+因此九个 Agent 中，多数已经具备可行的接入路径。
 
 更值得实测：
 
@@ -225,9 +263,9 @@ Agent Effectiveness
 × Runtime
 ~~~
 
-### 4.4 八个 Agent 在培训中的分工
+### 4.4 九个 Agent 在培训中的分工
 
-不要连续做八段软件介绍。
+不要连续做九段软件介绍。
 
 建议分成三类：
 
