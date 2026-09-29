@@ -257,18 +257,25 @@ Agent
 │          Layer 3: Retrieval Index          │
 │                                            │
 │ BM25 / Full-text / Vector / Metadata Index │
-│              + Optional Rerank             │
 └───────────────────┬────────────────────────┘
                     ↓
 ┌────────────────────────────────────────────┐
-│           Layer 4: Knowledge Tools         │
+│   Layer 4: Retrieval & Context Control      │
+│                                            │
+│ Candidate Recall / Rerank / ACL / Version  │
+│ Deduplicate / Threshold / Evidence Budget  │
+│ Context Selection / Context Packing        │
+└───────────────────┬────────────────────────┘
+                    ↓
+┌────────────────────────────────────────────┐
+│           Layer 5: Knowledge Tools         │
 │                                            │
 │ search / grep / read / query / SQL / API  │
 │ MCP / Web Search / Git / LSP              │
 └───────────────────┬────────────────────────┘
                     ↓
 ┌────────────────────────────────────────────┐
-│           Layer 5: Consumption             │
+│           Layer 6: Consumption             │
 │                                            │
 │ Open WebUI / Cherry / Coding Agent / App   │
 └────────────────────────────────────────────┘
@@ -492,6 +499,53 @@ Question
 
 # 9. 推荐的 Retrieval Strategy
 
+## 9.1 先明确：知识库有“外部检索”和“上下文内利用”两道关
+
+知识库系统不能只优化 Retriever。
+
+更完整的链路是：
+
+~~~text
+Question
+  ↓
+External Retrieval
+  ↓
+Candidate Chunks
+  ↓
+Rerank / Filter / ACL / Version
+  ↓
+Context Selection / Evidence Budget
+  ↓
+LLM Context
+  ↓
+In-context Retrieval / Context Utilization
+  ↓
+Answer
+~~~
+
+因此必须区分：
+
+- **External Retrieval Recall**：正确资料是否被搜索系统召回；
+- **In-context Retrieval / Context Utilization**：正确资料进入 Prompt 后，模型是否能在长上下文、干扰项和多证据条件下稳定使用。
+
+TACL 2024 的 Lost in the Middle、RULER 2024、ICML 2025 NoLiMa、ACL 2025 LongBench v2，以及 Findings of EMNLP 2025 的 “Context Length Alone Hurts LLM Performance Despite Perfect Retrieval” 都说明：
+
+> **标称 Context Window 不能直接等同于有效知识容量；即使相关证据已经进入 Context，输入继续变长仍可能损害任务表现。**
+
+因此架构中必须把：
+
+> **Context Selection / Evidence Budget**
+
+当成独立的一层，而不是简单执行：
+
+> Search → 所有结果 → Prompt。
+
+详细证据见：
+
+`docs/references/knowledge-base-rag-evidence-2026-09.md`
+
+## 9.2 共享知识库的候选检索思路
+
 部门技术资料通常同时包含：
 
 - 自然语言；
@@ -516,12 +570,22 @@ Question
              ↓
            Rerank
              ↓
-           Top-K
+ ACL / Version / Deduplicate
+             ↓
+      Evidence Budget
+             ↓
+       Selected Context
 ~~~
 
 即：
 
-> **Hybrid Retrieval 作为共享文档知识库的主力。**
+> **Hybrid Retrieval 作为共享文档知识库的主力候选。**
+
+但这里的目标不是把 Hybrid 召回的结果尽可能多地送给模型，而是：
+
+> **先扩大 Candidate Recall，再通过 Rerank / Metadata / Version / 去重压缩为足够的小证据集。**
+
+Top-K 应被理解成 **Recall 与 Context Pollution 的权衡参数**，不能固定认为越大越好。
 
 然后复杂任务：
 
@@ -766,6 +830,10 @@ Should Retrieve?
 第五：
 
 > **真正可复用的部门知识资产是 Source + Metadata + ACL + Retrieval Test，而不是某个客户端生成的一批 Embedding。**
+
+第六：
+
+> **Context Window 是输入容量上限，不是有效知识容量保证；知识库最终要管理的是 Evidence Budget，而不是把检索结果尽可能多地塞给模型。**
 
 ---
 
