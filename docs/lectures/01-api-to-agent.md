@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.0  
+> 状态：Final Lecture Draft v1.1  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -130,6 +130,582 @@ API Response
 ↓
 应用
 ```
+
+## 1.1 先不要依赖任何 Chat 软件：直接发一个 GET
+
+为了让“API”彻底从聊天界面里剥离出来，建议现场再做一次最简单的手工请求。
+
+目标：
+
+> **不打开 Cherry Studio，只使用 Postman 或 curl，直接询问模型服务“你有哪些模型”。**
+
+请求：
+
+```http
+GET <BASE_URL>/v1/models
+Authorization: Bearer <API_KEY>
+```
+
+或者使用 curl：
+
+```bash
+curl -H "Authorization: Bearer <API_KEY>" \
+  <BASE_URL>/v1/models
+```
+
+现场重点不是教 curl 参数，而是让大家看到四个东西：
+
+1. Method 是 `GET`；
+2. URL 是 `/v1/models`；
+3. 服务返回 HTTP Status；
+4. Response Body 是 JSON。
+
+当前内网正式测试基线中，这个接口已经自动验证：
+
+- HTTP 200；
+- 找到模型 `qwen3.6`；
+- `max_model_len=131072`。
+
+【截图占位 API-POST-01｜Postman / curl 直接 GET /v1/models】
+
+【录屏占位 API-R09A｜不经过 Chat UI，直接 GET /v1/models】
+
+这一段讲完以后再问：
+
+> **如果 GET 是“向服务取信息”，那真正让模型回答问题时，为什么需要 POST？**
+
+---
+
+## 1.2 再手工发一个 POST：模型调用就是把输入放进 Request Body
+
+直接调用：
+
+```http
+POST <BASE_URL>/v1/chat/completions
+Content-Type: application/json
+Authorization: Bearer <API_KEY>
+```
+
+最小 Body 可以展示成：
+
+```json
+{
+  "model": "qwen3.6",
+  "messages": [
+    {
+      "role": "user",
+      "content": "请只回答：CHAT_OK"
+    }
+  ],
+  "temperature": 0,
+  "max_tokens": 128
+}
+```
+
+现场观察：
+
+- Request Body；
+- HTTP 200；
+- `object=chat.completion`；
+- `choices`；
+- `usage`。
+
+【截图占位 API-POST-02｜Postman POST /v1/chat/completions：Body + Response】
+
+【录屏占位 API-R09B｜直接 POST Chat → 得到 JSON Response】
+
+这一步的教学意义非常大：
+
+> **模型不是只能通过 Chat 软件使用。任何能够按协议构造 HTTP Request 的程序，都可以调用模型。**
+
+Python、Java、JavaScript、Cherry Studio、Open WebUI、Agent，本质上都可以站在这个位置。
+
+因此可以画：
+
+```text
+Postman
+Python
+Cherry Studio
+Open WebUI
+Agent
+业务应用
+    │
+    └────→ 同一个 Model API
+```
+
+【图示占位 API-POST-03｜不同客户端 → 同一个模型 API】
+
+---
+
+## 1.3 为什么“我手工调通一次”还不够？
+
+手工 GET / POST 非常适合学习和调试。
+
+但如果我们要回答：
+
+> **这个内网模型到底支持哪些接口和能力？**
+
+只手工点几次就不够了。
+
+因为至少要重复验证：
+
+- 基础 Endpoint；
+- 非流式；
+- SSE；
+- Thinking；
+- Tool Calling；
+- Tool Result；
+- Responses；
+- Anthropic Messages；
+- tokenize / detokenize；
+- Vision；
+- Vision + Tool Calling；
+- /metrics；
+- OpenAPI。
+
+所以我们在仓库里不是只保留了一张“测试成功”截图，而是建立了正式自动验收脚本：
+
+```text
+api/qwen/qwen_api_training_test.py
+```
+
+【截图占位 API-TEST-00｜qwen_api_training_test.py 文件头 + 覆盖范围】
+
+这里不要把脚本逐行讲解。
+
+只解释它做了三件非常重要的事情。
+
+### 第一：自动构造请求
+
+脚本直接使用 HTTP API，对各类 Endpoint 发出请求。
+
+例如：
+
+```text
+GET  /v1/models
+GET  /version
+GET  /metrics
+GET  /openapi.json
+
+POST /tokenize
+POST /detokenize
+
+POST /v1/chat/completions
+POST /v1/responses
+POST /v1/messages
+```
+
+### 第二：不是只看 HTTP 200，而是做断言
+
+例如：
+
+`/v1/models`
+
+不仅判断：
+
+> HTTP 200。
+
+还验证：
+
+- 是否真的存在 `qwen3.6`；
+- 是否读到 `max_model_len`。
+
+Tool Calling 不只是判断：
+
+> 请求没报错。
+
+还验证：
+
+- 是否真的返回标准 Tool Call；
+- Tool Result 回灌后模型能否继续生成最终回答。
+
+Vision 也不是：
+
+> 返回了一段文字就 PASS。
+
+而是使用固定 Ground Truth 检查数量、颜色、位置和文本。
+
+这体现一个工程原则：
+
+> **接口“响应了”和接口“满足我们需要的语义”是两回事。**
+
+### 第三：所有原始证据自动落盘
+
+每一个测试项保存：
+
+- Request；
+- Response；
+- HTTP Status；
+- elapsed time；
+- SSE 原始事件；
+- attempts；
+- analysis；
+- PASS / FAIL。
+
+最后再生成：
+
+- `manifest.json`；
+- `summary.md`；
+- 正式报告。
+
+API Key 在落盘前自动脱敏。
+
+【截图占位 API-TEST-02｜单条测试 record：Request / Response / Analysis】
+
+【截图占位 API-TEST-03｜结果目录树：records / SSE / manifest / summary】
+
+这就把：
+
+> “我今天手工试了一下，好像能用”
+
+升级成：
+
+> **“我们有一套可重复、可留档、以后模型升级还能重新跑的接口验收方法。”**
+
+---
+
+## 1.4 当前内网 Qwen 到底测出了什么？
+
+当前正式基线：
+
+```text
+api/qwen/results/20260930_095033/
+```
+
+正式报告：
+
+```text
+api/qwen/reports/qwen36_api_test_report_20260930.md
+```
+
+脚本版本：
+
+`2026-09-30-r4`
+
+当前模型：
+
+`qwen3.6`
+
+当前服务版本：
+
+`vLLM 0.23.0`
+
+Context 配置：
+
+`131072`
+
+本轮总结果：
+
+> **29 项：28 PASS、1 SKIP、0 FAIL、0 ERROR。**
+
+而且本轮所有实际执行请求都是一次成功，没有触发真实网络重试。
+
+【截图占位 API-TEST-01｜正式 r4 测试总览：28 PASS / 1 SKIP】
+
+建议课堂不要把 29 行全部念一遍，而是整理成能力矩阵：
+
+| 能力 | 当前实测 |
+|---|---|
+| `/v1/models` / `/version` | PASS |
+| `/tokenize` / `/detokenize` | PASS |
+| OpenAI Chat 非流式 / SSE | PASS |
+| Chat Tool Call / Tool Result Loop | PASS |
+| OpenAI Responses 非流式 / SSE | PASS |
+| Responses Function Call / Tool Result Loop | PASS |
+| Anthropic Messages 非流式 / SSE | PASS |
+| Anthropic Tool Use / Tool Result Loop | PASS |
+| Chat Vision / Vision SSE | PASS |
+| 多图 Vision | PASS |
+| Vision + Tool Calling | PASS |
+| Responses Vision | PASS |
+| Anthropic Vision | PASS |
+| `/metrics` / `/openapi.json` | PASS |
+| 公网 Remote Image URL | SKIP（默认不测公网 URL） |
+
+【图示占位 API-TEST-04｜Qwen 当前协议 / 能力矩阵】
+
+这里一定要保留几个“有价值的不完美结果”，因为它们比一张全绿表更能体现工程水平。
+
+### Thinking：PASS 不等于回答完整
+
+当前正式记录中：
+
+Thinking OFF：
+
+- 检测到 reasoning 关闭；
+- 约 70.82 s；
+- `finish_reason=length`。
+
+Thinking ON：
+
+- 检测到 reasoning；
+- 约 78.16 s；
+- 同样 `finish_reason=length`；
+- 最终 `content=null`。
+
+所以这里的 PASS 只表示：
+
+> Thinking 开关行为被检测到。
+
+不表示：
+
+> 这个业务问题已经得到完整高质量回答。
+
+### Anthropic：协议主体可用，但 Thinking 关闭存在兼容差异
+
+Anthropic Messages：
+
+- 文本；
+- SSE；
+- Tool Use；
+- Tool Result；
+- Vision；
+
+本轮都已经通过。
+
+但 `thinking.type=disabled` 后仍观察到 thinking。
+
+因此正确表述应该是：
+
+> **Anthropic 协议主体与 Tool Loop 当前实测可用，但关闭 Thinking 的参数仍存在兼容差异。**
+
+### Responses Vision：曾经的 400 不是模型“不支持”
+
+旧测试中 Responses Vision 曾经 HTTP 400。
+
+进一步检查 OpenAPI 后发现：
+
+> 请求漏掉了当前 Schema 要求的 `detail` 字段。
+
+r4 改成：
+
+```json
+{
+  "type": "input_image",
+  "detail": "auto",
+  "image_url": "data:image/png;base64,..."
+}
+```
+
+以后正式 PASS。
+
+这是第一讲非常好的工程案例：
+
+> **看到 400，先查 Error Body、Schema 和 OpenAPI，不要直接下结论“模型不支持”。**
+
+---
+
+## 1.5 建议现场真正运行一次自动测试，但不要把 29 项全等完
+
+【录屏占位 API-R10｜运行 qwen_api_training_test.py → PASS 输出 → 打开 summary / record】
+
+现场建议两种方式。
+
+### 方式 A：完整预录
+
+提前运行完整 r4 测试。
+
+录到：
+
+- Terminal；
+- PASS / SKIP；
+- 结果目录；
+- summary；
+- 某一条 record。
+
+课堂剪成 60～90 秒。
+
+### 方式 B：现场只跑一个子集 / 展示已有正式结果
+
+由于 Thinking、多图 Vision 等测试耗时较长，不建议现场等待完整 29 项。
+
+现场只演：
+
+- models；
+- chat；
+- tool；
+- metrics；
+
+其余直接打开正式基线报告。
+
+这样既有：
+
+> “现在真的能跑”
+
+又不会让课堂被模型等待时间拖垮。
+
+---
+
+## 1.6 从测试脚本得到一个很重要的方法论
+
+这套 Qwen 测试真正应该让大家学会的，不是 Python 语法。
+
+而是一种工程方法：
+
+```text
+手工探索
+→ 找到正确 Request
+→ 明确 Expected Result
+→ 写自动断言
+→ 保存原始证据
+→ 形成 Baseline
+→ 后续升级重新 Regression
+```
+
+这和第四讲的软件自动测试其实是一件事。
+
+> **AI API 也应该被当成真实工程接口来验收，而不是“聊两句感觉不错”就算通过。**
+
+---
+
+## 1.7 从“接口能不能用”继续追问：共享服务到底好不好用？
+
+到这里我们已经回答：
+
+> 单个请求能不能正确调用？
+
+但部门实际使用模型，还需要回答另一类问题：
+
+- 现在有多少请求正在算？
+- 有没有人在排队？
+- 两个实例是不是都在工作？
+- KV Cache 使用率怎样？
+- 当前 Prompt / Generation TPS 怎样？
+- TTFT 是否变长？
+- 高并发时服务发生了什么？
+
+这些问题不是一条 Chat Response 能回答的。
+
+所以测试脚本还会读取原始：
+
+`GET /metrics`
+
+当前 r4 在测试前后都验证了 `/metrics`，关键指标读取通过。
+
+【截图占位 API-08｜原始 vLLM /metrics：running / waiting / KV / token counters】
+
+这里要明确区分两个视角：
+
+```text
+Request / Response
+= 这一条调用发生了什么
+
+/metrics
+= 整个模型服务正在发生什么
+```
+
+---
+
+## 1.8 为什么我们又做了 model-metric？
+
+原始 Prometheus Metrics 对开发和运维有价值，但直接给大部分用户看，会遇到：
+
+- 指标很多；
+- Counter / Gauge / Histogram 不直观；
+- 多实例聚合容易理解错；
+- 单请求速度和服务聚合吞吐容易混淆；
+- 不容易连续观察。
+
+所以我们又做了自己的：
+
+`mrgolftech/model-metric`
+
+这不是为了再做一个“漂亮仪表盘”。
+
+它解决的是：
+
+> **把模型 API 从“单请求测试”提升到“共享服务持续观测”。**
+
+当前项目已经覆盖：
+
+- running / waiting；
+- Prompt / Generation TPS；
+- 每实例状态；
+- 实例覆盖率；
+- KV Cache max / avg；
+- TTFT；
+- E2E；
+- Queue；
+- Prefill；
+- Decode；
+- TPOT / ITL；
+- WebSocket 实时更新；
+- API Benchmark；
+- Context Window 验证；
+- Endpoint Compatibility。
+
+【截图占位 MM-01｜model-metric 总览】
+
+【截图占位 MM-02｜API Benchmark】
+
+【截图占位 MM-03｜Context Window / Endpoint Compatibility】
+
+这里必须讲清一个常见误解：
+
+> **单请求输出 tokens/s ≠ 整个模型服务的 aggregate output TPS。**
+
+一个是：
+
+> 某一个用户这次请求输出得多快。
+
+一个是：
+
+> 整个服务所有实例、所有请求合起来正在处理多少 Token。
+
+---
+
+## 1.9 第一讲最值得做的一段录屏：一条请求怎样在 model-metric 上“留下痕迹”
+
+【录屏占位 MM-R01｜Postman POST → model-metric 实时指标变化】
+
+建议录法：
+
+1. 左边打开 Postman；
+2. 右边打开 model-metric；
+3. 先让页面稳定；
+4. 发出一个输出稍长的 POST；
+5. 观察 running；
+6. 观察 TPS / KV / latency；
+7. 请求结束；
+8. running 回落。
+
+第二段可以使用 Benchmark：
+
+【录屏占位 MM-R02｜提高并发 → waiting / TPS / KV 变化】
+
+这时第一讲就形成了一条非常完整的证据链：
+
+```text
+手工 GET
+↓
+手工 POST
+↓
+Cherry Studio Network
+↓
+Python 自动验收
+↓
+正式测试 Baseline
+↓
+原始 /metrics
+↓
+model-metric
+```
+
+它分别回答：
+
+```text
+协议长什么样？
+↓
+应用怎样调用？
+↓
+功能到底支不支持？
+↓
+结果能否重复验证？
+↓
+共享服务运行时发生了什么？
+```
+
+这应该成为第一讲的核心工程案例，而不是旁支。
 
 ---
 
@@ -747,6 +1323,33 @@ Harness 执行和反馈
 
 要求能看到多个连续 event/data chunk。
 
+### API-TEST-03：结果资产目录
+
+拍摄：
+
+```text
+api/qwen/results/20260930_095033/
+```
+
+要求能看到：
+
+- 单项 JSON record；
+- SSE 原始记录；
+- manifest；
+- summary。
+
+### API-TEST-04：能力矩阵
+
+根据正式 r4 报告制作一张 PPT 友好矩阵：
+
+- Chat；
+- Responses；
+- Anthropic；
+- Tool Loop；
+- Vision；
+- Thinking 差异；
+- 28 PASS / 1 SKIP。
+
 ### API-03：Thinking
 
 固定同一问题，截 OFF 和 ON。
@@ -838,6 +1441,21 @@ Harness 执行和反馈
 - 模型继续生成。
 
 不要只录最终答案。
+
+## API-R10：自动测试脚本
+
+建议使用预录 + 现场打开正式结果。
+
+步骤：
+
+1. 显示 `qwen_api_training_test.py`；
+2. 运行测试；
+3. 展示若干 PASS；
+4. 打开结果目录；
+5. 打开 `manifest.json` / 正式报告；
+6. 展示一条 Tool Loop 或 Vision record。
+
+不要在课堂现场等待全部 Thinking / 多图 Vision 测试跑完。
 
 ## MM-R01：请求与指标变化
 
