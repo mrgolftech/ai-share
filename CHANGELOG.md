@@ -65,3 +65,8 @@
 - ZCode 连续案例延伸到模块四、五：模块四第一套 Host 固定用 ZCode 演示 Raw API → MCP → Skill → Command/Plugin；模块五用 ZCode AGENTS.md / Project Memory / Command / Skill / Plugin 解释资产路由。
 - 新增 `demos/agent-tool-integration/zcode-implementation-plan.md`，控制后端能力不变，仅改变 API/MCP/Skill 等接入与复用层。
 - 素材清单新增 ZCode 资产边界截图 ASSET-ZC-01～03。
+- 新增 Agent Runtime / 内网工具链专题：明确 Terminal/Tool 只是执行入口，Git、Python、Node/npm、Docker、编译器和项目依赖由宿主机/WSL/容器/远端环境提供。
+- 明确 ZCode“内置 Git 工作流”不等于可假定桌面包提供完整 Git CLI Runtime；内网环境需显式执行 git --version 验收。
+- 新增 `docs/cases/agent-runtime-environment-intranet.md`，覆盖离线安装包、内部 PyPI/npm/OS/Container Registry、CA、Proxy、DNS、版本/Lock 与 Environment as Asset。
+- 新增 `demos/zcode-real-world/check-agent-env.ps1` 和 `check-agent-env.sh`，用于培训前 Agent Runtime Preflight。
+- 素材清单新增 ENV-01～04、ENV-R01～02，并把 Runtime Preflight 调整为 ZCode 正式案例之前的优先步骤。
