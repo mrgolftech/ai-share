@@ -342,7 +342,7 @@ POST /v1/chat/completions
 
 ### 3.4 Python 自动测试：怎么证明一个接口真的 PASS
 
-现场运行：`api/qwen/qwen_api_training_test_v3.py`。
+现场运行：`api/qwen/qwen_api_training_test.py`。
 
 | 测试项 | 脚本实际验证 |
 |---|---|
@@ -359,7 +359,7 @@ POST /v1/chat/completions
 
 本轮 Thinking OFF / ON 都判 PASS，但两条都 `finish_reason=length`：PASS 只说明“开关行为符合预期”，不代表回答完整。
 
-【截图占位 API-TEST-01｜P0】v3 终端 28 PASS / 1 SKIP。
+【截图占位 API-TEST-01｜P0】r4 终端 28 PASS / 1 SKIP。
 
 【截图占位 API-TEST-02｜P0】单条 record：Request / Response / attempts / analysis。
 
