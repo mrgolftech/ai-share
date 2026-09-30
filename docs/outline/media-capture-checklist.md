@@ -244,6 +244,7 @@ AGENT-R05-tool-loop.mp4
 | OW-04 | 截图 | P0 | System Prompt + Parameters | ⬜ |
 | OW-05 | 截图 | P1 | Thinking UI vs 后端协议 | ⬜ |
 | OW-06 | 截图 | P1 | Vision vs Image Generation | ⬜ |
+| OW-07~13 | 截图/图示 | P0 | 内网 v0.11.0：Note、文档上传、Full Context/Focused、未向量化、Workspace Knowledge、问答 | ⬜ |
 | CH-01 | 截图 | P0 | Cherry 总览 | ⬜ |
 | CH-02 | 截图 | P0 | Custom Provider | ⬜ |
 | CH-03 | 截图 | P1 | Assistant vs Agent | ⬜ |
@@ -294,7 +295,9 @@ AGENT-R05-tool-loop.mp4
 |---|---:|---|---|
 | KB-R01 | P0 | Cherry 建库 → Parse/Chunk → BM25 → Retrieval Test → Chat | ⬜ |
 | KB-R02 | P0 | 同资料同问题：BM25 vs Embedding/Rerank | ⬜ |
-| KB-R03 | P0 | Open WebUI Shared KB + ACL | ⬜ |
+| KB-R03A | P0 | Open WebUI 个人 Note/Document → Workspace → 问答 | ⬜ |
+| KB-R03B | P0 | 同文档 Full Context vs Focused Retrieval + 未向量化提示 | ⬜ |
+| KB-R03C | P0 | Open WebUI Shared Knowledge + ACL | ⬜ |
 | KB-R04 | P1 | Pipeline vs Agentic Retrieval | ⬜ |
 | KB-R05 | P0 | Agent：Shared KB → Git → API/Metrics → 引用回答 | ⬜ |
 | KB-R06 | P1 | 无答案 / 版本冲突回归 | ⬜ |
