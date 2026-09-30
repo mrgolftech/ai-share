@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.2  
+> 状态：Final Lecture Draft v1.3  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -50,137 +50,364 @@
 
 ---
 
-# 1. 第一步：把聊天框拆开——原来背后就是一次模型调用
+# 1. 第一步：先从 Cherry Studio 配置模型——为什么同一个服务会出现三种 API？
 
-先打开 Cherry Studio 的开发者工具，在 Network 中观察模型列表。
+第一讲不先把三套 API 格式摆在 PPT 上让大家背。
 
-我们会看到类似：
+更自然的做法是：
+
+> **先配置一个大家正在使用的 Chat 客户端，在真实界面里看到“为什么这里会有不同接口类型”，再打开 Network 看它到底发了什么。**
+
+这样 API 不是抽象名词，而是从实际使用中长出来的。
+
+---
+
+## 1.1 配置内网模型：先认识 Provider、Base URL、API Key、Model
+
+在 Cherry Studio 中新增/编辑内网模型服务。
+
+现场只解释四个最基本概念：
+
+```text
+Provider
+= 我准备通过哪一类服务/协议去访问模型
+
+Base URL
+= 模型服务在哪里
+
+API Key
+= 客户端怎样证明自己有调用权限
+
+Model ID
+= 这次真正要调用哪个模型
+```
+
+【截图占位 CH-API-00｜Cherry 内网 Provider：Base URL / API Key / Model】
+
+配置完成后刷新模型列表，同时打开 DevTools Network。
+
+可以看到类似：
 
 `GET /v1/models`
 
-这一步解决第一个问题：
+【截图占位 API-NET-02｜Cherry GET /v1/models Request / Response】
 
-> Cherry Studio 自己并不知道服务器上有哪些模型，它需要向模型服务询问。
+【录屏占位 API-R01｜配置/刷新模型 → Network 中看到 GET /v1/models】
 
-接着发送第一条普通消息。
+这里第一次把 UI 和 API 对上：
 
-在 Network 中找到实际请求，可以看到：
+> Cherry Studio 自己并不知道服务器有哪些模型，它也是通过 API 向模型服务查询。
 
-- Request URL；
-- Method；
-- Header；
-- Authorization；
-- Request Body；
-- model；
-- messages；
-- stream。
+当前内网正式 r4 测试中，该接口已经验证：
 
-【截图占位 API-NET-02｜GET /v1/models Request / Response】
+- HTTP 200；
+- 找到 `qwen3.6`；
+- `max_model_len=131072`。
 
-【截图占位 API-NET-03｜第一轮 Chat Request Body】
+---
 
-这里不需要把 HTTP 协议完整讲一遍。
+## 1.2 配置时为什么会看到 OpenAI Chat、OpenAI Responses、Anthropic Messages？
 
-只需要建立几个最基本的工程概念：
+这是非常适合现场停下来问大家的问题：
 
-```text
-URL
-= 要访问哪个服务
+> **明明后面都是同一个 qwen3.6，为什么客户端还要让我选择不同 API / Endpoint Type？**
 
-GET / POST
-= 这次要读取信息，还是提交信息
+答案是：
 
-Header
-= 请求附带的控制信息和身份信息
+> **模型能力和接口协议是两层。**
 
-JSON
-= 应用和服务之间交换的结构化数据
+今天的大模型 API 并不是一开始就有一个全球统一标准，而是随着不同厂商、不同产品形态逐步演进出来的几套主流接口生态。
 
-Request
-= 应用发出去的内容
+可以用一条很简单的演进线理解。
 
-Response
-= 服务返回来的内容
-```
+### OpenAI Chat Completions：先解决“多轮聊天怎样表达”
 
-这时再回头看 Chat，就可以得到一个很重要的结论：
-
-> **聊天软件并不是模型。聊天软件首先是一个模型 API 的客户端。**
-
-为了进一步把这个关系讲直观，下一步不再依赖 Chat UI，而是直接用 Postman 或 curl 构造 GET / POST 请求。
-
-先留下一个认识：
+早期文本 Completion 更接近：
 
 ```text
-用户
-↓
-应用
-↓
-API Request
-↓
-模型服务
-↓
-API Response
-↓
-应用
+prompt → completion
 ```
 
-## 1.1 先不要依赖任何 Chat 软件：直接发一个 GET
+Chat 应用普及以后，需要明确：
 
-为了让“API”彻底从聊天界面里剥离出来，建议现场再做一次最简单的手工请求。
+- system；
+- user；
+- assistant；
+- 多轮 history；
+- tool call。
 
-目标：
+于是形成以：
 
-> **不打开 Cherry Studio，只使用 Postman 或 curl，直接询问模型服务“你有哪些模型”。**
+`messages[]`
 
-请求：
+为核心的 Chat Completions 形态。
+
+典型 Endpoint：
+
+```text
+POST /v1/chat/completions
+```
+
+它后来被大量第三方服务采用，形成非常广泛的 **OpenAI-compatible** 生态。
+
+### OpenAI Responses：从“聊天消息”继续走向统一的模型能力入口
+
+随着模型输入输出不再只有纯文本聊天，而开始包含：
+
+- reasoning；
+- multimodal input；
+- function/tool；
+- file/search 等 Agent 能力；
+
+OpenAI 又发展出以 `input / output items / events` 为中心的 Responses 形态。
+
+典型 Endpoint：
+
+```text
+POST /v1/responses
+```
+
+培训中不要简单说：
+
+> “Responses 就是 Chat Completions v2，旧接口马上淘汰。”
+
+更准确的是：
+
+> **它是 OpenAI 体系更偏统一输入输出、工具与 Agent 工作负载的新接口形态；现实工程中 Chat Completions 仍然大量存在，因此客户端需要同时兼容。**
+
+### Anthropic Messages：另一套独立演进的模型 API 生态
+
+Anthropic 的 Claude 体系独立发展出了 Messages API。
+
+它同样表达：
+
+- user / assistant；
+- streaming；
+- vision；
+- tool use；
+- thinking；
+
+但使用自己的 Content Block 结构，例如：
+
+- `content[]`；
+- `tool_use`；
+- `tool_result`。
+
+典型 Endpoint：
+
+```text
+POST /v1/messages
+```
+
+因此我们今天看到的三套接口，不是因为：
+
+> 有三个 qwen3.6。
+
+而是因为：
+
+> **客户端和推理服务为了兼容不同模型生态，需要做 Protocol Adapter。**
+
+可以画：
+
+```text
+                    qwen3.6
+                       ↑
+                  vLLM / Gateway
+              ┌────────┼────────┐
+              ↑        ↑        ↑
+       OpenAI Chat  Responses  Anthropic
+              ↑        ↑        ↑
+          Chat App   Codex类   Claude类
+```
+
+【图示占位 API-PROTO-00｜同一模型服务兼容三套 API 生态】
+
+这也是为什么第三讲讲 Agent 时还会遇到：
+
+- Provider Adapter；
+- Model Adapter；
+- Protocol Compatibility。
+
+---
+
+## 1.3 先不要讲 JSON：直接用 Cherry 同一个 Prompt 切三种协议
+
+建议在 Cherry 中准备三个容易辨认的配置/模型项，例如：
+
+```text
+Qwen - OpenAI Chat
+Qwen - OpenAI Responses
+Qwen - Anthropic Messages
+```
+
+具体名称和配置入口以当前安装版本为准。
+
+【截图占位 CH-API-01｜Cherry 当前实际的三种协议/Endpoint Type 配置】
+
+固定同一句：
+
+> 请只回答：PROTOCOL_OK
+
+然后依次选择三种配置，同时保持 DevTools Network 打开。
+
+观众会直接看到：
+
+```text
+/v1/chat/completions
+
+/v1/responses
+
+/v1/messages
+```
+
+【截图占位 CH-API-02A｜Cherry → /v1/chat/completions】
+
+【截图占位 CH-API-02B｜Cherry → /v1/responses】
+
+【截图占位 CH-API-02C｜Cherry → /v1/messages】
+
+【录屏占位 CH-R03｜同 Prompt 切三种 API → Network 显示三个 Endpoint】
+
+到这里再打开 Request Body。
+
+学员会看到：
+
+> **做的是同一件事，但 POST Body 长得不一样。**
+
+---
+
+## 1.4 三种 POST Request 到底有什么不同？
+
+### OpenAI Chat Completions
+
+```http
+POST /v1/chat/completions
+```
+
+核心输入：
+
+```json
+{
+  "model": "qwen3.6",
+  "messages": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."}
+  ]
+}
+```
+
+重点看：
+
+- `messages[]`；
+- `role`；
+- `choices[].message`；
+- `tool_calls`；
+- Chat SSE delta。
+
+【截图占位 API-PROTO-01｜OpenAI Chat 真实 Request / Response】
+
+### OpenAI Responses
+
+```http
+POST /v1/responses
+```
+
+当前内网实测输入可以看到：
+
+```json
+{
+  "model": "qwen3.6",
+  "input": "请只回答：RESPONSES_OK",
+  "reasoning": {
+    "effort": "none"
+  }
+}
+```
+
+重点看：
+
+- `input`；
+- `output[]`；
+- `function_call`；
+- `response.created`；
+- `response.completed`。
+
+【截图占位 API-PROTO-02｜Responses 真实 Request / Response / Event】
+
+### Anthropic Messages
+
+```http
+POST /v1/messages
+```
+
+典型输入：
+
+```json
+{
+  "model": "qwen3.6",
+  "max_tokens": 256,
+  "messages": [
+    {
+      "role": "user",
+      "content": "请只回答：CLAUDE_OK"
+    }
+  ]
+}
+```
+
+重点看：
+
+- `messages[]`；
+- `content[]` blocks；
+- `tool_use`；
+- `tool_result`；
+- Anthropic streaming events。
+
+【截图占位 API-PROTO-03｜Anthropic Messages 真实 Request / Response】
+
+### 用一张表结束，不要求学员背 Schema
+
+| 对比项 | OpenAI Chat | OpenAI Responses | Anthropic Messages |
+|---|---|---|---|
+| Endpoint | `/v1/chat/completions` | `/v1/responses` | `/v1/messages` |
+| 核心输入 | `messages[]` | `input` / items | `messages[]` + content blocks |
+| 普通输出 | `choices[].message` | `output[]` | `content[]` |
+| Tool Call | `tool_calls` | `function_call` | `tool_use` |
+| Tool Result | tool message | function output item | `tool_result` |
+| 当前内网基础闭环 | 已实测 | 已实测 | 已实测 |
+
+【图示占位 API-PROTO-04｜三种 POST Schema 对照】
+
+这部分最后只留下一个结论：
+
+> **不要把接口格式和模型能力混为一谈。**
+
+同一个模型可以被多个 Adapter 暴露成不同兼容协议；同一个客户端也可以根据 Endpoint Type 用不同方式组织 Request。
+
+---
+
+## 1.4A 脱离 Cherry 再手工发一次 GET / POST：证明 UI 只是客户端
+
+现在再使用 Postman 或 curl。
+
+### GET
 
 ```http
 GET <BASE_URL>/v1/models
 Authorization: Bearer <API_KEY>
 ```
 
-或者使用 curl：
+【截图占位 API-POST-01｜Postman / curl GET /v1/models】
 
-```bash
-curl -H "Authorization: Bearer <API_KEY>" \
-  <BASE_URL>/v1/models
-```
+### POST
 
-现场重点不是教 curl 参数，而是让大家看到四个东西：
-
-1. Method 是 `GET`；
-2. URL 是 `/v1/models`；
-3. 服务返回 HTTP Status；
-4. Response Body 是 JSON。
-
-当前内网正式测试基线中，这个接口已经自动验证：
-
-- HTTP 200；
-- 找到模型 `qwen3.6`；
-- `max_model_len=131072`。
-
-【截图占位 API-POST-01｜Postman / curl 直接 GET /v1/models】
-
-【录屏占位 API-R09A｜不经过 Chat UI，直接 GET /v1/models】
-
-这一段讲完以后再问：
-
-> **如果 GET 是“向服务取信息”，那真正让模型回答问题时，为什么需要 POST？**
-
----
-
-## 1.2 再手工发一个 POST：模型调用就是把输入放进 Request Body
-
-直接调用：
+选择最容易看懂的 OpenAI Chat：
 
 ```http
 POST <BASE_URL>/v1/chat/completions
-Content-Type: application/json
-Authorization: Bearer <API_KEY>
 ```
 
-最小 Body 可以展示成：
+Body：
 
 ```json
 {
@@ -196,304 +423,30 @@ Authorization: Bearer <API_KEY>
 }
 ```
 
-现场观察：
+【截图占位 API-POST-02｜Postman POST Chat：Body + Response】
 
-- Request Body；
-- HTTP 200；
-- `object=chat.completion`；
-- `choices`；
-- `usage`。
+【录屏占位 API-R09｜Cherry Request → Postman 构造同类 GET/POST】
 
-【截图占位 API-POST-02｜Postman POST /v1/chat/completions：Body + Response】
-
-【录屏占位 API-R09B｜直接 POST Chat → 得到 JSON Response】
-
-这一步的教学意义非常大：
-
-> **模型不是只能通过 Chat 软件使用。任何能够按协议构造 HTTP Request 的程序，都可以调用模型。**
-
-Python、Java、JavaScript、Cherry Studio、Open WebUI、Agent，本质上都可以站在这个位置。
-
-因此可以画：
+于是关系就非常清楚：
 
 ```text
-Postman
-Python
 Cherry Studio
 Open WebUI
+Postman
+Python
 Agent
 业务应用
-    │
-    └────→ 同一个 Model API
+      │
+      ↓
+  API Protocol
+      ↓
+  Model Service
+      ↓
+    qwen3.6
 ```
 
-【图示占位 API-POST-03｜不同客户端 → 同一个模型 API】
+【图示占位 API-POST-03｜不同客户端 → Protocol Adapter → 同一模型服务】
 
----
-
-## 1.3 同一个“问模型”动作，为什么会有三种 API 形态？
-
-到这里学员已经看懂最基本的 OpenAI Chat 请求。
-
-接下来正好利用我们的内网服务回答一个非常现实的问题：
-
-> **为什么同一个 qwen3.6，在不同客户端里会出现 OpenAI Chat、OpenAI Responses、Anthropic Messages 三种接口？**
-
-这三种接口不是三个模型。
-
-更准确地说，它们是：
-
-> **应用与模型服务之间三种不同的协议 / 数据结构约定。**
-
-当前内网 qwen3.6 已经用正式测试脚本分别验证了这三类接口，所以这里不需要只讲官方概念，可以直接拿我们自己的 Request / Response 对照。
-
-### OpenAI Chat Completions
-
-典型 Endpoint：
-
-```text
-POST /v1/chat/completions
-```
-
-核心输入结构：
-
-```json
-{
-  "model": "qwen3.6",
-  "messages": [
-    {"role": "system", "content": "..."},
-    {"role": "user", "content": "..."}
-  ]
-}
-```
-
-主要观察：
-
-- `messages`；
-- `role`；
-- `choices`；
-- `message.content`；
-- `tool_calls`；
-- `stream=true` 时的 SSE chunk。
-
-可以把它理解为：
-
-> **以“多轮聊天消息”为中心的接口形态。**
-
-它目前仍然是大量 OpenAI-compatible 客户端和开源服务最常见的兼容方式之一。
-
-【截图占位 API-PROTO-01｜OpenAI Chat：Request messages + Response choices/tool_calls】
-
----
-
-### OpenAI Responses
-
-典型 Endpoint：
-
-```text
-POST /v1/responses
-```
-
-我们当前内网实测使用的核心输入类似：
-
-```json
-{
-  "model": "qwen3.6",
-  "input": "请只回答：RESPONSES_OK",
-  "reasoning": {
-    "effort": "none"
-  }
-}
-```
-
-它的返回不再围绕 `choices[].message`，而更强调：
-
-- `response`；
-- `output[]`；
-- `function_call`；
-- 流式时的 `response.created`、`response.completed` 等事件。
-
-在培训中不要把 Responses 简单说成：
-
-> “Chat Completions 的新版本，旧的马上不能用。”
-
-更稳妥的说法是：
-
-> **Responses 是 OpenAI 体系中面向更统一输入/输出、工具与 Agent 场景的新接口形态；但大量现有系统仍然使用 Chat Completions，因此工程上需要根据客户端和服务端兼容性选择。**
-
-我们的内网测试已经验证：
-
-- 非流式；
-- SSE；
-- Function Call；
-- Tool Result Loop；
-- Vision。
-
-【截图占位 API-PROTO-02｜OpenAI Responses：input + output/function_call + SSE event】
-
----
-
-### Anthropic Messages
-
-典型 Endpoint：
-
-```text
-POST /v1/messages
-```
-
-典型结构与 OpenAI Chat 不完全一样。
-
-例如：
-
-```json
-{
-  "model": "qwen3.6",
-  "max_tokens": 256,
-  "messages": [
-    {
-      "role": "user",
-      "content": "请只回答：CLAUDE_OK"
-    }
-  ]
-}
-```
-
-工具调用也使用自己的 Content Block 语义：
-
-- `tool_use`；
-- `tool_result`；
-- 流式 `message_start` / `message_stop`；
-- reasoning/thinking 也有自己的协议结构。
-
-我们的内网 r4 已验证：
-
-- Messages；
-- SSE；
-- count_tokens；
-- tool_use；
-- tool_result；
-- Vision；
-
-但同时发现：
-
-> `thinking.type=disabled` 当前没有按预期彻底关闭 thinking。
-
-这正好说明：
-
-> **“支持 Anthropic API”不能只看 Endpoint 能不能返回 200，还要验证各个具体语义是否真的兼容。**
-
-【截图占位 API-PROTO-03｜Anthropic Messages：messages/content block + tool_use/tool_result】
-
----
-
-### 三种接口一张表看懂
-
-| 对比项 | OpenAI Chat Completions | OpenAI Responses | Anthropic Messages |
-|---|---|---|---|
-| 典型 Endpoint | `/v1/chat/completions` | `/v1/responses` | `/v1/messages` |
-| 主要输入 | `messages[]` | `input` / input items | `messages[]` / content blocks |
-| 普通输出 | `choices[].message` | `output[]` | `content[]` |
-| 工具调用 | `tool_calls` | `function_call` | `tool_use` |
-| 工具结果 | tool role/message | function-call output item | `tool_result` |
-| 流式事件 | Chat SSE delta | Responses event stream | Anthropic message/content events |
-| 当前内网基础闭环 | 已实测 | 已实测 | 已实测 |
-
-【图示占位 API-PROTO-04｜同一 qwen3.6 → 三种协议 Adapter → 不同客户端】
-
-这一页最重要的结论：
-
-> **模型能力和接口协议是两层。**
-
-模型可能本身会 Tool Calling / Vision，但客户端还必须：
-
-1. 知道该用哪种协议；
-2. 按对应 Schema 组织 Request；
-3. 正确解析 Response；
-4. 把 Tool Result 再按该协议回灌。
-
-所以后面看到不同 Agent 要求“OpenAI Responses”或“Anthropic Endpoint”时，就不会再觉得这是三个不同的模型世界。
-
----
-
-## 1.4 用 Cherry Studio 直接演示三种 API 接入：同一个 UI，后端协议可以不同
-
-Cherry Studio 很适合用来把这个问题可视化。
-
-当前 Cherry Studio 的实现已经明确区分不同 Endpoint Type，例如：
-
-- `openai-chat-completions`；
-- `openai-responses`；
-- `anthropic-messages`。
-
-部分多协议 Provider / Gateway 还可以在同一个服务配置下根据模型 Endpoint Type 自动选择对应 Adapter。
-
-因此本培训建议直接用内网 qwen3.6 做三个配置/模型项，分别代表：
-
-```text
-Qwen - OpenAI Chat
-Qwen - OpenAI Responses
-Qwen - Anthropic Messages
-```
-
-具体名称按你当前 Cherry Studio 实际界面设置，不要求与上面完全一致。
-
-【截图占位 CH-API-01｜Cherry 模型服务：同一个内网 Base URL 的三种协议配置/模型 Endpoint Type】
-
-如果当前 Cherry 版本允许在 Provider / Model 高级设置里选择 Endpoint Type，就直接截这个选择项。
-
-如果当前版本是通过不同 Provider / Adapter 配置实现，则截图真实配置，不为了培训强行做成同一 UI。
-
-教学重点是：
-
-> **三条配置最终指向同一个内网模型服务，但 Cherry 会按照不同协议组织 Request。**
-
-### 演示方法：同一个 Prompt，切三次模型/协议
-
-固定问题：
-
-> 请只回答：PROTOCOL_OK
-
-依次选择：
-
-1. OpenAI Chat；
-2. OpenAI Responses；
-3. Anthropic Messages。
-
-每次都同时打开 DevTools Network。
-
-最终应该看到三个不同 Endpoint：
-
-```text
-/v1/chat/completions
-/v1/responses
-/v1/messages
-```
-
-【截图占位 CH-API-02A｜Cherry → /v1/chat/completions】
-
-【截图占位 CH-API-02B｜Cherry → /v1/responses】
-
-【截图占位 CH-API-02C｜Cherry → /v1/messages】
-
-【录屏占位 CH-R03｜Cherry 同 Prompt 切三种 API → Network 显示三个不同 Endpoint】
-
-这是第一讲非常值得做的一段录屏。
-
-因为学员可以直接看到：
-
-> **前端还是同一个聊天框，但后端协议已经换了。**
-
-随后再打开 Request Body，对照：
-
-```text
-messages / choices
-input / output
-messages / content blocks
-```
-
-就能把前面的协议表彻底讲活。
-
----
 
 ## 1.5 为什么“我手工调通一次”还不够？
 
