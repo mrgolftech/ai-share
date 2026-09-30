@@ -6,6 +6,29 @@
 
 ---
 
+## 第一讲中的 Cherry Studio 定位
+
+在当前四讲正式授课结构中，Cherry Studio 在第一讲承担一个额外角色：
+
+> **把 Chat 应用如何组织 Model、Instructions、Context、Parameters、Knowledge、Web Search 和 Tools 可视化。**
+
+第一讲只演示这些选项如何改变模型请求或上下文：
+
+- Provider / Endpoint Type：OpenAI Chat、OpenAI Responses、Anthropic Messages；
+- Assistant Instructions；
+- 默认模型 / 临时切换模型；
+- Temperature / Top-P / Max Tokens / Stream / Thinking；
+- 对话中勾选知识库；
+- 联网检索；
+- MCP / Tool。
+
+第一讲不展开 BM25、Embedding、Chunk、Rerank 和部门知识治理，这些内容统一放到第二讲。
+
+最终讲义位置：
+
+`docs/lectures/01-api-to-agent.md`
+
+
 # 一、先给两款工具一个准确定位
 
 Open WebUI 和 Cherry Studio 都不能再简单叫“聊天壳”。
