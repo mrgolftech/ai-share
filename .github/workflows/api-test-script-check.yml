@@ -7,12 +7,17 @@ on:
       - "api/qwen/qwen_api_training_test_v2.py"
       - "api/qwen/qwen_api_training_test_v3.py"
       - "api/qwen/qwen_failed_retest.py"
+      - "demos/api-applications/*.py"
+      - "demos/api-applications/requirements.txt"
       - ".github/workflows/api-test-script-check.yml"
   pull_request:
     paths:
       - "api/qwen/qwen_api_training_test.py"
       - "api/qwen/qwen_api_training_test_v2.py"
+      - "api/qwen/qwen_api_training_test_v3.py"
       - "api/qwen/qwen_failed_retest.py"
+      - "demos/api-applications/*.py"
+      - "demos/api-applications/requirements.txt"
       - ".github/workflows/api-test-script-check.yml"
 
 jobs:
@@ -31,3 +36,10 @@ jobs:
           python -m py_compile api/qwen/qwen_api_training_test_v2.py
           python -m py_compile api/qwen/qwen_api_training_test_v3.py
           python -m py_compile api/qwen/qwen_failed_retest.py
+          python -m py_compile demos/api-applications/common.py
+          python -m py_compile demos/api-applications/translate.py
+          python -m py_compile demos/api-applications/json_extract.py
+          python -m py_compile demos/api-applications/vision_ocr.py
+          python -m py_compile demos/api-applications/visual_qa.py
+          python -m py_compile demos/api-applications/run_all.py
+          python -m py_compile demos/api-applications/generate_samples.py
