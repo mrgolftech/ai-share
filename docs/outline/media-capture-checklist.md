@@ -92,7 +92,7 @@ AGENT-R05-tool-loop.mp4
 | API-01 | 截图 | /v1/models + /version | 第一章 API | ⬜ |
 | API-NET-01~07 | 截图 | Cherry Network：models / Chat / Context / Vision / SSE | 第一章 API | ⬜ |
 | API-POST-01~02 | 截图 | 自编 Postman：GET models / POST chat | 第一章 API | ⬜ |
-| API-TEST-01~02 | 截图 | v3 自动测试总览 + record 断言 | 第一章 API | ⬜ |
+| API-TEST-00~04 | 截图/图示 | r4 自动测试脚本、28 PASS/1 SKIP、record、结果目录、能力矩阵 | 第一讲 API | ⬜ |
 | MM-01~03 | 截图 | model-metric 总览 / Benchmark / Context&Endpoint | 第一章 API / 案例 | ⬜ |
 | API-03 | 截图 | Thinking OFF/ON 实测 | 第一章 API | ⬜ |
 | API-04~05 | 截图 | Tool Call + Tool Result | 第一章 API | ⬜ |
@@ -161,8 +161,11 @@ AGENT-R05-tool-loop.mp4
 | API-NET-07 | P0 | SSE/EventStream | 能看到流式事件 | ⬜ |
 | API-POST-01 | P0 | 自编 Postman GET /v1/models | Method/URL/Status/Response | ⬜ |
 | API-POST-02 | P0 | 自编 Postman POST /v1/chat/completions | Body/messages/stream/usage | ⬜ |
-| API-TEST-01 | P0 | v3 终端结果 | 28 PASS / 1 SKIP | ⬜ |
+| API-TEST-00 | P0 | qwen_api_training_test.py 文件头 | 覆盖接口、输出留档、Key 脱敏 | ⬜ |
+| API-TEST-01 | P0 | r4 正式测试总览 | 28 PASS / 1 SKIP / 0 FAIL / 0 ERROR | ⬜ |
 | API-TEST-02 | P0 | 单条 record JSON | Request/Response/attempts/analysis | ⬜ |
+| API-TEST-03 | P0 | 20260930_095033 结果目录 | records/SSE/manifest/summary | ⬜ |
+| API-TEST-04 | P0 | 协议/能力矩阵 | Chat/Responses/Anthropic/Tool/Vision/Thinking 差异 | ⬜ |
 | API-02 | P1 | Token speed Race Mode | 5/30/120 tok/s | ⬜ |
 | API-03 | P0 | Thinking OFF/ON | 来自真实测试 | ⬜ |
 | API-04~05 | P0 | Tool Call / Tool Result | 完整闭环两张图 | ⬜ |
@@ -186,6 +189,7 @@ AGENT-R05-tool-loop.mp4
 | API-R07 | P0 | 完整 Tool Loop | ⬜ |
 | API-R08 | P0 | Chat vs Agent | ⬜ |
 | API-R09 | P0 | Postman GET/POST → Cherry Network 对照 | ⬜ |
+| API-R10 | P0 | 自动测试脚本 → 正式结果 → record/report | ⬜ |
 | MM-R01 | P0 | Postman 请求 → model-metric 实时变化 | ⬜ |
 | MM-R02 | P1 | API Benchmark → 总览并发/吞吐变化 | ⬜ |
 
