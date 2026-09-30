@@ -38,10 +38,11 @@ Chat Response 的 `usage` 是单请求 Token；客户端可测单请求 TTFT/tok
 1. 自编 Postman：`GET /v1/models`。
 2. 自编 Postman：`POST /v1/chat/completions`。
 3. Cherry Network 对照同类真实请求。
-4. `qwen_api_training_test_v3.py` 展示自动断言。
-5. model-metric 总览观察请求前后 running/waiting/TPS/KV。
-6. model-metric API Benchmark 演示并发、TTFT、吞吐。
-7. Context Window / Endpoint Compatibility 对应回前面的 API 概念。
+4. `api/qwen/qwen_api_training_test.py` 展示 r4 自动断言与留档。
+5. 展示 `api/qwen/results/20260930_095033/` 与正式报告的 28 PASS / 1 SKIP 基线。
+6. model-metric 总览观察请求前后 running/waiting/TPS/KV。
+7. model-metric API Benchmark 演示并发、TTFT、吞吐。
+8. Context Window / Endpoint Compatibility 对应回前面的 API 概念。
 
 ## 5. 素材占位
 - `MM-01`：内网 model-metric 总览。
