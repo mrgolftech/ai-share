@@ -1,6 +1,6 @@
 # AI 大模型与 Agent 工程实践培训——系列授课拆分方案
 
-> 状态：Baseline v0.1  
+> 状态：Baseline v0.2  
 > 日期：2026-09-30  
 > 依据：`docs/outline/training-outline.md` 当前完整讲义基线  
 > 原则：不再把全部内容压缩为一次讲座；每次围绕一个核心问题，并穿插真实工程证据。
@@ -35,7 +35,7 @@
 
 ---
 
-# 2. 建议拆成 7 次
+# 2. 建议拆成 8 次
 
 默认每次按约 1.5～2 小时设计；实际时长可根据部门安排压缩或合并。
 
@@ -72,35 +72,161 @@
 
 ---
 
-# 第 2 次：为什么 Chat 不够——Knowledge、RAG 与 Agent
+# 第 2 次：部门知识库怎么建——从资料堆到可治理的 AI 知识基础设施
 
 ## 核心问题
 
-> Chat、知识库、RAG、Agent 到底分别解决什么问题？
+> 部门有大量文档、代码、规范、测试数据和系统数据，怎样把它们建设成 Chat、应用和 Agent 都能可靠使用的知识体系？
+
+## 这次培训单独成场的原因
+
+知识库不是 Chat 软件里的一个“上传文件”功能，而是部门后续 AI 应用的公共基础能力。
+
+这场培训重点不是让学员记住 RAG 名词，而是建立一套能够直接指导部门知识库建设的工程方法。
+
+## 内容
+
+### A. 先定义“知识资产”
+
+- 什么是 Source of Truth；
+- 原始资料、索引、缓存、生成答案的区别；
+- 文档、代码、配置、数据库、API、日志、实时指标为什么不能统一当 PDF 处理；
+- 哪些资产应该进入部门知识体系，哪些不应该。
+
+### B. 文档进入知识库之前发生什么
+
+- Parse；
+- OCR 边界；
+- Chunk；
+- Metadata；
+- 标题层级；
+- 表格、图片、代码块；
+- 文档格式规范；
+- 版本与来源标识。
+
+### C. Retrieval 到底怎么做
+
+- 全文搜索 / BM25；
+- Embedding / Vector；
+- Hybrid；
+- Rerank；
+- Top-K；
+- Query Rewrite；
+- Metadata Filter；
+- 不同问题为什么需要不同 Retrieval。
+
+### D. Context 不是无限知识容量
+
+- Context Window；
+- Lost in the Middle；
+- 长上下文召回；
+- External Retrieval Recall vs In-context Utilization；
+- Context Budget；
+- Evidence Budget；
+- 为什么“检索越多”不一定越好。
+
+### E. 部门知识治理
+
+- ACL / 权限；
+- 版本；
+- 过期资料；
+- 重复资料；
+- 冲突资料；
+- 引用与溯源；
+- 更新和重建索引；
+- 谁负责维护 Source of Truth。
+
+### F. 三类工具怎样使用同一套知识
+
+- Cherry Studio：个人/轻量知识工作台；
+- Open WebUI：共享知识库与多人访问；
+- Agent：Workspace + Search + Read + RAG + DB/API/MCP 的多源取证。
+
+重点说明：
+
+> Agent 可以承接前两类知识资产，但不应该把所有知识都强行向量化。
+
+### G. 怎样评测知识库是否真的可用
+
+至少设计：
+
+- answerable；
+- no-answer；
+- 版本冲突；
+- 权限；
+- 精确编号/型号；
+- 跨文档组合；
+- 长文档定位；
+- 引用准确性；
+- Retrieval Recall；
+- Context Utilization。
+
+## 主 Demo
+
+使用**同一套真实部门资料**，分别演示：
+
+```text
+Cherry Studio
+→ Open WebUI Shared Knowledge
+→ Agent 多源逐步取证
+```
+
+控制变量：
+
+> **资料不变，只改变检索方式和使用入口。**
+
+## 对应讲义
+
+- `docs/chapters/03-department-knowledge-base-teaching.md`：主讲教学版；
+- `docs/chapters/03-department-knowledge-base.md`：完整技术稿；
+- `docs/architecture/department-knowledge-architecture.md`：部门架构；
+- `docs/references/knowledge-base-rag-evidence-2026-09.md`：证据基线；
+- `demos/knowledge-retrieval/README.md`：统一 Demo。
+
+## 学完应该带走
+
+> **知识库首先是知识资产和治理问题，其次才是向量数据库问题。**
+
+以及：
+
+> **知识原文是资产，索引是派生物，Cherry / Open WebUI / Agent 只是不同入口。**
+
+---
+
+# 第 3 次：为什么 Chat 不够——从 Chat 工作台走向 Agent
+
+## 核心问题
+
+> 如果知识已经能查到了，为什么复杂工程任务仍然不能只靠 Chat？
 
 ## 内容
 
 - Chat 适合什么；
-- Open WebUI / Cherry Studio；
-- Knowledge / RAG；
-- Parse / Chunk / BM25 / Embedding / Hybrid / Rerank；
-- Context Budget / Evidence Budget；
-- Lost in the Middle 等长上下文限制；
-- Chat → Agent 的变化；
-- Agent Harness 是什么。
+- Open WebUI / Cherry Studio 作为 Chat / Knowledge 工作台；
+- Prompt → Answer 的局限；
+- Chat → Workspace；
+- Agent Harness；
+- Workspace；
+- Context / Plan / Memory；
+- Tools；
+- Permission / Verification；
+- CLI / GUI / IDE / Web Surface；
+- WorkBuddy 等“Chat Surface 背后已有 Runtime”的例子。
 
 ## 主案例
 
-- 部门知识库同源三层 Demo；
-- Cherry / Open WebUI / Agent 使用同一套资料。
+- 同模型 Chat vs Agent；
+- 鹈鹕统一案例；
+- WorkBuddy Chat → Workspace → Artifact；
+- 一个需要修改真实仓库的小任务。
 
 ## 学完应该带走
 
-> “把资料上传进去”不等于知识库；“上下文很长”也不等于模型能可靠使用全部内容。
+> **知识库解决“模型去哪里找知识”；Agent 进一步解决“模型怎样围绕目标持续行动和验证”。**
 
 ---
 
-# 第 3 次：Agent 为什么能真正干活——Workspace、工具、Runtime 与服务器
+# 第 4 次：Agent 为什么能真正干活——Workspace、工具、Runtime 与服务器
 
 ## 核心问题
 
@@ -148,7 +274,7 @@
 
 ---
 
-# 第 4 次：怎样让 Agent 掌握企业工具——API、MCP、Skill 与可复用资产
+# 第 5 次：怎样让 Agent 掌握企业工具——API、MCP、Skill 与可复用资产
 
 ## 核心问题
 
@@ -189,7 +315,7 @@
 
 ---
 
-# 第 5 次：完整工程案例（一）——Agent 怎样从需求开发一个 Web 应用
+# 第 6 次：完整工程案例（一）——Agent 怎样从需求开发一个 Web 应用
 
 ## 核心问题
 
@@ -249,7 +375,7 @@ Problem
 
 ---
 
-# 第 6 次：完整工程案例（二）——本地客户端 / GUI / 打包发布
+# 第 7 次：完整工程案例（二）——本地客户端 / GUI / 打包发布
 
 ## 核心问题
 
@@ -301,7 +427,7 @@ Problem
 
 ---
 
-# 第 7 次：跨领域案例——数据分析、安全研究与内容生产
+# 第 8 次：跨领域案例——数据分析、安全研究与内容生产
 
 ## 核心问题
 
@@ -429,10 +555,10 @@ Scope
 例如 BMQuiz：
 
 ```text
-第 2 次：为什么 Chat 不足以完成这个项目
-第 3 次：Workspace / Browser / Git / Server
-第 4 次：AGENTS.md / Skill / CI 作为资产
-第 5 次：完整工程闭环
+第 3 次：为什么 Chat 不足以完成这个项目
+第 4 次：Workspace / Browser / Git / Server
+第 5 次：AGENTS.md / Skill / CI 作为资产
+第 6 次：完整工程闭环
 ```
 
 这样学员最终看到的是：
@@ -445,7 +571,7 @@ Scope
 
 在案例证据还未集中补录前，先完成：
 
-1. 7 次培训的章节映射；
+1. 8 次培训的章节映射；
 2. BMQuiz 完整工程案例讲义；
 3. FileCheck 完整工程案例讲义；
 4. Agent 服务器运维案例讲义；
