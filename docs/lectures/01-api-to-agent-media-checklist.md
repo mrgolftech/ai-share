@@ -2,7 +2,7 @@
 
 > 日期：2026-09-30  
 > 对应讲义：`docs/lectures/01-api-to-agent.md`  
-> 状态：Working Checklist v1.1  
+> 状态：Working Checklist v1.2（适配第一讲 v2.0 七幕叙事）  
 > 使用原则：**正文决定“为什么需要这份素材、插在哪里”；本清单决定“具体拍什么、怎么拍、优先级、状态和备用方案”。**
 
 ---
@@ -15,6 +15,19 @@
 - 每项完成后把状态改为：`⬜ 未准备` / `🟨 已采集待处理` / `✅ 可直接用于培训`；
 - 同一素材如果跨讲复用，只保留一个原始文件，但在两个讲义清单中分别注明用途；
 - 现场 Demo 涉及网络、模型排队、Browser、SSH、Build、GitHub Actions 时必须准备预录或静态备用。
+- 讲义中的 **【主讲 / 扩展 / 备用】** 表示“现场是否展开”；本清单中的 **P0 / P1 / P2** 表示“素材准备优先级”。两者不是同一个维度：例如某段内容现场只作备用，但其截图仍可能是 P0，因为它承担 Demo 失败时的兜底作用。
+
+### 与 v2.0 七幕叙事的素材对应
+
+| 七幕 | 现场核心素材 |
+|---|---|
+| 第一幕：拆开聊天框 | API-NET / CH-API / API-POST / API-APP |
+| 第二幕：理解“记忆” | API-NET-04A～C / API-R02 |
+| 第三幕：走进一次推理 | TOKEN-01～05 / TOKEN-R01 |
+| 第四幕：应用组织信息 | API-SYS / FILE / CH-ASSIST / WB-COMP；OW 深入内容按第二讲复用 |
+| 第五幕：调用成本与性能 | API-SPEED / API-03 / MM |
+| 第六幕：从回答走向行动 | API-04～05 / API-R07 |
+| 第七幕：复杂任务走向 Agent | CHAT / ZCODE / API-R08 |
 
 ---
 
@@ -43,7 +56,7 @@
 | CHAT-* / ZCODE-* | P0 | Chat vs Agent 最小闭环 | ⬜ |
 | API-R* / CH-R* / OW-R* / WB-R* / MM-R* | P0/P1 | 第一讲动态演示与备用录屏 | ⬜ |
 
-> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → Tokenize/Detokenize 与推理链路 → API 非 Chat 小应用 → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
+> 第一讲优先拍摄顺序按 v2.0 主线调整为：**Cherry Network / 三协议 → API 非 Chat 小应用 → 多轮 Context → Tokenize/Detokenize 与推理链路 → Cherry/Open WebUI 核心对应 → Token 速度与 model-metric → Tool Loop → Chat vs Agent**。自动测试完整过程、Open WebUI 深入 Knowledge 细节和并发压测可后拍，作为扩展/备用。
 
 ---
 
@@ -711,18 +724,19 @@ Agent：
 
 # 16. 第一讲现场 Demo 与备用策略
 
-现场建议真正实时做四项，并准备一条 P0 的 API 小应用串联录屏：
+现场建议真正实时做四组动作，并让顺序与七幕主线一致：
 
-1. Cherry 配置内网模型，并用同一 Prompt 切 OpenAI Chat / Responses / Anthropic 三种协议，看 Network Endpoint；
-2. Open WebUI v0.11.0：个人 Note / 文档 → Knowledge → Workspace → 基于资料问答；
-3. Cherry 多轮 Context；
-4. 最小 Agent Read/Edit/Test Loop。
+1. **拆开聊天框**：Cherry 配置内网模型，用同一 Prompt 切 OpenAI Chat / Responses / Anthropic 三种协议，看 Network Endpoint；
+2. **理解 Context 与 Token**：做两轮连续对话看历史重新进入 Request，随后用同一短文本完成 `/tokenize → /detokenize` 往返；
+3. **看应用怎样组织信息**：Cherry Assistant 与 Open WebUI Workspace Model 只做“Base Model + 长期指令 + Knowledge”的核心对应，Open WebUI 深入 Knowledge 细节留到第二讲；
+4. **从回答走向行动**：最小 Agent Read/Edit/Test/Diff Loop。
 
 P0 预录：
 
-- API-APP-R01：同一 qwen3.6 API 连续完成翻译 / JSON / Vision OCR / Visual QA，用 60～90 秒证明“API 不等于 Chat”。
+- API-APP-R01：同一 qwen3.6 API 连续完成翻译 / JSON / Vision OCR / Visual QA，用 60～90 秒证明“API 不等于 Chat”；
+- MM-R01：一条请求在 model-metric 上留下 running / TPS / KV / latency 痕迹，用于第五幕在讲完 TTFT / Tokens/s 后展示。
 
-Postman、自动测试、model-metric、Thinking、Vision、Tool Loop 根据现场时长选择实时或预录；其中完整 r4 测试、并发压测和长 Thinking 优先使用预录。
+Postman、完整自动测试、并发压测、长 Thinking、Vision 深入、Open WebUI Full Context/Focused Retrieval 等根据现场时长选择实时或预录；其中第二讲会复用的 Knowledge 深入内容不在第一讲展开。
 
 原则：
 
