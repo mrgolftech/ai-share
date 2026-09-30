@@ -2356,8 +2356,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Qwen API 自动测试脚本（已有实测证据）
 - Qwen API 实测结果（已有实测证据）
 - Qwen API 实测报告（已有实测证据）
-- 第一章 API 培训讲义（可用于培训；第一讲正式讲义已更新到 v1.7）
-- 第一讲新增“API 不等于 Chat”主桥段：同一 qwen3.6 API 可封装为翻译、结构化抽取/JSON、Vision OCR、网页截图 Visual QA、分类/路由等非 Chat 应用；已落盘可运行 Python Demo：`demos/api-applications/translate.py`、`json_extract.py`、`vision_ocr.py`、`visual_qa.py`、`run_all.py`；Demo 总入口：`demos/api-applications/README.md`
+- 第一章 API 培训讲义（可用于培训；第一讲正式讲义已更新到 v1.8）
+- 第一讲新增“API 不等于 Chat”主桥段：同一 qwen3.6 API 可封装为翻译、结构化抽取/JSON、Vision OCR、网页截图 Visual QA、分类/路由等非 Chat 应用；已落盘可运行 Python Demo：`demos/api-applications/translate.py`、`json_extract.py`、`vision_ocr.py`、`visual_qa.py`、`run_all.py`；Token 输出速率体感 Demo 同步归入 `demos/api-applications/token-output-speed/`，形成统一“API 应用体验套件”；Demo 总入口：`demos/api-applications/README.md`
 - 第一讲已明确 Cherry Studio Desktop/Local-first 与 Open WebUI Self-hosted/Server-side 的数据边界差异，并避免把“最早/唯一服务端项目”等未经系统统计的历史判断写成硬事实；证据基线：`docs/references/chat-workbench-api-application-evidence-2026-09.md`
 - Cherry Studio Network 抓包主 Demo（已有讲义设计，待现场截图：models / 首轮 Chat / 多轮 Context / Vision / SSE）
 - Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
