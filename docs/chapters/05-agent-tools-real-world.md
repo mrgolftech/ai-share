@@ -1065,6 +1065,147 @@ playwright install
 
 > **Node.js 不是浏览器自动化的理论前提；但当前 Playwright CLI/MCP 生态明确依赖 Node.js 20+，所以完整 Agent 工作站仍然很值得预装 Node.js。**
 
+### 7.1.7 Browser Use 和 Computer Use 对模型能力的要求
+
+Browser Use 和 Computer Use 对模型的要求并不相同，关键取决于 Harness 给模型的“观察”是什么。
+
+#### Browser Use：不一定需要视觉
+
+如果 Browser Tool 返回的是：
+
+~~~text
+heading "Settings"
+button "Save" [ref=e12]
+textbox "Name" [ref=e15]
+~~~
+
+这类 DOM / Accessibility Snapshot，模型主要需要：
+
+- 文字理解；
+- 页面语义理解；
+- Tool Calling；
+- 根据新状态连续决策；
+- Context / State Management。
+
+此时并不要求模型必须能看图片。
+
+Playwright MCP 当前默认就是 accessibility snapshot 模式，并明确说明普通交互不需要 vision model。
+
+所以：
+
+> **结构化 Browser Use = 可以由纯文本模型完成。**
+
+但如果网页包含：
+
+- Canvas；
+- WebGL；
+- 地图；
+- 图表；
+- 图像编辑器；
+- 没有 ARIA/Accessibility 信息的自定义控件；
+- 需要判断页面布局、颜色、遮挡、视觉质量；
+
+就需要加入 Screenshot / Vision。
+
+Playwright MCP 当前也把这部分单独定义为 Vision Mode：模型先看 Screenshot，再基于坐标点击、拖拽或滚轮。
+
+因此更准确地说：
+
+~~~text
+Browser Use
+  ├─ Structured mode
+  │    DOM / Accessibility Snapshot
+  │    → Vision 非必需
+  │
+  └─ Vision mode
+       Screenshot / coordinates
+       → Vision 必需
+~~~
+
+#### Computer Use：通常需要视觉 + 空间定位
+
+典型 Computer Use 的 Observation 是：
+
+~~~text
+Screenshot
+→ Model 看当前桌面
+→ 判断哪个区域是目标
+→ 输出 x/y 坐标或鼠标键盘动作
+→ Environment 执行
+→ 返回新 Screenshot
+~~~
+
+因此模型不仅要“看懂图片”，还要具备：
+
+- GUI 元素识别；
+- 空间关系理解；
+- 坐标定位；
+- 点击 / 拖拽 / 滚动规划；
+- 根据截图变化判断动作是否成功；
+- 多步任务规划；
+- 错误恢复。
+
+OpenAI 当前 Computer Use 官方流程就是：
+
+~~~text
+Screenshot / tool result
+→ model decides
+→ mouse / keyboard / code action
+→ environment executes
+→ new screenshot
+→ continue
+~~~
+
+而 OpenAI Vision 文档也明确把 computer use 列为需要高保真、坐标敏感视觉输入的场景。
+
+所以可以把 Computer Use 的能力要求概括成：
+
+> **Vision + Spatial Grounding + Tool/Action Calling + Planning + Verification。**
+
+#### 但 Computer Use 也不一定“所有信息都只能靠像素”
+
+现代 Computer Use 可以把部分工作转成代码：
+
+- Playwright 操作 Browser；
+- PyAutoGUI 操作 Desktop；
+- Accessibility API；
+- DOM；
+- OS automation API。
+
+此时模型可以通过代码获得更多结构化信息，降低“纯视觉点坐标”的负担。
+
+但是，只要任务涉及：
+
+- 桌面 App；
+- 视觉布局；
+- 无结构化 API 的 GUI；
+- 原生对话框；
+- Canvas；
+- 图像内容；
+
+视觉能力仍然是核心能力。
+
+#### 模型能力要求对比
+
+| 能力 | Structured Browser Use | Vision Browser Use | Computer Use |
+|---|---:|---:|---:|
+| 文本/语义理解 | 必需 | 必需 | 必需 |
+| Tool Calling | 必需 | 必需 | 必需 |
+| 多步规划 | 重要 | 重要 | 很重要 |
+| 视觉理解 | 非必需 | 必需 | 通常必需 |
+| 空间定位 / 坐标 Grounding | 非必需 | 重要 | 核心 |
+| DOM / Accessibility 理解 | 核心 | 可选 | 可选 |
+| Screenshot 理解 | 可选 | 核心 | 核心 |
+| 错误恢复 | 重要 | 很重要 | 很重要 |
+
+一句话：
+
+> **Browser Use 可以把网页先结构化再给模型；Computer Use 往往只能把“屏幕”给模型，因此更依赖视觉和空间推理。**
+
+**图示占位：TOOL-06D｜Structured Browser Use vs Vision Browser Use vs Computer Use 模型能力要求**
+
+---
+
 ### 7.1.6 课堂推荐的选择顺序
 
 ~~~text
