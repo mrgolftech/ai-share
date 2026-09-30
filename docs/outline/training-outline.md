@@ -446,6 +446,33 @@ Chat UI
 
 ---
 
+### System Prompt、附件与 Prompt Engineering
+
+第一讲增加三个基础问题：
+
+1. **System Prompt 是什么？**
+   - OpenAI Chat：`system/developer message`；
+   - OpenAI Responses：`instructions`；
+   - Anthropic Messages：顶层 `system`；
+   - Cherry Assistant / Open WebUI Workspace Model 负责把这类长期指令持续注入模型调用。
+
+2. **文件附件怎样进入模型？**
+   - Client Parse → Text → Context；
+   - Native File / Document Input；
+   - Vision Image Input；
+   - Full Context；
+   - Knowledge / RAG。
+   - 统一强调：UI 上“上传文件”不等于底层一定“转成文本全部塞进 Context”。
+
+3. **Prompt Engineering 怎么讲？**
+   - 官方稳定原则优先：Task / Context / Constraints / Output / Examples / Verification；
+   - RTF、CO-STAR、CRISPE 只做社区记忆框架简介，不作为标准；
+   - 工程任务优先 Goal / Current State / Constraints / Acceptance / Verification，而不是只强调“角色扮演”。
+
+证据：
+
+`docs/references/system-prompt-file-input-prompt-engineering-2026-09.md`
+
 ## 3.7 Token：为什么模型调用有成本
 
 结合：
