@@ -386,6 +386,8 @@ AGENT-R05-tool-loop.mp4
 | ENV-02 | P0 | ZCode Terminal 环境检查结果 | ⬜ |
 | ENV-03 | P0 | Local / WSL / Docker / SSH 工具链位置对比 | ⬜ |
 | ENV-04 | P0 | 公网临时安装 vs 内网内部镜像/离线包 | ⬜ |
+| ENV-05 | P0 | 系统 CLI vs Python vs Node.js 工具选择决策树 | ⬜ |
+| ENV-06 | P1 | CDP / Playwright：Browser Tool、CLI、MCP、Python、Node.js 路径对比 | ⬜ |
 | ENV-R01 | P0 | Preflight：工具缺失 → 补齐 → 同任务成功 | ⬜ |
 | ENV-R02 | P1 | npm/pip 公网源失败 → 内部源成功 | ⬜ |
 
