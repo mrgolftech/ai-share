@@ -354,3 +354,56 @@ Python Playwright 官方安装：
 3. 现有 Host Chrome 的常见接入方式包括浏览器 Extension 和 Remote Debugging/CDP。
 4. Playwright CLI/MCP 当前官方都明确要求 Node.js 20+。
 5. 没有 Node.js 时，Python Playwright 仍然可用；但 Agent 自带 Browser Use 时甚至不需要额外 Playwright。
+
+
+---
+
+## Browser Use / Computer Use 的模型能力要求
+
+### Structured Browser Use
+
+Playwright MCP 当前默认使用 Accessibility Snapshot 与 element refs 进行交互，官方明确说明：
+
+- 默认不需要 vision model；
+- Snapshot 是文本结构；
+- element ref 提供精确目标；
+- 相比 screenshot，token 成本更低、交互更确定。
+
+来源：
+- https://playwright.dev/mcp/introduction
+- https://playwright.dev/mcp/snapshots
+- https://playwright.dev/docs/getting-started-mcp
+
+### Vision Browser Use
+
+Playwright MCP 当前提供独立 Vision Mode：
+
+- screenshot 提供视觉状态；
+- coordinate-based mouse tools 提供 x/y 点击与拖拽；
+- 适合 Canvas、WebGL、地图、图表、图像编辑器和缺失 accessibility 信息的自定义控件。
+
+来源：
+- https://playwright.dev/mcp/vision-mode
+
+### Computer Use
+
+OpenAI 当前 Computer Use 官方流程以截图或其他 tool observations 驱动下一步：
+
+- 模型观察 screenshot/tool result；
+- 生成 mouse / keyboard / code actions；
+- environment 执行；
+- 返回新的 screenshot；
+- 模型继续判断。
+
+OpenAI Vision 官方进一步把 computer use 列为对图像细节和坐标敏感的场景。
+
+来源：
+- https://developers.openai.com/api/docs/guides/tools-computer-use
+- https://developers.openai.com/api/docs/guides/images-vision
+
+### 培训结论
+
+- Structured Browser Use：视觉不是硬要求。
+- Vision Browser Use：需要视觉理解和坐标 grounding。
+- Computer Use：通常需要 Vision + Spatial Grounding + Action Calling + Planning + Verification。
+- 如果 Harness 能提供 DOM / Accessibility / OS automation API，部分工作可以结构化，降低纯视觉负担。
