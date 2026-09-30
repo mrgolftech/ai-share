@@ -2,7 +2,7 @@
 
 > 日期：2026-09-30  
 > 对应讲义：`docs/lectures/01-api-to-agent.md`  
-> 状态：Working Checklist v1.0  
+> 状态：Working Checklist v1.1  
 > 使用原则：**正文决定“为什么需要这份素材、插在哪里”；本清单决定“具体拍什么、怎么拍、优先级、状态和备用方案”。**
 
 ---
@@ -23,6 +23,7 @@
 | 素材组 | 优先级 | 主要内容 | 状态 |
 |---|---:|---|---|
 | API-NET-* | P0 | Cherry models / Chat / Context / Vision / SSE 抓包 | ⬜ |
+| TOKEN-* | P0 | Text→Tokenize→Prefill→Decode→Detokenize 推理链路与百万 Token 直觉 | ⬜ |
 | API-PROTO-* | P0 | OpenAI Chat / Responses / Anthropic 三协议 | ⬜ |
 | API-SYS-* | P0 | System Prompt 在三种 API 中的实际位置 | ⬜ |
 | FILE-* | P0 | 临时附件 / 原生 File Input / Vision / Knowledge 四条路径 | ⬜ |
@@ -42,7 +43,7 @@
 | CHAT-* / ZCODE-* | P0 | Chat vs Agent 最小闭环 | ⬜ |
 | API-R* / CH-R* / OW-R* / WB-R* / MM-R* | P0/P1 | 第一讲动态演示与备用录屏 | ⬜ |
 
-> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → API 非 Chat 小应用 → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
+> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → Tokenize/Detokenize 与推理链路 → API 非 Chat 小应用 → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
 
 ---
 
@@ -110,6 +111,48 @@
 
 要求能看到多个连续 event/data chunk。
 
+
+### TOKEN-01～05：Token 与文本 LLM 推理链路
+
+这组素材是第一讲新增的 P0 核心图组，目标不是解释 Tokenizer 算法细节，而是让学员第一次直观看懂“文字怎样进入模型、模型怎样生成文字”。
+
+必须准备：
+
+- TOKEN-01：`Text → Tokenizer → Token IDs → Embedding → Transformer → logits → Sampling → Token → Detokenize → Text` 完整链路图；
+- TOKEN-02：内网 qwen3.6 `POST /tokenize` 真实请求与返回，标出原始文本、Token IDs、Token 数；
+- TOKEN-03：将 TOKEN-02 的 Token IDs 送入 `POST /detokenize`，展示恢复文本；
+- TOKEN-04：`60k Input → Prefill → First Token → Decode → Output` 时序/流程图，并与 TTFT、Decode Tokens/s 对上；
+- TOKEN-05：百万 Token 直觉图：`1,000,000 ÷ 60,000 ≈ 16.7 次`。
+
+TOKEN-05 必须同时写清三个不同概念：
+
+1. Context Window：单次推理容量上限；
+2. Input Tokens：本轮实际输入量；
+3. Token 额度 / 计费 / 吞吐统计：累计处理量。
+
+避免错误表述：
+
+> “支持 131K Context，所以总共只有 131K Token 可用。”
+
+也避免把：
+
+> “100 万 Token 额度”
+
+说成：
+
+> “100 万 Token 上下文窗口”。
+
+建议再加一个多轮对话累计示意：
+
+```text
+第1轮 10k
+第2轮 20k
+第3轮 30k
+第4轮 40k
+...
+```
+
+用于说明如果历史内容每轮重新进入请求，累计处理 Token 会快速增长。
 
 ### API-SYS-01～04：System Prompt 在三套 API 中怎么附加
 
@@ -374,6 +417,30 @@ api/qwen/results/20260930_095033/
 目的：
 
 > 证明“模型列表也是 API 获取的”。
+
+## TOKEN-R01：Tokenize → Detokenize 往返
+
+时长建议：30～45 秒。
+
+固定一段简短中文技术文本，例如：
+
+> 人工智能正在改变软件开发方式。
+
+步骤：
+
+1. 调用内网 qwen3.6 `POST /tokenize`；
+2. 展示 Token IDs 和 Token 数；
+3. 将同一组 Token IDs 送入 `POST /detokenize`；
+4. 展示恢复后的文本；
+5. 回到 TOKEN-01 图，说明 LLM 本体处理的是 Token/向量，而 UI 最后显示的是解码后的文本。
+
+目的：
+
+> 用一个真实接口往返，把“文本 → Token → 模型 → Token → 文本”从抽象概念变成可观察过程。
+
+边界：
+
+> 不要求学员记 Token ID；不要宣称 1 Token 等于 1 个汉字或 1 个单词。
 
 ## API-R02：多轮 Context
 
