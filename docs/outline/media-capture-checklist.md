@@ -92,6 +92,12 @@ AGENT-R05-tool-loop.mp4
 | API-01 | 截图 | /v1/models + /version | 第一章 API | ⬜ |
 | API-NET-01~07 | 截图 | Cherry Network：models / Chat / Context / Vision / SSE | 第一章 API | ⬜ |
 | API-POST-01~02 | 截图 | 自编 Postman：GET models / POST chat | 第一章 API | ⬜ |
+| API-PROTO-01~04 | 截图/图示 | OpenAI Chat / Responses / Anthropic 三协议真实请求与对比 | 第一讲 API | ⬜ |
+| CH-API-01~02C | 截图 | Cherry 同一内网服务三种协议配置 + Network Endpoint | 第一讲 API | ⬜ |
+| CH-ASSIST-01~06 | 截图/图示 | Cherry 助手指令、默认模型、参数、对话能力与 UI→Context/Tool 映射 | 第一讲 Chat Workbench | ⬜ |
+| CH-KB-01~04 | 截图 | Cherry 创建知识库、资料处理、召回测试、对话勾选 | 第一讲预览 / 第二讲复用 | ⬜ |
+| CH-WEB-01 | 截图 | Cherry 联网搜索开关 + 搜索引用 | 第一讲 Chat Workbench | ⬜ |
+| CH-TOOL-01~02 | 截图 | Cherry MCP/Tool 配置 + Tool Call/Result | 第一讲 / 第三讲复用 | ⬜ |
 | API-TEST-00~04 | 截图/图示 | r4 自动测试脚本、28 PASS/1 SKIP、record、结果目录、能力矩阵 | 第一讲 API | ⬜ |
 | MM-01~03 | 截图 | model-metric 总览 / Benchmark / Context&Endpoint | 第一章 API / 案例 | ⬜ |
 | API-03 | 截图 | Thinking OFF/ON 实测 | 第一章 API | ⬜ |
@@ -99,6 +105,7 @@ AGENT-R05-tool-loop.mp4
 | API-08 | 截图 | /metrics 原始指标 | 第一章 API | ⬜ |
 | API-R01~04 | 录屏 | models / 多轮 Context / Vision / SSE | 第一章 API | ⬜ |
 | API-R09 | 录屏 | Postman GET/POST → Cherry Network 对照 | 第一章 API | ⬜ |
+| CH-R03~06 | 录屏 | Cherry 三协议切换、模型参数、知识库勾选、联网检索 | 第一讲 Chat Workbench | ⬜ |
 | MM-R01~02 | 录屏 | Postman/API Benchmark → model-metric 指标变化 | 第一章 API / 案例 | ⬜ |
 | API-R07 | 录屏 | 完整 Tool Loop | 第一章 API | ⬜ |
 | API-R08 | 录屏 | 同模型 Chat vs Agent | 第一章 / Chat→Agent | ⬜ |
@@ -161,6 +168,12 @@ AGENT-R05-tool-loop.mp4
 | API-NET-07 | P0 | SSE/EventStream | 能看到流式事件 | ⬜ |
 | API-POST-01 | P0 | 自编 Postman GET /v1/models | Method/URL/Status/Response | ⬜ |
 | API-POST-02 | P0 | 自编 Postman POST /v1/chat/completions | Body/messages/stream/usage | ⬜ |
+| API-PROTO-01 | P0 | OpenAI Chat 实际 Request/Response | messages / choices / tool_calls | ⬜ |
+| API-PROTO-02 | P0 | OpenAI Responses 实际 Request/Response | input / output / function_call / events | ⬜ |
+| API-PROTO-03 | P0 | Anthropic Messages 实际 Request/Response | content blocks / tool_use / tool_result | ⬜ |
+| API-PROTO-04 | P0 | 三协议对比图 | 同一 qwen3.6，不同 Endpoint/Schema | ⬜ |
+| CH-API-01 | P0 | Cherry Provider/Endpoint Type 配置 | 当前版本真实 UI，不预设具体标签 | ⬜ |
+| CH-API-02A~C | P0 | Cherry 三协议 Network 请求 | /chat/completions / responses / messages | ⬜ |
 | API-TEST-00 | P0 | qwen_api_training_test.py 文件头 | 覆盖接口、输出留档、Key 脱敏 | ⬜ |
 | API-TEST-01 | P0 | r4 正式测试总览 | 28 PASS / 1 SKIP / 0 FAIL / 0 ERROR | ⬜ |
 | API-TEST-02 | P0 | 单条 record JSON | Request/Response/attempts/analysis | ⬜ |
@@ -190,6 +203,10 @@ AGENT-R05-tool-loop.mp4
 | API-R08 | P0 | Chat vs Agent | ⬜ |
 | API-R09 | P0 | Postman GET/POST → Cherry Network 对照 | ⬜ |
 | API-R10 | P0 | 自动测试脚本 → 正式结果 → record/report | ⬜ |
+| CH-R03 | P0 | Cherry 同 Prompt 切 OpenAI Chat / Responses / Anthropic → Network 对照 | ⬜ |
+| CH-R04 | P1 | 修改 Max Tokens / Stream / Thinking → Request 参数变化 | ⬜ |
+| CH-R05 | P0 | 不选知识库 vs 勾选知识库 → Retrieval/引用变化 | ⬜ |
+| CH-R06 | P0 | 普通回答 vs 联网搜索 → Search Result / Citation | ⬜ |
 | MM-R01 | P0 | Postman 请求 → model-metric 实时变化 | ⬜ |
 | MM-R02 | P1 | API Benchmark → 总览并发/吞吐变化 | ⬜ |
 
@@ -232,6 +249,11 @@ AGENT-R05-tool-loop.mp4
 | CH-03 | 截图 | P1 | Assistant vs Agent | ⬜ |
 | CH-04 | 截图 | P1 | Thinking / Context | ⬜ |
 | CH-05 | 截图 | P1 | Vision vs Drawing | ⬜ |
+| CH-06 | 截图 | P0 | 助手 Instructions / Prompt | ⬜ |
+| CH-07 | 截图 | P0 | 助手默认模型 + 对话模型切换 | ⬜ |
+| CH-08 | 截图 | P0 | Temperature / Top-P / Max Tokens / Stream / Context | ⬜ |
+| CH-09 | 截图 | P0 | 输入区 Knowledge / Web Search / + 工具面板 | ⬜ |
+| CH-10 | 截图 | P0 | 助手知识库关联 + MCP 关联 | ⬜ |
 | WB-R01 | 录屏 | P1 | Open WebUI Provider→Chat | ⬜ |
 | WB-R02 | 录屏 | P0 | Cherry Provider→内网模型 | ⬜ |
 
