@@ -125,7 +125,30 @@ LLM Context
 - https://cherryai.com/docs/en/knowledge-base/knowledge-base/
 - https://cherryai.com/docs/en/
 
-### 3.2 Open WebUI（官方文档，2026-09 核验）
+### 3.2 Open WebUI（内网 v0.11.0 实测 + 官方文档，2026-09 核验）
+
+当前部门内网部署：`v0.11.0`。
+
+当前实际使用已经走通：
+
+- 用户创建自己的 Note / Markdown；
+- 上传文档；
+- 将内容作为 Knowledge 使用；
+- 对 Markdown / 文档选择 Full Context 或 Focused Retrieval；
+- 当前实例未配置 Embedding Model，会提示未向量化；
+- Knowledge 仍可被 Workspace / Model 配置引用；
+- 选择对应 Workspace 后可依据资料回答。
+
+当前内部验证的关键边界：
+
+> **能依据资料回答，不等于 Vector Retrieval 已经生效。**
+
+- Full Context 明确可以不依赖 Embedding，整篇内容直接进入 Context；
+- Focused Retrieval 在未配置 Embedding 的当前实例中，实际走哪条检索路径仍需通过 Retrieval / Tool Trace 继续确认，不能只从最终答案反推。
+
+详细记录：
+
+`docs/references/openwebui-v0.11.0-internal-validation-2026-09.md`
 
 当前官方 Knowledge/RAG 文档支持：
 
@@ -149,6 +172,9 @@ LLM Context
 - Agentic Retrieval 与 Hybrid Retrieval 可以组合，而不是互斥。
 
 官方资料：
+- https://docs.openwebui.com/features/notes/
+- https://docs.openwebui.com/features/workspace/
+- https://docs.openwebui.com/features/workspace/models/
 - https://docs.openwebui.com/features/workspace/knowledge/
 - https://docs.openwebui.com/features/chat-conversations/rag/
 - https://docs.openwebui.com/ecosystem/knowledge-base-sync/
