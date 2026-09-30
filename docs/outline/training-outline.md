@@ -195,7 +195,19 @@
 
 详细场次设计：
 
-`docs/outline/training-series-plan.md`
+- 8 个内容单元：`docs/outline/training-series-plan.md`
+- 当前 4 次现场授课评审方案：`docs/outline/training-4-session-review-draft.md`
+
+当前更推荐将 **1～8 保留为内容单元**，现场授课按：
+
+`13 / 2 / 45 / 678`
+
+组织为 4 次：
+
+1. **1+3**：API → Model → Chat → Agent，建立底层统一认知；
+2. **2**：部门知识库独立专题；
+3. **4+5**：深入 Agent Harness、Runtime、Tools、MCP、Skill 与多 Agent 共性；
+4. **6+7+8**：真实工程案例实操，围绕 Git、Agent、测试、CI/CD、部署形成闭环。
 
 原则：
 
