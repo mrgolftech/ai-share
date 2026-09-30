@@ -46,6 +46,53 @@ Need more work?
 
 > **读 → 做 → 看结果 → 验证 → 留痕 → 交付。**
 
+
+
+## 0.1 本章采用 ZCode 作为第一套贯穿案例
+
+为了避免把 File / Shell / Git / Browser / Permission 讲成一串抽象名词，本章第一套完整案例固定使用 **ZCode Agent**。
+
+选择它不是为了得出“ZCode 最好”的结论，而是因为当前 ZCode 把 Workspace、文件树、Terminal、Built-in Browser、Git / Review、Execution Modes、AGENTS.md 和 Goal Mode 集中在同一套 ADE 中，适合让学员在一个连续画面里看到 Agent Harness 的执行闭环。
+
+本章统一采用：
+
+```text
+一个问题
+→ 一个 ZCode 真实画面
+→ 一个底层 Agent 机制
+→ 一个可迁移到其他 Agent 的结论
+```
+
+例如：
+
+| 先问的问题 | ZCode 案例 | 底层机制 |
+|---|---|---|
+| Agent 怎么知道项目规则？ | 读取 Workspace `AGENTS.md` | Project Instructions |
+| Agent 怎么知道 Bug 真的存在？ | Terminal 运行失败测试 | Tool Execution / Observation |
+| Agent 怎么找到相关代码？ | File Tree / Search / Read | Selective Context |
+| 改完怎么知道修好了？ | 重跑测试 | Verification Loop |
+| 人怎么知道改了什么？ | Review / Git Diff | State / Audit |
+| 为什么不能一直 Full Access？ | Execution Modes | Permission / Human-in-the-loop |
+| 长任务为什么能持续？ | Goal Mode | Task State / Completion Loop |
+
+贯穿案例分两层：
+
+1. **视觉闭环：鹈鹕骑自行车**  
+   用 Browser 快速展示“生成 → 执行 → 看结果 → 修改 → 再验证”。
+
+2. **工程闭环：Sensor Guard 边界 Bug**  
+   使用 `demos/zcode-real-world/project/`，展示“读规则 → 跑测试 → 定位 → 最小修复 → 重测 → Diff”。
+
+详细案例设计：
+
+- `demos/zcode-real-world/README.md`
+- `docs/cases/zcode-agent-real-world.md`
+
+需要始终强调：
+
+> **ZCode 是案例载体，真正要带走的是 Workspace + Tools + State + Permission + Verification。**
+
+
 ---
 
 # 1. 先看一个最小真实任务
@@ -959,55 +1006,69 @@ Agent 适合承担：
 
 # 17. 课堂 Demo 设计
 
-## Demo A：最小 Read → Edit → Test → Diff
+## Demo A：ZCode 工程闭环——Sensor Guard
 
 ### 目的
 
-证明 Agent 不是只给代码。
+证明 Agent 不是只给代码，而是进入已有项目完成“读规则 → 复现 → 修改 → 验证 → Review”。
 
-### 固定任务
+训练项目：
 
-在一个小仓库中：
+`demos/zcode-real-world/project/`
 
-1. 读取 AGENTS.md；
-2. 找到一个小 Bug；
-3. 修改；
-4. 运行测试；
-5. 打印 Git Diff；
-6. 汇报。
+固定 Prompt：
+
+> 当前仓库有一个已知失败。请先读取项目规则和现有测试，复现问题，定位原因并用最小改动修复；运行必要测试确认结果，最后检查 Git Diff，并说明修改了什么、验证了什么、还有什么没有验证。不要跳过已有测试，也不要做无关重构。
+
+初始基线：
+
+- 5 条单元测试；
+- 其中 85.0°C 临界值测试失败；
+- 修复目标应由 Agent 从 README / tests / implementation 中自行确认。
 
 ### 必须保留证据
 
-- Agent 读取规则；
-- Tool Trace；
-- 测试失败/通过；
-- Git Diff。
+- ZCode 读取 `AGENTS.md`；
+- Terminal 第一次测试失败；
+- Search / Read 定位相关代码；
+- 最小 Edit；
+- 第二次完整测试通过；
+- Review / Git Diff；
+- 当前 Execution Mode。
 
-对应录屏：**TOOL-R01**
+对应录屏：**ZCODE-R02 / TOOL-R01**
 
 ---
 
-## Demo B：代码测试通过，但浏览器发现 UI 问题
+## Demo B：ZCode Browser 闭环——鹈鹕骑自行车
 
 ### 目的
 
-说明：
+先用一个肉眼可见的短任务说明：
+
+> **Chat 给出代码；Agent 可以把代码写入文件、打开真实页面、观察结果并继续修改。**
+
+复用：
+
+`demos/pelican-bicycle/README.md`
+
+推荐流程：
+
+```text
+同一 Prompt
+→ ZCode 创建 index.html
+→ Built-in Browser 打开
+→ 第一次视觉检查
+→ 根据实际页面继续修改
+→ 再次 Browser Verify
+→ Review 最终变化
+```
+
+这一段同时引出：
 
 > **Test != Visual QA。**
 
-### 流程
-
-```text
-修改 UI
-→ build/test pass
-→ 启动服务
-→ Playwright / Browser 打开
-→ 发现文本截断/按钮异常
-→ 修改
-→ 再截图
-```
-
-对应录屏：**TOOL-R02**
+对应录屏：**ZCODE-R01 / TOOL-R02**
 
 ---
 
@@ -1105,19 +1166,17 @@ local test pass
 
 ### 第二段：10 分钟
 
-直接做 TOOL-R01：
+直接做 **ZCODE-R02**：
 
-> Read → Edit → Test → Diff
+> AGENTS.md → Test Fail → Search → Edit → Test Pass → Diff
 
-边做边解释 File / Shell / Git。
+边做边解释 Project Instructions / File / Shell / Git / Verification。
 
 ---
 
 ### 第三段：8 分钟
 
-讲 Browser / Playwright / Computer Use / Crawler。
-
-立即接 TOOL-R02。
+先做 **ZCODE-R01 鹈鹕 Browser 闭环**，再从 ZCode Built-in Browser 抽象到 Browser Use / Playwright / Computer Use / Crawler 的区别。
 
 ---
 
@@ -1181,7 +1240,18 @@ Skill / Command / Hook
 
 本章概念部分优先使用稳定机制；涉及具体产品行为时，以当前官方文档为准。
 
-## 官方资料
+## ZCode 当前官方资料
+
+- ZCode Agent：https://zcode.z.ai/en/docs/agents
+- ZCode Agent Framework：https://zcode.z.ai/en/docs/agent-framework
+- ADE Tools：https://zcode.z.ai/en/docs/ADE-tools
+- Browser Automation：https://zcode.z.ai/en/docs/browser-use
+- Safety Confirmation：https://zcode.z.ai/en/docs/safety-confirm
+- Goal Mode：https://zcode.z.ai/en/docs/goal
+
+注意：ZCode 当前官方实现会持续变化；课堂截图和具体菜单名称以录制当天版本为准。
+
+## 其他官方资料
 
 - Playwright Auto-waiting / Actionability  
   https://playwright.dev/docs/actionability
@@ -1216,6 +1286,8 @@ Skill / Command / Hook
 
 以下内容不要仅靠讲义结论，需补真实素材：
 
+- ZCODE-R01：ZCode 鹈鹕 Browser 闭环；
+- ZCODE-R02：ZCode Sensor Guard 的 AGENTS.md / Test / Edit / Diff 完整闭环；
 - TOOL-R01：真实仓库 Read/Edit/Test/Diff；
 - TOOL-R02：Playwright / Browser Visual QA；
 - TOOL-R03：SSH / Docker 部署；
