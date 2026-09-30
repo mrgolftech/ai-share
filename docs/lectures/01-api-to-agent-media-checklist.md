@@ -24,6 +24,9 @@
 |---|---:|---|---|
 | API-NET-* | P0 | Cherry models / Chat / Context / Vision / SSE 抓包 | ⬜ |
 | API-PROTO-* | P0 | OpenAI Chat / Responses / Anthropic 三协议 | ⬜ |
+| API-SYS-* | P0 | System Prompt 在三种 API 中的实际位置 | ⬜ |
+| FILE-* | P0 | 临时附件 / 原生 File Input / Vision / Knowledge 四条路径 | ⬜ |
+| PROMPT-* | P1 | Prompt 骨架、社区框架、Prompt/Rules/Skill/Test 边界 | ⬜ |
 | API-POST-* | P0 | Postman / curl GET + POST | ⬜ |
 | API-TEST-* | P0 | qwen_api_training_test.py + r4 28 PASS / 1 SKIP | ⬜ |
 | CH-API-* | P0 | Cherry 三种 Endpoint Type / Network 对照 | ⬜ |
@@ -105,6 +108,40 @@
 
 要求能看到多个连续 event/data chunk。
 
+
+### API-SYS-01～04：System Prompt 在三套 API 中怎么附加
+
+必须准备同一段“内网 API 培训助手”长期指令的三套真实 Request：
+
+- API-SYS-01：OpenAI Chat 中的 `system/developer message`；
+- API-SYS-02：OpenAI Responses 中的 `instructions`；
+- API-SYS-03：Anthropic Messages 顶层 `system`；
+- API-SYS-04：一张三协议位置对照图。
+
+要求：
+
+> 以当前 Cherry + 内网 qwen3.6 实际 Network Request 为准，不因为官方新接口支持某字段就推断内网一定相同。
+
+### PROMPT-01～04：Prompt 基础
+
+准备：
+
+- PROMPT-01：System Prompt / User Prompt / Context 三层关系；
+- PROMPT-02：推荐工程 Prompt 骨架：Goal/Context/Constraints/Output/Examples/Verification；
+- PROMPT-03：RTF / CO-STAR / CRISPE 社区框架速览，注明“记忆法，不是标准”；
+- PROMPT-04：User Prompt / System Prompt / Project Rules / Skill / Test 作用范围。
+
+### FILE-01～05：文件怎样进入模型
+
+准备统一图组：
+
+- FILE-01：客户端 Parse → Extract Text → Context；
+- FILE-02：Responses `input_file` / `file_id`；
+- FILE-03：Anthropic `document` / `file_id`；
+- FILE-04：图片作为 Vision Content；
+- FILE-05：临时附件 vs Full Context vs Knowledge/RAG。
+
+建议所有图都使用同一个短 Markdown / PDF 做示意，避免不同文件造成理解干扰。
 
 ### API-POST-01～03：直接 GET / POST 与客户端关系
 
@@ -438,6 +475,51 @@ api/qwen/results/20260930_095033/
 6. 新建 Chat；
 7. 固定问题；
 8. 观察系统提示词和知识共同影响回答。
+
+## PROMPT-R01：修改 System Prompt → 看 Request
+
+固定同一个用户问题。
+
+步骤：
+
+1. Cherry Assistant 先不设置长期指令；
+2. 发送问题并保存 Network Request；
+3. 增加 System Prompt；
+4. 再发送同一问题；
+5. 对照 Request 中新增的 `system/developer`、`instructions` 或顶层 `system`；
+6. 如时间允许切三种 Endpoint Type。
+
+目的：
+
+> 证明 Assistant / Workspace 的“长期指令”最终仍然要进入模型调用。
+
+## FILE-R01：同一文件三种进入 Context
+
+准备一个短文件，包含唯一字符串：
+
+`TRAINING_ATTACHMENT_CODE = BLUE-7319`
+
+依次演示：
+
+1. Cherry 临时附件；
+2. Cherry Knowledge；
+3. Open WebUI Full Context / Workspace Knowledge。
+
+每次问：
+
+> 文档中的 TRAINING_ATTACHMENT_CODE 是什么？
+
+同时观察：
+
+- Request；
+- Retrieval / Tool Trace；
+- 是否全文；
+- 是否只出现片段；
+- 是否出现 file/document content type。
+
+目的：
+
+> 证明“上传文件”只是 UI 动作，底层可能是完全不同的数据路径。
 
 ## API-R10：自动测试脚本
 
