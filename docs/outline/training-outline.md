@@ -178,36 +178,35 @@
 
 # 3. 整体内容结构
 
-内容逻辑仍然分为六个核心模块，并在最后进行方法论收束；但**授课组织不再按“一次讲座”设计**。
+内容逻辑继续保留 **1～8 个内容单元**，用于维护知识边界、讲义、证据、截图和 Demo；现场授课正式按 **4 次专题讲座**组织。
 
-截至 2026-09-30，培训正式改为系列化组织，建议拆为 **8 次**：
+截至 2026-09-30，当前正式授课基线为：
 
-1. 模型调用与 API；
-2. **部门知识库专题：知识资产、RAG、检索、治理、权限、评测与落地架构**；
-3. Chat 工作台 → Agent Harness；
-4. Agent 工具、Runtime 与服务器；
-5. API / MCP / Skill 与可复用资产；
-6. 完整 Web 工程案例：BMQuiz V2 + model-metric 对照；
-7. 完整本地客户端 / GUI 工程案例：FileCheck；
-8. IPsec 数据分析、HyperFrames、授权研究、网站安全测试等跨领域案例与最终方法论收束。
+1. **第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑**  
+   内容映射：1 + 3。解决模型、API、Chat、Agent、工具之间的底层关系问题。
+2. **第二讲：部门知识库建设——让 AI 可靠使用我们的知识**  
+   内容映射：2。围绕部门知识资产、检索、治理、权限、评测和使用方案单独展开。
+3. **第三讲：深入 Agent——掌握共性，而不是记住不同界面**  
+   内容映射：4 + 5。深入 Harness、Context、Workspace、Runtime、Tools、MCP、Skill 与多 Agent 共性。
+4. **第四讲：Agent 工程实战——用真实项目走通开发、测试、发布和部署**  
+   内容映射：6 + 7 + 8。以 BMQuiz、FileCheck 等真实项目为主线，用多个专题案例扩展 Agent 的应用边界。
 
-其中第 2 次知识库专题作为部门知识库建设的独立培训，不再作为 Chat→Agent 章节中的附属内容。
+正式领导审核稿及当前授课组织基线：
 
-详细场次设计：
+`docs/outline/training-4-session-leadership-proposal.md`
 
-- 8 个内容单元：`docs/outline/training-series-plan.md`
-- 当前 4 次现场授课评审方案：`docs/outline/training-4-session-review-draft.md`
+辅助材料：
 
-当前更推荐将 **1～8 保留为内容单元**，现场授课按：
+- 8 个内容单元：`docs/outline/training-series-plan.md`（仅作为内容组织，不再作为现场场次数）
+- 4 次授课详细评审稿：`docs/outline/training-4-session-review-draft.md`
+
+当前统一采用：
 
 `13 / 2 / 45 / 678`
 
-组织为 4 次：
+原则：
 
-1. **1+3**：API → Model → Chat → Agent，建立底层统一认知；
-2. **2**：部门知识库独立专题；
-3. **4+5**：深入 Agent Harness、Runtime、Tools、MCP、Skill 与多 Agent 共性；
-4. **6+7+8**：真实工程案例实操，围绕 Git、Agent、测试、CI/CD、部署形成闭环。
+> **1～8 管“内容怎么维护”，4 次讲座管“现场怎么讲”。后续 PPT、截图、录屏、讲课脚本和案例准备一律按四场讲座组织。**
 
 原则：
 
@@ -2169,15 +2168,20 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 ## 12.1 当前编制策略（2026-09-30）
 
-当前先完成**不依赖现场案例的完整讲义主体**，真实案例、截图、录屏和统一 Demo 在完整讲义形成后再集中补充。
+四次讲座方案已经确定，后续工作从“继续扩章节”转入**按四场讲座准备可交付授课材料**。
 
-因此当前顺序调整为：
+当前优先级：
 
-1. 模块一～五主讲稿达到“可用于培训”；
-2. 完成最终方法论收束章 `docs/chapters/08-agent-engineering-methodology.md`；
-3. 进行一次全讲义串联检查：重复内容、术语一致性、章节过渡、事实边界；
-4. 再集中补真实案例、截图、录屏与 Demo 实测证据；
-5. 最后从完整讲义抽象 PPT 故事线。
+1. 按四场分别完成“讲课脚本级目录”：问题、案例、知识点、过渡和结论；
+2. 把现有 1～8 内容单元映射进四场，消除重复讲解；
+3. 优先补 P0 截图与录屏，并为现场 Demo 准备备用素材；
+4. 完成两个纵向工程案例：BMQuiz、FileCheck；
+5. 完成知识库同源三层 Demo 与部门知识库建设方案；
+6. 完成第三讲多 Agent 共性对照、Browser/Runtime/MCP/Skill 演示；
+7. 再从完整讲义和真实证据抽象四套 PPT 故事线；
+8. 制作最终 PPT，并执行现场演示预演与备用方案检查。
+
+> 当前原则：**不再为了“内容更全”继续横向扩充概念，优先把已确定内容做深、做实、做成可演示材料。**
 
 > 原有案例建设顺序继续保留，作为后续“证据与演示补全阶段”的执行清单。
 
@@ -2232,7 +2236,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（可用于培训；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则；案例与素材后补）
 - 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
 - 方法论收束主讲稿：`docs/chapters/08-agent-engineering-methodology.md`（可用于培训；覆盖任务路由、Problem→Release 工程链、Agent 执行闭环、模型/Thinking/Context 预算、人机分工、交付与资产沉淀；METHOD-01～07 图示后补）
-- 系列授课拆分方案：`docs/outline/training-series-plan.md`（已有基线；当前建议 8 次，第 2 次固定为部门知识库专题，每次围绕一个核心问题组织）
+- 正式四讲授课方案：`docs/outline/training-4-session-leadership-proposal.md`（当前授课基线；按 13 / 2 / 45 / 678 组织）
+- 8 个内容单元：`docs/outline/training-series-plan.md`（继续保留用于内容维护，不作为现场场次安排）
 - 完整工程案例框架：`docs/cases/end-to-end-agent-engineering-cases.md`（已有框架；BMQuiz V2 与 FileCheck 固定为两个纵向主案例）
 - BMQuiz V2 完整工程案例：`docs/cases/bmquiz-end-to-end-agent-development.md`（已有第一版主讲底稿；已按真实仓库与 Git 历史串联需求、约束、架构、AGENTS、Plan、实现、测试、Visual QA、Server CI、Docker/GHCR、部署、验证与资产沉淀；待补原始对话与截图/录屏）
 - Agent 服务器运维案例：`docs/cases/agent-server-operations.md`（已有案例设计；BMQuiz Docker + model-metric systemd，待真实录屏与执行证据）
@@ -2246,9 +2251,9 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块三：Agent 工具与真实世界（已有初稿；**第一套贯穿主案例已固定为 ZCode**，案例规范为 `demos/zcode-real-world/README.md`，已建立 Sensor Guard 训练项目和 `docs/cases/zcode-agent-real-world.md`；当前缺口为 ZCode 实际录屏/截图，以及 SSH/Docker、Commit→CI 等后续真实案例证据）
 - 模块四：API / MCP / Skill 等关系（主讲稿已可用于培训，官方证据基线已形成；后续只补最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据与素材）
 - 模块五：可复用资产与知识体系（主讲稿已可用于培训，证据基线已形成；后续只补仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
-- **完整工程案例讲义（当前下一建设重点）**：先按真实仓库证据写 BMQuiz V2 从需求→架构→Plan→开发→测试→Visual QA→CI/CD→服务器部署的完整案例，再写 FileCheck 客户端/GUI/打包发布完整案例
+- **当前下一建设重点：按四讲组织授课材料**。第一讲补 API/Chat/Agent 录屏，第二讲完成知识库同源三层 Demo 与建设方案，第三讲补多 Agent 共性/Browser/Runtime/MCP/Skill 演示，第四讲完成 BMQuiz 与 FileCheck 两个纵向工程案例并组织横向专题案例
 - Agent 服务器运维：案例设计已完成，后续补 BMQuiz Docker 与 model-metric systemd 的真实执行证据和录屏
-- 完整讲义串联检查：在两个纵向主案例写入后，再检查 7 次系列培训的重复、过渡、节奏和案例插入位置
+- 四讲串联检查：检查四场之间的重复、术语一致性、案例复用、过渡和节奏；8 个内容单元只作为后台内容维护
 - 其他专题案例：IPsec VPN 数据分析、HyperFrames、授权机制/协议研究、网站安全测试后续逐个补证据与讲义
 - 各模块架构图 / 流程图
 - Demo 脚本
