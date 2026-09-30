@@ -2,7 +2,7 @@
 
 > 用途：AI 大模型与 Agent 工程实践培训  
 > 定位：教学演示，不作为正式 Benchmark  
-> 状态：已有 Demo 规范，待实测结果和截图
+> 状态：已有 Demo 规范；Agent 组第一套正式演示固定使用 ZCode，待实测结果和截图
 
 ## 1. 为什么选这个题
 
@@ -95,7 +95,9 @@ Prompt
 
 ### Agent 组
 
-允许 Agent 使用：
+第一套正式培训演示固定使用 **ZCode Agent**。后续如需跨 Harness 对比，再保持同模型、同 Prompt、同验收条件增加其他 Agent；不要在这一 Demo 中把多个 Agent 的 UI 混在一起。
+
+ZCode Agent 允许使用：
 
 - Workspace；
 - File；
@@ -116,14 +118,21 @@ Prompt
 → 交付
 ~~~
 
-重点记录：
+ZCode 侧重点观察：
 
+- Workspace 是否真实生成文件；
+- Built-in Browser 是否被用于查看实际结果；
+- Agent 是否根据页面状态继续修改；
+- 最终是否进入 Review / Changed Files；
+- 当前 Execution Mode；
 - 第一次生成是否成功；
 - 是否主动运行；
 - 是否发现视觉问题；
 - 迭代次数；
 - 是否真正修好；
 - 最终是否留下可运行文件和变更记录。
+
+补充设计见：`demos/zcode-real-world/README.md`。
 
 ## 5. 建议现场展示顺序
 
