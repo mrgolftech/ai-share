@@ -115,6 +115,9 @@ AGENT-R05-tool-loop.mp4
 | TOOL-01~06 | 图示/截图 | Tool Loop、Workspace、Shell/Git、验证层次、Browser 分类 | Agent 真实世界 | ⬜ |
 | TOOL-07~11 | 截图/图示 | Visual QA、SSH/Docker、API、CI、完整工程闭环 | Agent 真实世界 | ⬜ |
 | TOOL-R01~04 | 录屏 | Read/Edit/Test/Diff、Visual QA、SSH 部署、CI | Agent 真实世界 | ⬜ |
+| ZCODE-01~05 | 截图 | 鹈鹕：Workspace → File → Browser → Iterate → Review | ZCode 主案例 | ⬜ |
+| ZCODE-06~12 | 截图 | Sensor Guard：Rules → Test Fail → Search/Edit → Pass → Diff → Permission | ZCode 主案例 | ⬜ |
+| ZCODE-R01~02 | 录屏 | 鹈鹕 Browser 闭环 + Sensor Guard 工程闭环 | ZCode 主案例 | ⬜ |
 | CONNECT-01~04 | 图示 | API/Tool/MCP/Skill 分层与关系 | Agent 工具接入 | ⬜ |
 | CONNECT-06~09 | 图示/截图 | 端到端示例、Skill 目录、权限拆分、决策表 | Agent 工具接入 | ⬜ |
 | CONNECT-R01~03 | 录屏 | Raw API → MCP Tool → Skill+MCP | Agent 工具接入 | ⬜ |
@@ -307,6 +310,14 @@ AGENT-R05-tool-loop.mp4
 
 # 9. Agent 如何操作真实世界
 
+本模块第一套贯穿主案例固定使用 **ZCode Agent**：
+
+- `demos/zcode-real-world/README.md`
+- `docs/cases/zcode-agent-real-world.md`
+- `demos/zcode-real-world/project/`
+
+先用 ZCode 建立完整执行闭环，再用其他 Agent 做机制对照，避免培训频繁切换 UI。
+
 完整占位：
 
 `docs/chapters/05-agent-tools-real-world.md`
@@ -336,6 +347,22 @@ AGENT-R05-tool-loop.mp4
 | TOOL-R03 | P0 | SSH → Docker → Logs → Health Check | ⬜ |
 | TOOL-R04 | P0 | Commit → Push → CI | ⬜ |
 | TOOL-R05 | P1 | API Tool 与 GUI 操作完成同一任务对比 | ⬜ |
+| ZCODE-01 | P0 | ZCode Workspace + 鹈鹕任务 | ⬜ |
+| ZCODE-02 | P0 | index.html 出现在 File Tree | ⬜ |
+| ZCODE-03 | P0 | Built-in Browser 第一次结果 | ⬜ |
+| ZCODE-04 | P0 | Agent 根据 Browser 结果继续修改 | ⬜ |
+| ZCODE-05 | P0 | 最终 Browser 验证 + Review | ⬜ |
+| ZCODE-06 | P0 | Sensor Guard 初始 Workspace | ⬜ |
+| ZCODE-07 | P0 | 读取 AGENTS.md | ⬜ |
+| ZCODE-08 | P0 | Terminal 首次测试失败 | ⬜ |
+| ZCODE-09 | P0 | Search / Read 定位代码 | ⬜ |
+| ZCODE-10 | P0 | 修改后完整测试通过 | ⬜ |
+| ZCODE-11 | P0 | Review / Git Diff | ⬜ |
+| ZCODE-12 | P0 | Execution Modes / Safety Confirmation | ⬜ |
+| ZCODE-13 | P1 | Goal Mode / Summary | ⬜ |
+| ZCODE-R01 | P0 | 鹈鹕：生成 → Browser → 看 → 修 → 再验证 | ⬜ |
+| ZCODE-R02 | P0 | Sensor Guard：Rules → Fail → Locate → Fix → Pass → Diff | ⬜ |
+| ZCODE-R03 | P1 | Goal Mode 多轮长任务 | ⬜ |
 
 
 ---
@@ -418,11 +445,12 @@ AGENT-R05-tool-loop.mp4
 3. **API / Postman / model-metric 一次录完**：API-01、API-POST-01~02、API-TEST-01~02、API-03~09、MM-01~03、API-R06/07/09、MM-R01~02；
 4. **统一鹈鹕 Demo 一次录完**：API-10/11、CHAT-01/02/04、CHAT-R01~03、API-R08；
 5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
-6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
-7. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
-8. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
-9. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
-10. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+6. **ZCode 主案例先录**：ZCODE-01~13、ZCODE-R01~03；优先完成 ZCODE-R01 鹈鹕 Browser 闭环和 ZCODE-R02 Sensor Guard 工程闭环；
+7. **工程 Agent Repo 补充录制**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
+8. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
+9. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
+10. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
+11. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
