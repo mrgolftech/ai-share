@@ -2357,12 +2357,12 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Qwen API 实测结果（已有实测证据）
 - Qwen API 实测报告（已有实测证据）
 - 第一章 API 培训讲义（可用于培训；第一讲正式讲义已更新到 v1.7）
-- 第一讲新增“API 不等于 Chat”主桥段：同一 qwen3.6 API 可封装为翻译、结构化抽取/JSON、Vision OCR、网页截图 Visual QA、分类/路由等非 Chat 应用；Demo 规范：`demos/api-applications/README.md`
+- 第一讲新增“API 不等于 Chat”主桥段：同一 qwen3.6 API 可封装为翻译、结构化抽取/JSON、Vision OCR、网页截图 Visual QA、分类/路由等非 Chat 应用；已落盘可运行 Python Demo：`demos/api-applications/translate.py`、`json_extract.py`、`vision_ocr.py`、`visual_qa.py`、`run_all.py`；Demo 总入口：`demos/api-applications/README.md`
 - 第一讲已明确 Cherry Studio Desktop/Local-first 与 Open WebUI Self-hosted/Server-side 的数据边界差异，并避免把“最早/唯一服务端项目”等未经系统统计的历史判断写成硬事实；证据基线：`docs/references/chat-workbench-api-application-evidence-2026-09.md`
 - Cherry Studio Network 抓包主 Demo（已有讲义设计，待现场截图：models / 首轮 Chat / 多轮 Context / Vision / SSE）
 - Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
 - Thinking 失败项专项复测（已有实测证据）
-- Token 输出速率体感 Demo（可用于培训，基于 Apache-2.0 开源项目改造，可离线运行）
+- Token 输出速率体感 Demo（可用于培训，基于 Apache-2.0 开源项目改造，可离线运行；已归入 `demos/api-applications/token-output-speed/`，原路径保留兼容跳转；第一讲已补 TTFT / Decode Tokens/s / Total Latency 与不同应用形态的性能影响）
 - 现有讲义截图/录屏占位与总清单（已有初稿：`docs/outline/media-capture-checklist.md`；API、Chat→Agent、Open WebUI/Cherry、知识库、Agent 共性机制、Agent 真实世界工具链均已建立编号；当前待用户按 P0 清单补真实截图与录屏）
 - 模块三主讲稿：`docs/chapters/05-agent-tools-real-world.md`（已有初稿；覆盖 File/Search、Shell、Git、Verification、Browser Use/Playwright/Computer Use/Crawler、SSH、Docker、API、CI/CD，并设计 TOOL-01～11 与 TOOL-R01～05）
 - 模块三证据基线：`docs/references/agent-tools-real-world-evidence-2026-09.md`（已有素材；已核验 Playwright、OpenAI Computer Use/Codex Sandbox、Git、Docker、GitHub Actions 官方资料）
