@@ -2037,8 +2037,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 1. 完成模块一现有 Qwen API 讲义、证据、图表和演示脚本；
 2. 编写“为什么 Chat 不够”章节；
 3. 打磨 Agent 工作区与工具链章节：`04-agent-common-mechanisms.md` 与 `05-agent-tools-real-world.md` 已有初稿，下一步补统一 Demo、实测证据和截图；
-4. **下一建设重点**：完成 API / MCP / Skill / Plugin / Command / Hook 关系说明、证据基线和架构图；
-5. 编写可复用资产、Memory、索引、语义检索、RAG、Sub-agent 章节；
+4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成，下一步实现并实测 Raw API → MCP Tool → Skill+MCP；
+5. **下一建设重点**：编写“如何形成可复用资产”主讲章，重点统一 Prompt / Project Rules / Skill / Script / Test / CI / Template / Memory / Knowledge Base 的沉淀边界；
 6. 按真实项目逐一整理案例；
 7. 为每个模块建立截图和 Demo 清单；
 
@@ -2074,6 +2074,9 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 现有讲义截图/录屏占位与总清单（已有初稿：`docs/outline/media-capture-checklist.md`；API、Chat→Agent、Open WebUI/Cherry、知识库、Agent 共性机制、Agent 真实世界工具链均已建立编号；当前待用户按 P0 清单补真实截图与录屏）
 - 模块三主讲稿：`docs/chapters/05-agent-tools-real-world.md`（已有初稿；覆盖 File/Search、Shell、Git、Verification、Browser Use/Playwright/Computer Use/Crawler、SSH、Docker、API、CI/CD，并设计 TOOL-01～11 与 TOOL-R01～05）
 - 模块三证据基线：`docs/references/agent-tools-real-world-evidence-2026-09.md`（已有素材；已核验 Playwright、OpenAI Computer Use/Codex Sandbox、Git、Docker、GitHub Actions 官方资料）
+- 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（已有初稿；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界）
+- 模块四证据基线：`docs/references/api-mcp-skill-evidence-2026-09.md`（已有素材；基于 MCP、OpenAI Skills/Plugins/Tool Design/Hooks 当前官方资料核验）
+- 模块四统一 Demo 设计：`demos/agent-tool-integration/README.md`（规划完成；同一训练服务依次演示 Raw API → MCP Tool → Skill+MCP，避免把三层误解为三套不同能力）
 
 - API 官方参考资料（已有素材）
 
@@ -2082,8 +2085,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；知识库现采用“双稿制”：`docs/chapters/03-department-knowledge-base-teaching.md` 为培训主讲教学版，按“问题→例子→原理→结论”重构并预留 KB-01～KB-22 截图/图示占位；`docs/chapters/03-department-knowledge-base.md` 保留为完整技术稿和深入阅读材料；架构文档为 `docs/architecture/department-knowledge-architecture.md`；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，证据基线为 `docs/references/knowledge-base-rag-evidence-2026-09.md`，涵盖 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，以及 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget；教学版已完成 v0.2 第一轮“首次学习者降阶”重构：新增开卷考试统一类比、RAG“先查再给再答”、Embedding/Vector Index 非知识本体解释、Parse 与 Chunk 分拆、长上下文证据下沉、Top-K/Rerank/Evidence Budget 统一直觉、Agentic Retrieval“逐步取证”解释、问题类型→检索方式速查表和讲师节奏分层；当前待补 KB-01～KB-22 及扩展占位截图/图示，并在后续验证阶段补 BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 实测）
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；10 个 Agent（新增 WorkBuddy）横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo；WorkBuddy 的 Chat→Workspace→Skill→Runtime 截图已规划为 AGENT-WB-01～04）
 - 模块三：Agent 工具与真实世界（已有初稿，当前缺口为真实 Read/Edit/Test/Diff、Browser Visual QA、SSH/Docker、Commit→CI 录屏与截图，以及内网 qwen3.6 在具体 Harness 中的稳定性实测）
-- **模块四：API / MCP / Skill 等关系（下一建设重点）**
-- 模块五：可复用资产与知识体系
+- 模块四：API / MCP / Skill 等关系（已有初稿与官方证据基线；当前缺口为最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据）
+- **模块五：可复用资产与知识体系（下一建设重点）**
 - 模块六：真实案例材料
 - 各模块架构图 / 流程图
 - Demo 脚本
