@@ -180,7 +180,7 @@ git clone ...
 | Python | Python 3 + pip + venv | API、数据、脚本、自动化 |
 | Node | Node.js + npm | Web、Playwright、部分 MCP / Hook |
 | HTTP | curl | API / Health Check |
-| SSH | OpenSSH Client | 远端服务器 |
+| SSH | OpenSSH Client（条件项） | CLI 远端操作；ZCode Remote Development 自身使用内置 SSH client |
 | CA | 部门内部根证书 | HTTPS / Internal Registry |
 | PATH | 标准化 PATH | 让 Agent 找到工具 |
 
@@ -267,6 +267,45 @@ PyPI Mirror
 npm Registry
 Container Registry
 ~~~
+
+---
+
+## 8.1 一个非常关键的“半离线”能力
+
+ZCode 当前 Remote Development 文档明确提供两种首次远端 Runtime 准备方式：
+
+- Download on remote server：远端自己访问 ZCode CDN；
+- Download locally then upload：桌面端下载组件，再通过 SFTP 上传到远端的 ~/.zcode/server。
+
+因此：
+
+> **远端开发机本身可以不访问公网。**
+
+这对“内网开发服务器”很有价值。
+
+但还需要进一步区分：
+
+### 远端无公网，桌面端可访问外网
+
+当前官方的 “Download locally then upload” 可以工作。
+
+### 桌面端和远端都完全隔离公网
+
+当前官方文档没有给出一个明确的、完全 air-gapped 的远端 Runtime 离线包流程。
+
+因此在真正的全隔离内网部署前，需要单独验证：
+
+- ZCode Desktop 如何离线安装；
+- 首次 Remote Agent Runtime 如何预置；
+- Plugin / Marketplace 如何本地分发；
+- 模型 Endpoint 是否完全走内网；
+- 更新机制是否能关闭或转为人工离线更新。
+
+不要在培训中把“远端无需公网”直接说成：
+
+> “ZCode 支持完全离线部署。”
+
+这是两个不同结论。
 
 ---
 
