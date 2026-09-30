@@ -2219,6 +2219,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 方法论收束主讲稿：`docs/chapters/08-agent-engineering-methodology.md`（可用于培训；覆盖任务路由、Problem→Release 工程链、Agent 执行闭环、模型/Thinking/Context 预算、人机分工、交付与资产沉淀；METHOD-01～07 图示后补）
 - 系列授课拆分方案：`docs/outline/training-series-plan.md`（已有基线；当前建议 7 次，每次围绕一个核心问题组织）
 - 完整工程案例框架：`docs/cases/end-to-end-agent-engineering-cases.md`（已有框架；BMQuiz V2 与 FileCheck 固定为两个纵向主案例）
+- BMQuiz V2 完整工程案例：`docs/cases/bmquiz-end-to-end-agent-development.md`（已有第一版主讲底稿；已按真实仓库与 Git 历史串联需求、约束、架构、AGENTS、Plan、实现、测试、Visual QA、Server CI、Docker/GHCR、部署、验证与资产沉淀；待补原始对话与截图/录屏）
 - Agent 服务器运维案例：`docs/cases/agent-server-operations.md`（已有案例设计；BMQuiz Docker + model-metric systemd，待真实录屏与执行证据）
 
 - API 官方参考资料（已有素材）
