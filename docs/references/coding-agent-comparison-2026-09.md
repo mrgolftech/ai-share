@@ -1,4 +1,4 @@
-# 2026 Agent 横向对比：ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes / Hermes
+# 2026 Agent 横向对比：ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes / WorkBuddy
 
 > 用途：AI 大模型与 Agent 工程实践培训参考资料
 > 核实日期：2026-09-29
@@ -27,7 +27,7 @@
 
 ---
 
-## 2. 一张表先看懂九个 Agent
+## 2. 一张表先看懂十个 Agent
 
 > “自有 API 接入”主要指企业自建或第三方模型服务，而不是产品自带账号订阅。
 
@@ -42,6 +42,7 @@
 | **Cline** | IDE-first Agent | **是，Apache-2.0** | **非常容易** | VS Code / CLI；Plan/Act；文件/命令/Browser；MCP；BYOK；人机确认感强 | IDE 中交互较重；大任务自主循环风格与 terminal-first Harness 不完全相同 |
 | **Kilo Code** | Multi-surface Agentic Engineering Platform | **是，MIT** | **非常容易** | VS Code / JetBrains / CLI；Code/Plan/Debug/Ask；Subagents；Browser；Marketplace；大量模型 | 2026 年重构后当前架构与早期 Roo/Cline 派生版本不同，培训需以当前版本为准 |
 | **Hermes Agent** | 通用自主 Agent / Coding + Automation + Personal Agent | **是，MIT** | **非常容易** | TUI/Desktop/Web/Gateway；Memory；Skills；MCP；Subagents；Cron；Browser；多种 Terminal Backend；Provider-neutral | 能力面比纯 Coding Agent 更宽，做编码 Benchmark 时要区分“通用 Agent 能力”和“Coding Harness 优化程度” |
+| **WorkBuddy** | 全场景办公 / Workspace / Cloud Agent | **产品专有；Skill/开放平台生态开放** | **很容易** | Chat/Task Surface；本地 Workspace；Skill Marketplace；MCP；自定义模型；文件/终端/浏览器；企业云端 Runtime/Sandbox | 不应只按 Coding Benchmark 看；更适合观察“Chat Surface + Workspace + Skill 生态 + 云端 Runtime”的产品形态 |
 
 ---
 
@@ -193,6 +194,29 @@ Hermes 的差异点是：
 
 > **它不只把自己定位成 Coding Agent，而是一个可以长期运行、拥有 Memory、Skills、自动化和多平台 Gateway 的通用自主 Agent。**
 
+### 3.10 WorkBuddy
+
+WorkBuddy 当前官方模型配置支持可视化添加自定义模型，也支持“自定义 API”手动填写 URL、API Key 和模型名；标准路径默认按 `/chat/completions` 组织，并明确支持 Ollama 的 OpenAI-compatible 接口。
+
+因此对部门当前已经实测通过 OpenAI Chat Completions 的 qwen3.6：
+
+> **WorkBuddy 具备直接接入并做 Harness / Workspace 演示的基础条件。**
+
+它更值得关注的不是单纯“能不能接模型”，而是接入以后同一个对话任务还能继续使用：
+
+- 本地授权 Workspace；
+- 文件读写；
+- Terminal；
+- Browser / Web Preview；
+- MCP；
+- Skills；
+- 右侧变更 / 产物；
+- 企业云端 Runtime / Sandbox。
+
+所以它很适合用来讲：
+
+> **模型 API 只是底座；真正的 Agent 产品价值来自模型之上的 Harness、Workspace、Runtime 和 Skill 生态。**
+
 ---
 
 ## 4. 如果只针对“部门内网 Qwen”，接入便利度怎么判断
@@ -210,6 +234,7 @@ Hermes 的差异点是：
 | **Cline** | ★★★★★ | OpenAI Compatible 三字段即可接入 |
 | **Kilo Code** | ★★★★★ | Chat / Responses / Anthropic 三种自定义 Provider 路径齐全 |
 | **Hermes Agent** | ★★★★★ | 原生支持 Custom OpenAI-compatible Endpoint、OPENAI_BASE_URL，本地 vLLM / Ollama / LM Studio 等路径也完整 |
+| **WorkBuddy** | ★★★★★ | 官方支持自定义 API / URL / API Key / Model，标准 Chat Completions 路径明确，也支持本地 Ollama OpenAI-compatible 接入 |
 
 注意：
 
@@ -291,6 +316,22 @@ Nous Research 官方 `NousResearch/hermes-agent` 仓库为 MIT License，源码�
 - ACP Server 等多种使用界面。
 
 因此它可以作为“同一个 Agent Core 如何服务多种交互 Surface”的案例。
+
+### WorkBuddy
+
+WorkBuddy 当前是产品化的桌面 / 云端 Agent 工作台，不应因为开放平台和 Skill 生态就表述为“整个 Harness 开源”。
+
+培训中应分开说：
+
+- WorkBuddy 产品本体：产品化软件；
+- Skill：可导入、创建、共享的能力包；
+- Open Platform：面向 Buddy 应用、专家、Skill、连接器等开放生态；
+- 第三方社区：存在面向 WorkBuddy / Agent Skills 的公共 Skill 目录。
+
+这里的教学重点不是“开不开源”本身，而是：
+
+> **Agent 生态资产可以独立于产品核心演化，Skill 正在成为一种跨 Harness 可迁移的工程资产形态。**
+
 
 ---
 
@@ -400,6 +441,40 @@ Hermes 最值得培训讲的不是“又一个会改代码的 Agent”，而是�
 它与 Codex / Claude Code / OpenCode 的对比重点不应只放在编码完成率，而应放在：
 
 > **Coding Harness vs General-purpose Persistent Agent**
+
+
+### WorkBuddy：从 Chat Surface 到可执行 Workspace
+
+WorkBuddy 最值得培训讲的是它把“对话窗口”和“执行环境”放在了一起。
+
+官方当前能力可以分成三层：
+
+~~~text
+Chat / Task Surface
+        ↓
+Workspace + Files + Terminal + Browser + Artifacts
+        ↓
+Skills / MCP / Custom Model
+        ↓
+Local Runtime or Cloud Runtime / Sandbox
+~~~
+
+尤其是企业智能体文档中，Runtime 被明确描述为 Session 背后的独立云端沙箱实例，包含完整 Linux 文件系统和终端，并支持 Checkpoint / Version。
+
+它非常适合纠正一种过时认知：
+
+~~~text
+Chat = 只能生成文字
+Agent = 必须长得像 IDE
+~~~
+
+更准确的是：
+
+> **UI 只是 Surface。一个看起来像 Chat 的产品，如果背后绑定了 Workspace、Tool Loop 和 Runtime，同样可以完成文件处理、代码执行、网页预览和多步骤任务。**
+
+同时要避免另一种过度概括：
+
+> **不能说所有 Chat 后端都有完整虚拟容器；是否存在 Sandbox、是否可执行、是否持久化，要看具体产品和工作模式。**
 
 ---
 
@@ -518,6 +593,17 @@ Pi > Oh My Pi > OpenCode > Codex
 
 这也能帮助学员理解：Agent 的应用边界并不止于软件开发。
 
+
+### 第五类：Workspace / 办公 Agent + Skill 生态
+
+- WorkBuddy
+
+讲：
+
+> **Chat Surface 如何连接本地 Workspace / 云端 Sandbox，以及 Skill Marketplace 如何把社区方法变成可安装能力。**
+
+这一类特别适合非纯软件开发人员理解 Agent：界面仍然像对话，但后台已经能操作文件、终端、浏览器并交付产物。
+
 ---
 
 ## 9. 推荐现场 Demo
@@ -567,6 +653,28 @@ Different Pass Rate / Cost / Cache / Runtime
 
 这一张比罗列 Agent 功能更有说服力。
 
+
+### Demo D：WorkBuddy 的 Chat Surface → Workspace → Skill → Runtime
+
+建议用四张连续截图，不做性能排名：
+
+1. 普通任务对话界面；
+2. 右侧 Workspace 文件 / 变更 / Browser / 产物；
+3. Skill Marketplace；
+4. 企业云端 Runtime（账号可见时）。
+
+让学员直观看到：
+
+~~~text
+看起来还是 Chat
+        ↓
+但背后已经有 Workspace
+        ↓
+能力可以通过 Skill 扩展
+        ↓
+执行可以落在本地或云端 Runtime
+~~~
+
 ---
 
 ## 10. 对部门内部使用的实际判断
@@ -578,7 +686,8 @@ Different Pass Rate / Cost / Cache / Runtime
 - Cline；
 - Kilo；
 - ZCode；
-- Hermes。
+- Hermes；
+- WorkBuddy。
 
 如果目标是研究 Harness 设计，重点看：
 
@@ -618,7 +727,7 @@ Different Pass Rate / Cost / Cache / Runtime
 同一时间限制
 同一权限范围
         ↓
-ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo
+ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo / Hermes / WorkBuddy
 ~~~
 
 记录：
@@ -701,3 +810,13 @@ ZCode / Codex / Claude Code / OpenCode / DSH / Pi / Cline / Kilo
 - GitHub: https://github.com/NousResearch/hermes-agent
 - Providers: https://hermes-agent.nousresearch.com/docs/integrations/providers/
 - Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+
+### WorkBuddy
+
+- Product docs: https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Product-Guide
+- Model configuration: https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Model
+- Skill Marketplace: https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market
+- Cloud Agent / Runtime: https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/CloudAgent
+- Right sidebar / Workspace: https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Right-Sidebar
+- Open Platform: https://open.workbuddy.cn/
+- Community Skill Atlas (third-party snapshot): https://github.com/sandbaseai/workbuddy-skill
