@@ -178,7 +178,25 @@
 
 # 3. 整体内容结构
 
-整场培训分为六个核心模块，并在最后进行方法论收束。
+内容逻辑仍然分为六个核心模块，并在最后进行方法论收束；但**授课组织不再按“一次讲座”设计**。
+
+截至 2026-09-30，培训正式改为系列化组织，建议拆为 7 次：
+
+1. 模型调用与 API；
+2. Chat → Knowledge/RAG → Agent；
+3. Agent Harness、工具、Runtime 与服务器；
+4. API / MCP / Skill 与可复用资产；
+5. 完整 Web 工程案例：BMQuiz V2 + model-metric 对照；
+6. 完整本地客户端 / GUI 工程案例：FileCheck；
+7. IPsec 数据分析、HyperFrames、授权研究、网站安全测试等跨领域案例与最终方法论收束。
+
+详细场次设计：
+
+`docs/outline/training-series-plan.md`
+
+原则：
+
+> **章节结构负责“知识怎样组织”，系列场次负责“现场怎样讲”。两者不要求一一对应。**
 
 ---
 
@@ -1652,7 +1670,37 @@ Query
 
 # 模块六：用真实项目证明 Agent 能完成什么
 
-本模块不是单纯“案例展示”。
+本模块不是单纯“案例展示”，也不再把所有案例视为同等粒度。
+
+案例分为两类：
+
+### A. 贯穿式完整工程案例
+
+必须从需求讲到交付：
+
+- **BMQuiz V2**：Web / Full-stack / Visual QA / Docker / Server / CI/CD；
+- **FileCheck**：本地客户端 / CLI / GUI / 兼容性 / PyInstaller / GitHub Release。
+
+完整案例统一回答：
+
+`Problem → Requirement → Constraint → Research → Architecture → Plan → Implement → Test → QA → Review → Build → Release → Deploy → Verify → Assetize`
+
+详细框架：
+
+`docs/cases/end-to-end-agent-engineering-cases.md`
+
+### B. 专题案例
+
+只重点证明某类 Agent 能力：
+
+- model-metric；
+- Agent 服务器运维；
+- IPsec VPN 数据分析；
+- HyperFrames；
+- 文档处理；
+- Knowledge / RAG；
+- 授权机制 / 协议行为研究；
+- 网站安全测试。
 
 每个案例需要尽量回答：
 
@@ -1666,6 +1714,15 @@ Query
 ---
 
 ## 8.1 案例一：服务器运维
+
+现有服务器案例从“SSH / Docker 功能展示”升级为真实工程交付案例，固定使用：
+
+- **BMQuiz**：Docker / GHCR / Compose / health / application smoke / rollback；
+- **model-metric**：systemd / journalctl / SQLite / API 语义验证。
+
+完整案例设计：
+
+`docs/cases/agent-server-operations.md`
 
 ### 展示内容
 
@@ -2160,6 +2217,9 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（可用于培训；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则；案例与素材后补）
 - 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
 - 方法论收束主讲稿：`docs/chapters/08-agent-engineering-methodology.md`（可用于培训；覆盖任务路由、Problem→Release 工程链、Agent 执行闭环、模型/Thinking/Context 预算、人机分工、交付与资产沉淀；METHOD-01～07 图示后补）
+- 系列授课拆分方案：`docs/outline/training-series-plan.md`（已有基线；当前建议 7 次，每次围绕一个核心问题组织）
+- 完整工程案例框架：`docs/cases/end-to-end-agent-engineering-cases.md`（已有框架；BMQuiz V2 与 FileCheck 固定为两个纵向主案例）
+- Agent 服务器运维案例：`docs/cases/agent-server-operations.md`（已有案例设计；BMQuiz Docker + model-metric systemd，待真实录屏与执行证据）
 
 - API 官方参考资料（已有素材）
 
@@ -2170,8 +2230,10 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块三：Agent 工具与真实世界（已有初稿；**第一套贯穿主案例已固定为 ZCode**，案例规范为 `demos/zcode-real-world/README.md`，已建立 Sensor Guard 训练项目和 `docs/cases/zcode-agent-real-world.md`；当前缺口为 ZCode 实际录屏/截图，以及 SSH/Docker、Commit→CI 等后续真实案例证据）
 - 模块四：API / MCP / Skill 等关系（主讲稿已可用于培训，官方证据基线已形成；后续只补最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据与素材）
 - 模块五：可复用资产与知识体系（主讲稿已可用于培训，证据基线已形成；后续只补仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
-- **完整讲义串联检查（当前下一建设重点）**：先检查模块一～五 + 方法论收束的重复、缺口、术语和过渡；案例与模块三～五实测证据随后集中补充
-- 模块六：真实案例材料 + 模块三～五实测证据（后续证据与演示补全阶段）
+- **完整工程案例讲义（当前下一建设重点）**：先按真实仓库证据写 BMQuiz V2 从需求→架构→Plan→开发→测试→Visual QA→CI/CD→服务器部署的完整案例，再写 FileCheck 客户端/GUI/打包发布完整案例
+- Agent 服务器运维：案例设计已完成，后续补 BMQuiz Docker 与 model-metric systemd 的真实执行证据和录屏
+- 完整讲义串联检查：在两个纵向主案例写入后，再检查 7 次系列培训的重复、过渡、节奏和案例插入位置
+- 其他专题案例：IPsec VPN 数据分析、HyperFrames、授权机制/协议研究、网站安全测试后续逐个补证据与讲义
 - 各模块架构图 / 流程图
 - Demo 脚本
 - 截图资产
