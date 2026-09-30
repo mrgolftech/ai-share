@@ -11,7 +11,7 @@
 ```text
 体验层
 └─ Token 输出速率体感模拟器
-   └─ ../token-output-speed/index.html
+   └─ token-output-speed/index.html
 
 真实 API 应用层
 ├─ translate.py      技术文本翻译
@@ -33,7 +33,7 @@
 现有 Demo：
 
 ```text
-demos/token-output-speed/index.html
+demos/api-applications/token-output-speed/index.html
 ```
 
 直接双击即可运行。
