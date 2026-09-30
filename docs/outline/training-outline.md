@@ -243,7 +243,7 @@
 - 当前部署描述：两个华为昇腾节点；
 - 当前多模态实测：OpenAI Chat 单图、SSE、多图、Vision + Tool Calling 均通过；
 - Anthropic Base64 Image 已通过；
-- Responses Vision 因旧测试请求漏 detail 必填字段，待按 OpenAPI Schema 修正后复测。
+- Responses Vision 旧测试请求曾因漏 `detail` 必填字段返回 400；r4 已按当前 OpenAPI Schema 修正并正式验证 PASS。
 
 注意：
 
@@ -654,21 +654,31 @@ Raw Model
 
 ### Open WebUI
 
-定位：
+当前内网部署：`v0.11.0`。
 
-> **更适合作为部门统一 AI 门户 / 集中式模型工作台。**
+定位更新为：
+
+> **既可以作为个人 Note / Knowledge 工作台，也适合作为部门统一 AI 门户、Workspace 与共享 Knowledge 入口。**
+
+当前内网已实际走通：
+
+- 个人 Note / Markdown；
+- 上传文档；
+- Full Context / Focused Retrieval；
+- 当前未配置 Embedding，因此存在“未向量化”提示；
+- Knowledge 绑定 Workspace / Model；
+- 选择对应 Workspace 后基于资料回答。
 
 需要演示：
 
-- OpenAI-compatible Provider 接入；
-- Workspace Model；
+- Workspace / Model；
 - System Prompt 与参数；
-- Thinking 显示与后端真实 Thinking 参数的区别；
-- Vision 与 Image Generation 的区别；
+- 个人 Note / Document；
 - Knowledge Base；
-- Vector Retrieval；
-- BM25 + Vector + Rerank Hybrid RAG；
-- Native Knowledge Tools / kb_exec Agentic Retrieval。
+- Full Context vs Focused Retrieval；
+- “未配置 Embedding但仍能使用知识”与“Vector Retrieval 已生效”之间的区别；
+- Shared Knowledge / Group / ACL；
+- 后续再根据当前实例实测补 Hybrid / Native Knowledge Tools / Agentic Retrieval。
 
 ### Cherry Studio
 
@@ -721,7 +731,7 @@ Cherry Studio 当前官方知识库支持：
 
 推荐定位：
 
-- Open WebUI：部门共享 Knowledge Service / AI Portal；
+- Open WebUI：个人 Note/Knowledge + Workspace，同时承担部门共享 Knowledge Service / AI Portal；
 - Cherry Studio：个人 Knowledge Workspace；
 - Coding / General Agent：跨 Repo、文件、API、DB、共享 KB 的 Agentic Retrieval 与任务执行层。
 
@@ -799,7 +809,7 @@ Cherry Studio
 → 演示知识怎么建：Parse / Chunk / BM25 / Embedding / Rerank
 
 Open WebUI
-→ 演示知识怎么共享治理：Shared KB / Group / ACL / Workspace Model
+→ 先演示个人 Note/Document → Full Context/Focused → Workspace，再演示 Shared KB / Group / ACL
 
 Agent
 → 演示知识怎么被编排：Shared RAG KB + Git / File + API / Metrics
