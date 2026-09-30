@@ -1,4 +1,4 @@
-# AI 大模型与 Agent 工程实践系列培训方案（领导审核稿）
+# AI 大模型与 Agent 工程实践系列培训方案
 
 > 状态：Current Training Baseline v1.0  
 > 日期：2026-09-30  
