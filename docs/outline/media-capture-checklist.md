@@ -1,0 +1,327 @@
+# 培训截图与录屏总清单
+
+> 日期：2026-09-30  
+> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`。  
+> 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。
+
+---
+
+# 1. 优先级与状态
+
+优先级：
+
+- **P0**：培训必须准备。没有现场 Demo，也应该有截图/预录作为备用。
+- **P1**：强烈建议。明显提升理解，但可根据培训时长裁剪。
+- **P2**：可选。主要用于补充说明或深入讨论。
+
+状态：
+
+- ⬜ 未准备
+- 🟨 已截图/录制，待裁剪、标注或脱敏
+- ✅ 可直接用于培训/PPT
+
+---
+
+# 2. 截图与录屏统一规范
+
+## 2.1 截图
+
+建议：
+
+- 优先 16:9 桌面环境，方便后续进入 PPT；
+- 浏览器/客户端缩放保持一致，文字必须在投影环境下可读；
+- 截图前关闭无关窗口、通知和个人信息；
+- API Key、Token、账号、Cookie、SSH Key、真实内网地址、真实敏感业务数据按培训范围脱敏；
+- 尽量截“真实界面 + 真实结果”，概念图只用于真实界面无法直接表达的机制；
+- 同一组对比截图必须固定模型、问题、资料和条件；
+- 不把官方文档截图写成“我们的实测”，官方材料必须注明来源。
+
+建议文件名：
+
+~~~text
+<编号>-<简短说明>.png
+
+例如：
+API-NET-04C-context-diff.png
+AGENT-WB-02-workspace.png
+KB-05-bm25-vs-embedding.png
+~~~
+
+## 2.2 录屏
+
+建议：
+
+- 原始录屏优先 1920×1080；
+- 鼠标指针保留，关键点击不要太快；
+- 每段录屏尽量只回答一个问题；
+- 优先录“动态过程”，静态配置不要为了录屏而录屏；
+- 长时间 Thinking / Build / Install 等等待过程后期剪掉，但原始视频保留；
+- 现场 Demo 有失败风险的内容必须提前准备预录；
+- 涉及对比时，固定输入、模型和数据，不通过后期剪辑制造不真实差异；
+- Agent 录屏应尽量保留 Tool Call、Terminal、Diff、Test、Browser 等证据，不只录最终回答。
+
+建议文件名：
+
+~~~text
+<编号>-<简短说明>.mp4
+
+例如：
+API-R02-multiturn-context.mp4
+KB-R05-agent-multisource-retrieval.mp4
+AGENT-R05-tool-loop.mp4
+~~~
+
+---
+
+# 3. P0：优先一次性准备的素材
+
+如果时间有限，先完成下面这一批。
+
+| 编号 | 类型 | 内容 | 主要讲义 | 状态 |
+|---|---|---|---|---|
+| API-01 | 截图 | /v1/models + /version | 第一章 API | ⬜ |
+| API-NET-01~07 | 截图 | Cherry Network：models / Chat / Context / Vision / SSE | 第一章 API | ⬜ |
+| API-03 | 截图 | Thinking OFF/ON 实测 | 第一章 API | ⬜ |
+| API-04~05 | 截图 | Tool Call + Tool Result | 第一章 API | ⬜ |
+| API-08 | 截图 | /metrics 原始指标 | 第一章 API | ⬜ |
+| API-R01~04 | 录屏 | models / 多轮 Context / Vision / SSE | 第一章 API | ⬜ |
+| API-R07 | 录屏 | 完整 Tool Loop | 第一章 API | ⬜ |
+| API-R08 | 录屏 | 同模型 Chat vs Agent | 第一章 / Chat→Agent | ⬜ |
+| CHAT-01~03 | 截图/图示 | Chat vs Agent 核心差异 | Chat→Agent | ⬜ |
+| CHAT-R01~03 | 录屏 | 最小闭环 + 鹈鹕 Chat/Agent 对照 | Chat→Agent | ⬜ |
+| OW-01~02 | 截图 | Open WebUI 总览与 Provider | 工作台/RAG | ⬜ |
+| OW-04 | 截图 | System Prompt / Parameters | 工作台/RAG | ⬜ |
+| CH-01~02 | 截图 | Cherry 总览与 Custom Provider | 工作台/RAG | ⬜ |
+| WB-R02 | 录屏 | Cherry Provider → 内网模型 | 工作台/RAG | ⬜ |
+| KB-01~06 | 截图/图示 | 外部知识、架构、RAG、BM25/Embedding、Parse/Chunk | 知识库 | ⬜ |
+| KB-08~11 | 图示/截图 | 两层召回、Evidence Budget、Rerank、三种 Retrieval | 知识库 | ⬜ |
+| KB-12~17 | 截图 | Cherry KB + Open WebUI Shared KB | 知识库 | ⬜ |
+| KB-18~22 | 截图/图示 | Agent 多源取证、统一架构、ACL、引用 | 知识库 | ⬜ |
+| KB-R01~03 | 录屏 | Cherry 建库/检索 + Open WebUI Shared KB/ACL | 知识库 | ⬜ |
+| KB-R05 | 录屏 | Agent 跨源逐步取证 | 知识库 | ⬜ |
+| AGENT-01~04 | 图示/截图 | Harness、受控评测、AGENTS.md、Workspace | Agent 共性 | ⬜ |
+| AGENT-WB-01~03 | 截图 | WorkBuddy Chat / Workspace / Skill | Agent 共性 | ⬜ |
+| AGENT-07~09 | 截图 | Tool Trace / MCP / Skill | Agent 共性 | ⬜ |
+| AGENT-12~13 | 截图 | Sandbox/Approval + Verification | Agent 共性 | ⬜ |
+| AGENT-16 | 截图 | Runtime Backend | Agent 共性 | ⬜ |
+| AGENT-R02 | 录屏 | WorkBuddy Chat → Workspace → Artifact | Agent 共性 | ⬜ |
+| AGENT-R04~05 | 录屏 | 读取项目规则 + Tool Loop | Agent 共性 | ⬜ |
+| AGENT-R07 | 录屏 | Skill 前后流程对比 | Agent 共性 | ⬜ |
+
+---
+
+# 4. 第一章：模型怎么调用
+
+完整占位位于：
+
+`docs/chapters/01-intranet-qwen-api.md`
+
+## 4.1 静态
+
+| 编号 | 优先级 | 拍什么 | 关键要求 | 状态 |
+|---|---:|---|---|---|
+| API-01 | P0 | /v1/models + /version | model id、context、version | ⬜ |
+| API-NET-01 | P0 | Cherry 模型列表 | 与下一张 models Request 对应 | ⬜ |
+| API-NET-02 | P0 | GET /v1/models Request/Response | URL/Method/Response 清晰 | ⬜ |
+| API-NET-03 | P0 | 第一轮 Chat Payload | model/messages/input/stream | ⬜ |
+| API-NET-04A~C | P0 | 第一/第二轮 Request + Diff | 明确上下文如何附加 | ⬜ |
+| API-NET-05~06 | P0 | Vision Payload | 文本+图像实际结构 | ⬜ |
+| API-NET-07 | P0 | SSE/EventStream | 能看到流式事件 | ⬜ |
+| API-02 | P1 | Token speed Race Mode | 5/30/120 tok/s | ⬜ |
+| API-03 | P0 | Thinking OFF/ON | 来自真实测试 | ⬜ |
+| API-04~05 | P0 | Tool Call / Tool Result | 完整闭环两张图 | ⬜ |
+| API-06~07 | P1 | Vision / Vision Tool | 固定 Ground Truth | ⬜ |
+| API-08~09 | P0/P1 | metrics + model-metric | 原始指标与 UI 对照 | ⬜ |
+| API-10~11 | P1 | 鹈鹕 Chat / Agent | 同模型同 Prompt | ⬜ |
+
+## 4.2 录屏
+
+| 编号 | 优先级 | 动态过程 | 状态 |
+|---|---:|---|---|
+| API-R01 | P0 | 刷新模型 → /v1/models | ⬜ |
+| API-R02 | P0 | 连续两轮对话 → Context 变化 | ⬜ |
+| API-R03 | P0 | 图片输入 → Payload | ⬜ |
+| API-R04 | P0 | SSE → 聊天窗口逐步显示 | ⬜ |
+| API-R05 | P1 | Tokens/s Race Mode | ⬜ |
+| API-R06 | P1 | Thinking OFF/ON 体感 | ⬜ |
+| API-R07 | P0 | 完整 Tool Loop | ⬜ |
+| API-R08 | P0 | Chat vs Agent | ⬜ |
+
+---
+
+# 5. Chat → Agent 过渡章
+
+完整占位：
+
+`docs/chapters/02-chat-to-agent-harness.md`
+
+| 编号 | 类型 | 优先级 | 内容 | 状态 |
+|---|---|---:|---|---|
+| CHAT-01 | 截图 | P0 | Chat 只给答案/代码 | ⬜ |
+| CHAT-02 | 截图 | P0 | Agent 文件/命令/验证 | ⬜ |
+| CHAT-03 | 图示 | P0 | Prompt→Answer vs Goal→Deliver | ⬜ |
+| CHAT-04 | 截图 | P1 | 同模型最终结果对照 | ⬜ |
+| CHAT-R01 | 录屏 | P0 | Read/Edit/Run/Verify 最小闭环 | ⬜ |
+| CHAT-R02 | 录屏 | P0 | 鹈鹕 Chat 人工接力 | ⬜ |
+| CHAT-R03 | 录屏 | P0 | 鹈鹕 Agent 自动闭环 | ⬜ |
+
+---
+
+# 6. Open WebUI / Cherry Studio / RAG
+
+完整占位：
+
+`docs/chapters/02-chat-workbenches-and-rag.md`
+
+| 编号 | 类型 | 优先级 | 内容 | 状态 |
+|---|---|---:|---|---|
+| OW-01 | 截图 | P0 | Open WebUI 总览 | ⬜ |
+| OW-02 | 截图 | P0 | Provider/Connection | ⬜ |
+| OW-03 | 截图 | P1 | Chat→Model→Knowledge→Tool | ⬜ |
+| OW-04 | 截图 | P0 | System Prompt + Parameters | ⬜ |
+| OW-05 | 截图 | P1 | Thinking UI vs 后端协议 | ⬜ |
+| OW-06 | 截图 | P1 | Vision vs Image Generation | ⬜ |
+| CH-01 | 截图 | P0 | Cherry 总览 | ⬜ |
+| CH-02 | 截图 | P0 | Custom Provider | ⬜ |
+| CH-03 | 截图 | P1 | Assistant vs Agent | ⬜ |
+| CH-04 | 截图 | P1 | Thinking / Context | ⬜ |
+| CH-05 | 截图 | P1 | Vision vs Drawing | ⬜ |
+| WB-R01 | 录屏 | P1 | Open WebUI Provider→Chat | ⬜ |
+| WB-R02 | 录屏 | P0 | Cherry Provider→内网模型 | ⬜ |
+
+知识库操作统一复用下一节 `KB-xx`。
+
+---
+
+# 7. 部门知识库
+
+教学版：
+
+`docs/chapters/03-department-knowledge-base-teaching.md`
+
+技术版：
+
+`docs/chapters/03-department-knowledge-base.md`
+
+两份讲义共用同一套素材编号。
+
+## 7.1 截图/图示
+
+当前已有 `KB-01～KB-22`，详见教学版第 21 节。重点：
+
+- KB-01：无资料 vs 带资料；
+- KB-04 / 05：BM25 / Embedding；
+- KB-06A / 06：PDF → Parsed Text → Chunk；
+- KB-08 / 08B / 09：External Retrieval / Context Utilization / Evidence Budget；
+- KB-12～14：Cherry；
+- KB-15～17：Open WebUI；
+- KB-18：Agent Tool Trace；
+- KB-19：同源三工具；
+- KB-21：ACL；
+- KB-22：引用与可追溯。
+
+## 7.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| KB-R01 | P0 | Cherry 建库 → Parse/Chunk → BM25 → Retrieval Test → Chat | ⬜ |
+| KB-R02 | P0 | 同资料同问题：BM25 vs Embedding/Rerank | ⬜ |
+| KB-R03 | P0 | Open WebUI Shared KB + ACL | ⬜ |
+| KB-R04 | P1 | Pipeline vs Agentic Retrieval | ⬜ |
+| KB-R05 | P0 | Agent：Shared KB → Git → API/Metrics → 引用回答 | ⬜ |
+| KB-R06 | P1 | 无答案 / 版本冲突回归 | ⬜ |
+
+---
+
+# 8. Agent 共性机制
+
+完整占位：
+
+`docs/chapters/04-agent-common-mechanisms.md`
+
+## 8.1 静态
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| AGENT-01 | P0 | Harness 总图 | ⬜ |
+| AGENT-02 | P0 | 固定模型 Harness 受控实验 | ⬜ |
+| AGENT-WB-01 | P0 | WorkBuddy Chat/Task | ⬜ |
+| AGENT-WB-02 | P0 | WorkBuddy Workspace/Artifact | ⬜ |
+| AGENT-WB-03 | P0 | WorkBuddy Skill Marketplace | ⬜ |
+| AGENT-WB-04 | P1 | WorkBuddy Cloud Runtime | ⬜ |
+| AGENT-03 | P0 | AGENTS.md + 实际遵守 | ⬜ |
+| AGENT-04 | P0 | Workspace | ⬜ |
+| AGENT-05 | P1 | Plan/Task State | ⬜ |
+| AGENT-06 | P1 | Memory | ⬜ |
+| AGENT-07 | P0 | Tool Trace | ⬜ |
+| AGENT-08 | P0 | MCP Tools/Resources | ⬜ |
+| AGENT-09 | P0 | Skill 目录/SKILL.md | ⬜ |
+| AGENT-10 | P1 | Browser Use | ⬜ |
+| AGENT-11 | P2 | Computer Use | ⬜ |
+| AGENT-12 | P0 | Approval/Sandbox | ⬜ |
+| AGENT-13 | P0 | Diff + Test + Visual QA | ⬜ |
+| AGENT-14 | P1 | Sub-agent | ⬜ |
+| AGENT-15 | P1 | CLI/IDE/Desktop-Web | ⬜ |
+| AGENT-16 | P0 | Runtime Backend | ⬜ |
+| AGENT-17 | P1 | Trace/Audit | ⬜ |
+
+## 8.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| AGENT-R01 | P0 | 同模型同任务跨 2–3 Harness | ⬜ |
+| AGENT-R02 | P0 | WorkBuddy Chat → Workspace → Artifact | ⬜ |
+| AGENT-R03 | P1 | WorkBuddy 社区 Skill 安装/调用 | ⬜ |
+| AGENT-R04 | P0 | 读取并遵守 AGENTS.md | ⬜ |
+| AGENT-R05 | P0 | Read/Edit/Test/Verify Tool Loop | ⬜ |
+| AGENT-R06 | P1 | MCP Tool 闭环 | ⬜ |
+| AGENT-R07 | P0 | Skill 前后流程对比 | ⬜ |
+| AGENT-R08 | P1 | Browser 自动操作 | ⬜ |
+| AGENT-R09 | P1 | Approval/Sandbox | ⬜ |
+| AGENT-R10 | P1 | Runtime Backend 切换/远程执行 | ⬜ |
+
+---
+
+# 9. 推荐的实际采集顺序
+
+不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
+
+1. **Cherry Studio 一次录完**：API-NET、API-R01~04、CH-01~05、WB-R02、KB-04/05、KB-12~14、KB-R01/02；
+2. **Open WebUI 一次录完**：OW-01~06、WB-R01、KB-15~17、KB-R03/04；
+3. **API / model-metric 一次录完**：API-01、API-03~09、API-R06/07；
+4. **统一鹈鹕 Demo 一次录完**：API-10/11、CHAT-01/02/04、CHAT-R01~03、API-R08；
+5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
+6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10；
+7. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+
+这样可以减少反复切换环境、账号、模型和测试资料。
+
+---
+
+# 10. 后续落盘约定
+
+实际素材建议逐步落到：
+
+~~~text
+assets/
+├── screenshots/
+│   ├── api/
+│   ├── chat-agent/
+│   ├── workbenches/
+│   ├── knowledge/
+│   └── agent/
+└── recordings/
+    ├── api/
+    ├── chat-agent/
+    ├── knowledge/
+    └── agent/
+~~~
+
+每完成一批素材：
+
+1. 回填本清单状态；
+2. 在对应讲义中将“占位”替换为真实相对路径；
+3. 原始录屏和裁剪后的培训版分开保存；
+4. 保留原始证据，不只保存 PPT 中经过裁剪的图片；
+5. 如果实测与讲义叙述不一致，以实测为准并同步修改讲义。
+
