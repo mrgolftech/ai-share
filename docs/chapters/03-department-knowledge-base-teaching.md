@@ -1148,7 +1148,7 @@ Agent 可能这样工作：
 
 ---
 
-# 12.4 到这里停一下：把几个容易混的词放到一张表里
+## 12.4 到这里停一下：把几个容易混的词放到一张表里
 
 | 名词 | 它是什么 | 它不是什么 |
 |---|---|---|
@@ -1330,7 +1330,7 @@ Agent
 
 ---
 
-# 14.1 先不要选工具，先判断“我现在到底在找什么”
+## 14.1 先不要选工具，先判断“我现在到底在找什么”
 
 给学员一张最实用的判断表：
 
@@ -1632,7 +1632,7 @@ RAGTruth、ALCE、RAGChecker 等研究都说明：
 
 ---
 
-# 19.1 讲师控制节奏：哪些要讲透，哪些只点到为止
+## 19.1 讲师控制节奏：哪些要讲透，哪些只点到为止
 
 现场建议把内容分三层。
 
@@ -1711,11 +1711,15 @@ RAGTruth、ALCE、RAGChecker 等研究都说明：
 | KB-01 | 无内部资料 vs 带资料回答 | 内网 qwen3.6 / Chat | 引出“外部知识” |
 | KB-02 | 部门知识五层架构 | 后续绘图 | 建立全局框架 |
 | KB-03 | 不同知识不同处理方式 | 后续绘图 | 防止“全部向量化” |
+| KB-04A | RAG“先查、再给、再答”三步图 | 后续绘图 | 降阶解释 RAG |
+| KB-04B | Source → Embedding → Vector Index | 后续绘图 | 强调 Embedding/Index 不是知识本体 |
 | KB-04 | Embedding=None / BM25 | Cherry Studio | 证明 RAG ≠ Vector |
 | KB-05 | BM25 vs Embedding Retrieval | Cherry Studio | 展示精确词 vs 语义 |
+| KB-06A | 原 PDF 与 Parsed Text 对照 | Cherry / Open WebUI | 强调先验证解析质量 |
 | KB-06 | Parsed Text / Chunk | Cherry / Open WebUI | 解释 Parse / Chunk |
 | KB-07 | v1/v2 Metadata | 自制示例 | 解释版本治理 |
 | KB-08 | 两层召回 | 后续绘图 | External vs In-context |
+| KB-08B | 标称 Context Window vs 有效 Evidence | 后续绘图 | 解释“放得下 ≠ 用得好” |
 | KB-09 | Candidate → Evidence Budget | 后续绘图 | 解释 Context Control |
 | KB-10 | Top-K / Rerank 配置 | Open WebUI / Cherry | 参数与 Context 的关系 |
 | KB-11 | Full Context / Pipeline / Agentic | 后续绘图 | 三种知识访问模式 |
