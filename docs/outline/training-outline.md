@@ -700,6 +700,41 @@ Raw Model
 - Knowledge 绑定 Agent；
 - MCP / Web Search / Work。
 
+### Cherry Assistant ↔ Open WebUI Workspace Model
+
+第一讲增加显式一一对应：
+
+```text
+Cherry Assistant
+↔ Open WebUI Workspace Model
+
+Assistant Instructions
+↔ System Prompt
+
+Cherry Knowledge Base
+↔ Open WebUI Knowledge / Note
+
+Assistant 绑定 Knowledge
+↔ Workspace Model 绑定 Knowledge
+```
+
+统一抽象：
+
+```text
+Base Model
++ System Prompt / Instructions
++ Knowledge
++ Parameters
++ Tools
+→ Reusable Assistant / Application Preset
+```
+
+并用同一 `qwen3.6`、同一 System Prompt、同一份 Qwen API 测试资料、同一问题做双端演示。
+
+关键教学边界：
+
+> **Assistant / Workspace Model 是应用层封装，不是重新训练模型；只有再加入 Runtime、连续 Tool Loop、Observe、Verify、Iterate，才进入完整 Agent。**
+
 ### Cherry Studio 与 Open WebUI 的数据边界
 
 第一讲增加一组工作台对照，不做“谁更好”的产品排名，而是比较：
