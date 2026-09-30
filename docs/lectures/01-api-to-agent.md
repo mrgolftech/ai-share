@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.5  
+> 状态：Final Lecture Draft v1.6  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -383,6 +383,182 @@ POST /v1/messages
 > **不要把接口格式和模型能力混为一谈。**
 
 同一个模型可以被多个 Adapter 暴露成不同兼容协议；同一个客户端也可以根据 Endpoint Type 用不同方式组织 Request。
+
+---
+
+## 1.4A System Prompt 到底是什么？三种 API 里放的位置还不一样
+
+前面已经看到三种 API 的 POST Body 不一样。
+
+这时正好解释大家在 Cherry Assistant、Open WebUI Workspace Model 中都会看到的一个词：
+
+> **System Prompt / Instructions。**
+
+它不是“神秘咒语”，也不是模型训练。
+
+可以先把它理解成：
+
+> **由应用提供、希望在当前助手/工作空间中长期生效的一组高层指令。**
+
+例如：
+
+```text
+你是部门内网模型 API 培训助手。
+优先依据已绑定的实测资料回答。
+没有证据时明确说明，不要猜测。
+输出先给结论，再给证据。
+```
+
+它通常用来规定：
+
+- 角色 / 职责；
+- 目标；
+- 行为边界；
+- 事实来源优先级；
+- 输出格式；
+- 工具使用原则；
+- 风格。
+
+但要明确：
+
+> **System Prompt 不是绝对安全边界，也不能替代权限、ACL、Sandbox 和程序校验。**
+
+---
+
+### OpenAI Chat Completions：作为高优先级 Message
+
+OpenAI Chat 采用 Message Roles。
+
+现代 OpenAI 模型更强调 `developer` role；大量 OpenAI-compatible 服务和现有客户端仍广泛使用 `system` role。
+
+典型结构可以先看成：
+
+```json
+{
+  "model": "qwen3.6",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是部门内网模型 API 培训助手……"
+    },
+    {
+      "role": "user",
+      "content": "Responses Vision 当前实测结论是什么？"
+    }
+  ]
+}
+```
+
+【截图占位 API-SYS-01｜Cherry OpenAI Chat Request：system/developer + user】
+
+培训时必须以当前 Cherry + 内网 qwen3.6 的真实 Request 为准：
+
+> **当前客户端究竟发送 `system` 还是 `developer`，现场看 Network，不根据 OpenAI 官方新接口直接推断内网兼容行为。**
+
+---
+
+### OpenAI Responses：更直接的 `instructions`
+
+Responses API 可以把高层指令放在顶层：
+
+```json
+{
+  "model": "qwen3.6",
+  "instructions": "你是部门内网模型 API 培训助手……",
+  "input": "Responses Vision 当前实测结论是什么？"
+}
+```
+
+【截图占位 API-SYS-02｜Cherry Responses Request：instructions + input】
+
+这里有一个工程细节值得点一下：
+
+> `instructions` 是当前 Response Request 的指令。应用如果管理多轮状态，仍然要明确自己如何在后续请求中继续提供这些长期规则。
+
+所以 Cherry Assistant / Open WebUI Workspace Model 的价值之一，就是：
+
+> **替用户持续管理这些长期 Instructions，而不是让用户每轮重新粘贴。**
+
+---
+
+### Anthropic Messages：顶层 `system`
+
+Anthropic Messages 不是在 `messages[]` 中加入一个 `role=system`。
+
+典型方式是：
+
+```json
+{
+  "model": "qwen3.6",
+  "system": "你是部门内网模型 API 培训助手……",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Responses Vision 当前实测结论是什么？"
+    }
+  ]
+}
+```
+
+【截图占位 API-SYS-03｜Cherry Anthropic Request：top-level system + messages】
+
+于是同一句长期指令，在三套协议里可能对应：
+
+| 协议 | 长期指令典型位置 |
+|---|---|
+| OpenAI Chat | `system/developer message` |
+| OpenAI Responses | `instructions` |
+| Anthropic Messages | 顶层 `system` |
+
+【图示占位 API-SYS-04｜同一个 System Prompt → 三种 API Schema】
+
+这一页非常适合和前面的“三协议”演示连起来：
+
+> **Prompt 的语义可以相同，但协议表达形式不同。**
+
+---
+
+## 1.4B System Prompt、User Prompt、Context 到底什么关系？
+
+可以用一个很简单的分层理解：
+
+```text
+System / Developer Instructions
+= 长期规则、角色、边界
+
+User Prompt
+= 这一次具体要做什么
+
+Context
+= 本轮模型真正能看到的全部输入材料
+```
+
+Context 可能同时包含：
+
+- System / Developer Instructions；
+- 当前 User Prompt；
+- 历史对话；
+- 文件内容；
+- 图片；
+- Knowledge Retrieval Result；
+- Web Search Result；
+- Tool Result。
+
+因此：
+
+> **System Prompt 是 Context 的一部分，但 Context 不等于 System Prompt。**
+
+【图示占位 PROMPT-01｜System Prompt / User Prompt / Context 三层关系】
+
+这张图后面会继续连接：
+
+> Cherry Assistant Instructions  
+> Open WebUI Workspace System Prompt  
+> AGENTS.md / Project Instructions
+
+它们作用范围不同，但都在解决：
+
+> **“哪些规则应该稳定、重复地进入模型当前工作上下文？”**
 
 ---
 
@@ -1032,7 +1208,374 @@ model-metric
 
 ---
 
-# 3.4 Cherry Studio：一个 Chat 工作台到底替我们做了哪些事？
+# 3.4 文件作为附件时，到底怎样进入模型？
+
+这里要专门纠正一个很常见的说法：
+
+> “上传文件以后，应用就是把文件转成文本塞进上下文。”
+
+**有时候是，但不能一概而论。**
+
+文件进入模型大致有四种典型路径。
+
+---
+
+## 3.6.1 路径一：客户端先解析成文本，再放进 Prompt / Message
+
+一些 Chat 客户端会先在本地或服务端做：
+
+```text
+DOCX / TXT / Markdown
+↓
+Parse
+↓
+Extracted Text
+↓
+Message / Context
+↓
+Model
+```
+
+【图示占位 FILE-01｜Client Parse → Text → Context】
+
+这时模型最终看到的确实主要是：
+
+> **提取后的文本。**
+
+但问题也很明显：
+
+- 表格结构可能丢失；
+- 图片和图表可能丢失；
+- 页码 / 标题层级可能变化；
+- 文件越大，占用 Context 越多。
+
+因此不能只问：
+
+> “支持不支持上传 Word？”
+
+还要问：
+
+> **它是怎样解析 Word 的？**
+
+---
+
+## 3.6.2 路径二：API 原生支持 File / Document Input
+
+现在一些模型 API 已经可以直接表达：
+
+> “这一项输入是一个文件。”
+
+例如 OpenAI Responses 支持 `input_file`，可以使用：
+
+- uploaded `file_id`；
+- Base64；
+- File URL。
+
+服务端再根据文件类型处理。
+
+当前 OpenAI 官方行为包括：
+
+- PDF：可同时提取文本和页面图像；
+- DOCX / PPTX / TXT / Code 等非 PDF 文档：主要提取文本；
+- Spreadsheet：走专门的表格处理流程。
+
+【图示占位 FILE-02｜Responses input_file → Server-side File Processing → Model】
+
+Anthropic Messages 对 PDF 也支持：
+
+- URL；
+- Base64 `document` block；
+- Files API `file_id`。
+
+【图示占位 FILE-03｜Anthropic document block / file_id】
+
+因此：
+
+> **API 中出现 file_id / input_file / document，不等于文件二进制原封不动地“塞进 Token”。**
+
+平台仍然会执行某种文件解析、视觉处理或文档处理。
+
+---
+
+## 3.6.3 路径三：图片直接作为多模态输入
+
+图片附件又不同。
+
+它可能作为：
+
+- image URL；
+- Base64 image；
+- image content block；
+
+交给 Vision Model。
+
+【截图占位 FILE-04｜Cherry 图片附件对应的 Vision Payload】
+
+这时不应该简单理解成：
+
+> “先 OCR 成文字再给模型。”
+
+多模态模型可以直接处理图像表示。
+
+OCR 可能是任务的一部分，但不是所有 Vision 输入的唯一机制。
+
+---
+
+## 3.6.4 路径四：文件进入 Knowledge Base，再按需检索
+
+如果文件不是临时附件，而是反复使用的知识：
+
+```text
+File
+↓
+Parse
+↓
+Chunk
+↓
+Index
+↓
+Question
+↓
+Retrieve
+↓
+Relevant Chunks
+↓
+Context
+↓
+Model
+```
+
+【图示占位 FILE-05｜Attachment vs Knowledge/RAG】
+
+Open WebUI 的 Full Context 则是另一个特例：
+
+```text
+File / Note
+↓
+Whole Content
+↓
+Context
+↓
+Model
+```
+
+因此“上传文件”至少要先问：
+
+> **这是临时附件、原生 File Input、Vision Input、Full Context，还是 Knowledge/RAG？**
+
+这五个词对用户看起来都像：
+
+> “我上传了一个文件。”
+
+但底层机制完全不同。
+
+---
+
+## 3.6.5 用 Cherry / Open WebUI 做一个附件路径实测
+
+建议第一讲准备同一个很短的 Markdown 文件：
+
+```text
+attachment-demo.md
+```
+
+里面放一个非常容易验证的唯一字符串，例如：
+
+```text
+TRAINING_ATTACHMENT_CODE = BLUE-7319
+```
+
+分别做三次：
+
+1. Cherry 直接作为临时附件；
+2. Cherry 放入 Knowledge 后再问；
+3. Open WebUI 使用 Full Context / Workspace Knowledge。
+
+固定问题：
+
+> 文档中的 TRAINING_ATTACHMENT_CODE 是什么？
+
+然后观察：
+
+- Network Request；
+- Context / Retrieval Trace；
+- 是否出现全文；
+- 是否只出现 Chunk；
+- 是否出现 file/document 类型。
+
+【录屏占位 FILE-R01｜同一文件三种进入 Context 的方式】
+
+这个 Demo 的价值非常大：
+
+> **不要根据 UI 上“回形针”图标猜底层机制，直接看 Request / Trace。**
+
+---
+
+# 3.5 Prompt Engineering：提示词需要“框架”吗？
+
+在大家理解 System Prompt、User Prompt、Context 以后，再简单介绍 Prompt Engineering。
+
+先给一个结论：
+
+> **提示词框架有用，但不要把框架当成模型的魔法口诀。**
+
+OpenAI 和 Anthropic 当前官方 Prompt Guidance 的共同点，其实非常朴素：
+
+- 任务要明确；
+- 给必要 Context；
+- 约束要明确；
+- 指定输出格式；
+- 必要时给 Examples；
+- 复杂任务进行结构化组织。
+
+所以培训不要求大家背十套缩写。
+
+我们统一推荐一个工程化 Prompt 骨架：
+
+```text
+Goal / Task
+Context
+Constraints
+Expected Output
+Examples（必要时）
+Verification / Success Criteria（工程任务）
+```
+
+【图示占位 PROMPT-02｜推荐 Prompt 骨架】
+
+对于普通办公问答，再加 Role 即可：
+
+```text
+Role
+Task
+Context
+Constraints
+Format
+Examples
+```
+
+---
+
+## 3.7.1 可以认识几个社区常见框架，但不要迷信
+
+### RTF
+
+```text
+Role
+Task
+Format
+```
+
+适合：
+
+> 很短、输出要求明确的日常任务。
+
+### CO-STAR
+
+社区常见表达：
+
+```text
+Context
+Objective
+Style
+Tone
+Audience
+Response
+```
+
+适合：
+
+> 文案、沟通、面向特定受众的内容生产。
+
+### CRISPE
+
+常见版本强调：
+
+- Capacity / Role；
+- Insight / Context；
+- Statement / Task；
+- Personality；
+- Experiment / Variants。
+
+适合：
+
+> 需要角色、背景、风格和多个候选版本的任务。
+
+【图示占位 PROMPT-03｜RTF / CO-STAR / CRISPE 一页速览】
+
+但这里要明确：
+
+> **这些大多是社区记忆法，不是 API 标准，也不是模型厂商规定的必填字段。**
+
+真正重要的是：
+
+> 有没有把模型完成任务所需的信息说清楚。
+
+---
+
+## 3.7.2 工程任务里，比“给模型一个专家角色”更重要的是什么？
+
+例如：
+
+> “你是一名资深软件工程师，请帮我修 Bug。”
+
+看起来像 Prompt Engineering。
+
+但缺了：
+
+- 哪个仓库；
+- 当前现象；
+- 不能改什么；
+- 怎么验证；
+- 什么算完成。
+
+更工程化的表达应该是：
+
+```text
+Goal
+修复 85°C 边界判断错误。
+
+Context
+代码位于 src/sensor_guard/。
+当前测试 test_high_temperature_boundary 失败。
+
+Constraints
+不改变其他温度阈值。
+遵守 AGENTS.md。
+不新增依赖。
+
+Verification
+pytest 必须全部通过。
+最后给出 git diff 摘要。
+```
+
+所以这里提前埋下第四讲最重要的一句话：
+
+> **对于复杂工程任务，Problem / Requirement / Constraint / Verification 往往比“你扮演什么专家”更重要。**
+
+---
+
+## 3.7.3 Prompt、System Prompt、Project Rules 不要混成一个东西
+
+最后做一张范围对比：
+
+| 类型 | 典型作用范围 | 示例 |
+|---|---|---|
+| User Prompt | 当前任务 | “总结这份报告” |
+| System Prompt | 一个 Assistant / Workspace | “优先依据内网资料回答” |
+| Project Rules | 一个项目 / Workspace | AGENTS.md / CLAUDE.md |
+| Skill | 一类重复工作 | “如何做服务健康检查” |
+| Test / Eval | 判断是否做对 | pytest / Benchmark |
+
+【图示占位 PROMPT-04｜Prompt → System Prompt → Project Rules → Skill → Test】
+
+这张图非常重要，因为它把第一讲和第三、第四讲接起来：
+
+> **不要把所有长期知识、项目规则和工作方法都塞进一个越来越长的 Prompt。**
+
+---
+
+# 3.6 Cherry Studio：一个 Chat 工作台到底替我们做了哪些事？
 
 在第一讲前面，我们已经从 Network 里看到：
 
@@ -1071,7 +1614,7 @@ Request Parameters
 
 ---
 
-## 3.4.1 助手指令：为什么不需要每轮都重新说“你是谁”
+## 3.6.1 助手指令：为什么不需要每轮都重新说“你是谁”
 
 Cherry Studio 的“助手”可以保存：
 
@@ -1119,7 +1662,7 @@ Conversation
 
 ---
 
-## 3.4.2 模型配置：同一个问题为什么可以临时切模型？
+## 3.6.2 模型配置：同一个问题为什么可以临时切模型？
 
 Cherry 的助手可以指定默认模型，对话中也可以临时切换模型。
 
@@ -1140,7 +1683,7 @@ Cherry 的助手可以指定默认模型，对话中也可以临时切换模型�
 
 ---
 
-## 3.4.3 模型参数：UI 里的 Temperature、Top-P、Max Tokens 到底改了什么？
+## 3.6.3 模型参数：UI 里的 Temperature、Top-P、Max Tokens 到底改了什么？
 
 在 Cherry 的助手模型设置中，可以展示：
 
@@ -1178,7 +1721,7 @@ Cherry 的助手可以指定默认模型，对话中也可以临时切换模型�
 
 ---
 
-## 3.4.4 知识库：勾一下之后，模型真的“学会”这些资料了吗？
+## 3.6.4 知识库：勾一下之后，模型真的“学会”这些资料了吗？
 
 Cherry 对话输入区可以选择已经创建的知识库，助手也可以预先关联知识库。
 
@@ -1248,7 +1791,7 @@ Model Answer
 
 ---
 
-## 3.4.5 联网搜索：为什么这和知识库不是一回事？
+## 3.6.5 联网搜索：为什么这和知识库不是一回事？
 
 Cherry 对话输入区还可以打开网络搜索。
 
@@ -1288,7 +1831,7 @@ Cherry 当前支持配置搜索服务和 URL 获取服务，并且联网能力�
 
 ---
 
-## 3.4.6 MCP / 工具调用：勾选工具以后发生了什么？
+## 3.6.6 MCP / 工具调用：勾选工具以后发生了什么？
 
 Cherry 助手可以关联 MCP，模型支持工具调用时，对话中就可以获得外部工具。
 
@@ -1326,7 +1869,7 @@ Answer
 
 ---
 
-## 3.4.7 一个 Cherry 对话到底可能包含哪些东西？
+## 3.6.7 一个 Cherry 对话到底可能包含哪些东西？
 
 讲完所有选项以后，可以截一张最终界面。
 
@@ -1362,7 +1905,7 @@ Model API
 
 ---
 
-# 3.5 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同
+# 3.7 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同
 
 在进入 Open WebUI 之前，先不要把它当成另一个完全不同的产品世界。
 
@@ -1389,7 +1932,7 @@ Model API
 
 ---
 
-## 3.5.0 用同一套 System Prompt 和同一份知识，分别创建两个“内网 API 培训助手”
+## 3.7.0 用同一套 System Prompt 和同一份知识，分别创建两个“内网 API 培训助手”
 
 为了把这个对应关系讲透，建议第一讲做一个非常直观的双端对照 Demo。
 
@@ -1483,7 +2026,7 @@ Open WebUI Workspace Model
 
 ---
 
-## 3.5.0A 为什么这组对应关系对后面理解 Agent 很重要？
+## 3.7.0A 为什么这组对应关系对后面理解 Agent 很重要？
 
 因为从这里开始，学员会看到一个连续演进：
 
@@ -1561,7 +2104,7 @@ Open WebUI 更适合展示另一类需求：
 
 ---
 
-## 3.5.1 个人笔记：知识不一定来自“上传 PDF”
+## 3.7.1 个人笔记：知识不一定来自“上传 PDF”
 
 当前内网 v0.11.0 已实际走通：
 
@@ -1592,7 +2135,7 @@ Open WebUI 更适合展示另一类需求：
 
 ---
 
-## 3.5.2 同一个 Markdown 文档为什么可以选“完整文档”和“聚焦检索”？
+## 3.7.2 同一个 Markdown 文档为什么可以选“完整文档”和“聚焦检索”？
 
 这是当前内网 Open WebUI v0.11.0 很适合现场演示的一点。
 
@@ -1667,7 +2210,7 @@ Model
 
 ---
 
-## 3.5.3 没有配置 Embedding，为什么仍然能用知识回答？
+## 3.7.3 没有配置 Embedding，为什么仍然能用知识回答？
 
 这是当前内网 v0.11.0 特别值得讲的真实现象。
 
@@ -1718,7 +2261,7 @@ Model
 
 ---
 
-## 3.5.4 Workspace：为什么它比“临时上传一个附件”更进一步？
+## 3.7.4 Workspace：为什么它比“临时上传一个附件”更进一步？
 
 一次聊天临时上传文件解决的是：
 
@@ -1760,7 +2303,7 @@ Open WebUI Workspace / Model
 
 ---
 
-## 3.5.5 Cherry Studio 与 Open WebUI：功能越来越像，但“数据边界”和“组织方式”不同
+## 3.7.5 Cherry Studio 与 Open WebUI：功能越来越像，但“数据边界”和“组织方式”不同
 
 如果只看今天的功能，两者其实越来越像：
 
@@ -1913,7 +2456,7 @@ Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge �
 
 ---
 
-## 3.5.6 Open WebUI Workspace Model 和 Cherry Assistant：其实在解决同一个问题
+## 3.7.6 Open WebUI Workspace Model 和 Cherry Assistant：其实在解决同一个问题
 
 现在把两边最容易混淆的功能放到一起。
 
@@ -1999,7 +2542,7 @@ Specialized Assistant / Workspace Model
 
 ---
 
-## 3.5.7 Open WebUI Notes：既可以“在笔记旁边问”，也可以成为后续知识
+## 3.7.7 Open WebUI Notes：既可以“在笔记旁边问”，也可以成为后续知识
 
 当前内网 v0.11.0 已经实际走通两个很有价值的使用方式。
 
@@ -2083,7 +2626,7 @@ Server Note / Knowledge
 
 ---
 
-## 3.5.8 从个人知识到部门知识：两者的演进路径不同
+## 3.7.8 从个人知识到部门知识：两者的演进路径不同
 
 Cherry 更自然的起点：
 
@@ -2117,7 +2660,7 @@ Open WebUI 更自然地可以继续向上走：
 
 ---
 
-## 3.5.9 第一讲和第二讲如何分工
+## 3.7.9 第一讲和第二讲如何分工
 
 第一讲只让学员看到：
 
