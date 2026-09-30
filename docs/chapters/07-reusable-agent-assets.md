@@ -86,6 +86,92 @@ api/qwen/
 
 **截图占位：ASSET-01 ai-share 仓库资产地图**
 
+
+## 1.1 用 ZCode 把“资产应该放哪里”变得可见
+
+模块三、四已经连续使用 ZCode，因此本章也可以先在同一个产品里观察不同资产的边界。
+
+ZCode 当前官方把几类东西明确分开：
+
+```text
+AGENTS.md
+→ 人维护
+→ 放在仓库
+→ 团队可 Review / Git 版本化
+→ 项目长期规则
+
+Project Memory
+→ Agent 自动提炼
+→ 本机保存
+→ 不进入 Git
+→ 适合工作过程中学到的零散项目事实
+
+Command
+→ 简单可复用 Prompt / 快捷入口
+
+Skill
+→ 完整可复用工作方法
+→ SKILL.md
+→ 可包含更系统的流程
+
+MCP
+→ 外部实时能力
+
+Plugin
+→ 把 Skill / Command / MCP / Hook / Subagent 打包分发
+```
+
+这给“资产路由”提供了一个很直观的产品案例。
+
+例如同一句经验：
+
+> “这个项目测试命令是 `python -m unittest discover -s tests -v`。”
+
+如果这是团队正式约束：
+
+> 写进 `AGENTS.md`。
+
+如果只是 Agent 在工作中偶然学到、尚未成为团队规范：
+
+> 可以出现在 Project Memory。
+
+如果是“每次验收都要按 12 步执行”的方法：
+
+> 应该升级成 Skill，而不是继续塞进 Memory。
+
+如果只是：
+
+> “请解释这个文件并列出风险”
+
+这种简单重复 Prompt：
+
+> 可以做成 Command。
+
+因此，本章不把 Memory / Skill / Command 当成“功能按钮”，而是通过同一个问题：
+
+> **这条经验应该沉淀到哪里？**
+
+来理解它们。
+
+### 一个很重要的当前 ZCode 事实
+
+ZCode 当前 Project Memory：
+
+- 默认关闭；
+- 开启后会额外消耗 Token；
+- 保存在本机，不进入 Git；
+- 当前 App 内还不能浏览或逐条清理其内容；
+- 只作用于主会话，Subagent 不读写它。
+
+这恰好支持本培训的工程原则：
+
+> **关键项目事实和规则不能只依赖不可审计的隐式 Memory，应写回显式项目资产。**
+
+**截图占位：ASSET-ZC-01｜ZCode AGENTS.md vs Project Memory**
+**截图占位：ASSET-ZC-02｜ZCode Command vs Skill**
+**截图占位：ASSET-ZC-03｜ZCode Plugin：Skill / Command / MCP / Hook 组成**
+
+
 ---
 
 # 2. 先不要背资产类型，先理解“生命周期”
@@ -1082,6 +1168,19 @@ project-acceptance Skill
   https://developers.openai.com/api/docs/guides/agents
 - OpenAI ExecPlan / PLANS.md  
   https://developers.openai.com/cookbook/articles/codex_exec_plans
+
+## ZCode：用于建立连续案例
+
+- ZCode Agent / AGENTS.md / Project Memory  
+  https://zcode.z.ai/en/docs/agents
+- Command  
+  https://zcode.z.ai/en/docs/commands
+- Skill  
+  https://zcode.z.ai/en/docs/skill
+- Plugin  
+  https://zcode.z.ai/en/docs/plugin
+- MCP  
+  https://zcode.z.ai/en/docs/mcp-services
 
 ## Hermes：用于说明产品实现差异
 
