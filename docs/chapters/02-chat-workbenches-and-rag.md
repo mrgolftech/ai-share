@@ -1968,3 +1968,85 @@ Cherry Local-first 和 Open WebUI Server-side 只描述：
 | WB-R02 | 录屏 | P0 | Cherry Provider → 内网模型 Chat | ⬜ |
 | KB-R01 | 录屏 | P0 | Cherry 从建库到问答 | ⬜ |
 | KB-R02 | 录屏 | P0 | BM25 / Embedding / Rerank 对比 | ⬜ |
+
+
+# 二十九、System Prompt 与附件：Chat 工作台最终怎样组织 Context
+
+## 29.1 System Prompt
+
+Cherry Assistant Instructions 和 Open WebUI Workspace Model System Prompt 都属于长期应用指令。
+
+协议层：
+
+```text
+OpenAI Chat
+→ system / developer message
+
+OpenAI Responses
+→ instructions
+
+Anthropic Messages
+→ top-level system
+```
+
+因此：
+
+> **UI 中“系统提示词”最终仍要通过对应 API Schema 进入模型当前请求。**
+
+它不是 Fine-tuning，也不是安全边界。
+
+## 29.2 文件附件
+
+不要统一表述成：
+
+> “上传以后全部转文本。”
+
+需要区分：
+
+```text
+Client Parse → Text
+Native File Input
+Vision Input
+Full Context
+Knowledge / RAG
+```
+
+临时附件、知识库文件和图片附件底层路径可能完全不同。
+
+培训时优先通过 Cherry Network / Open WebUI Trace 验证。
+
+## 29.3 Prompt Framework
+
+培训只介绍：
+
+- RTF；
+- CO-STAR；
+- CRISPE；
+
+作为常见记忆法。
+
+统一推荐的稳定结构仍然是：
+
+```text
+Task / Goal
+Context
+Constraints
+Expected Output
+Examples
+Verification
+```
+
+工程任务尤其强调：
+
+```text
+Goal
+Current State
+Constraints
+Allowed Actions
+Acceptance / Verification
+Deliverable
+```
+
+详细证据：
+
+`docs/references/system-prompt-file-input-prompt-engineering-2026-09.md`
