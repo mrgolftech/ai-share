@@ -2072,6 +2072,10 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 5. 编写可复用资产、Memory、索引、语义检索、RAG、Sub-agent 章节；
 6. 按真实项目逐一整理案例；
 7. 为每个模块建立截图和 Demo 清单；
+
+   - 当前已有讲义的统一素材清单已建立：`docs/outline/media-capture-checklist.md`；
+   - 截图/录屏采用统一编号、P0/P1/P2 优先级和状态管理；
+
 8. 形成培训完整讲义；
 9. 将讲义重新抽象为 PPT 逐页故事线；
 10. 制作最终 PPT 和备用演示素材。
@@ -2093,6 +2097,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
 - Thinking 失败项专项复测（已有实测证据）
 - Token 输出速率体感 Demo（可用于培训，基于 Apache-2.0 开源项目改造，可离线运行）
+- 现有讲义截图/录屏占位与总清单（已有初稿：`docs/outline/media-capture-checklist.md`；API、Chat→Agent、Open WebUI/Cherry、知识库、Agent 共性机制均已建立编号；当前待用户按 P0 清单补真实截图与录屏）
+
 - API 官方参考资料（已有素材）
 
 ## 待建设
