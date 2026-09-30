@@ -223,7 +223,7 @@ BLUE-7319
 也可以换自己的授权图片：
 
 ```bash
-python vision_ocr.py --image path/to/image.png
+python vision_ocr.py --image path/to/image.png --expected "YOUR-TEXT"
 ```
 
 边界：
@@ -294,7 +294,7 @@ Translation
 → Visual QA + JSON Validation
 ```
 
-课堂录屏建议保留 Base URL / Model 配置不变，让大家直观看到：
+脚本会在开头打印 Base URL 和 Model（不会打印 API Key）。课堂录屏建议保留 Base URL / Model 配置不变，让大家直观看到：
 
 > **变化的是 Input / Prompt / Output Contract，而不是换了四个模型。**
 
