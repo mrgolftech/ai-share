@@ -95,7 +95,7 @@ Need more work?
 
 ---
 
-# 1. 先看一个最小真实任务
+# 1. 问题：Chat 给了代码以后，谁来真正执行？
 
 假设任务不是“告诉我怎么改”，而是：
 
@@ -138,7 +138,7 @@ Agent 需要真正完成：
 
 ---
 
-# 2. Tool Call 到底发生了什么
+# 2. 问题：模型真的在“操作电脑”吗？——先看 Tool Call
 
 ## 2.1 模型并不是直接“执行命令”
 
@@ -200,7 +200,7 @@ Model
 
 ---
 
-# 3. File System：Agent 与工程项目连接的第一层
+# 3. 问题：Agent 怎么接触一个已有项目？——ZCode Workspace / File
 
 ## 3.1 为什么文件能力如此基础
 
@@ -279,7 +279,7 @@ Model
 
 ---
 
-# 4. Shell：为什么它是工程 Agent 的“通用插座”
+# 4. 问题：Agent 怎么使用现成工程工具？——ZCode Terminal / Shell
 
 ## 4.1 Shell 的本质不是“黑窗口”
 
@@ -377,7 +377,7 @@ OpenAI Codex 当前官方配置就明确区分审批策略和 Sandbox Mode，这
 
 ---
 
-# 5. Git：不仅是托管代码，更是 Agent 的状态与审计基础
+# 5. 问题：人怎么知道 Agent 实际改了什么？——ZCode Review / Git
 
 ## 5.1 为什么 Agent 特别需要 Git
 
@@ -462,7 +462,7 @@ Diff 是更可靠的事实。
 
 ---
 
-# 6. Test：为什么“命令成功”仍然不等于任务成功
+# 6. 问题：Agent 说“修好了”，凭什么相信？——Test / Verification
 
 ## 6.1 三种常见误判
 
@@ -526,7 +526,7 @@ L4 用户界面验证
 
 ---
 
-# 7. Browser Use、Playwright、Computer Use、Crawler：不要混成一件事
+# 7. 问题：Agent 怎么“看到”网页？——Browser / Playwright / Computer Use / Crawler
 
 这是这一章最容易讲乱的地方。
 
@@ -655,7 +655,7 @@ Model observes screenshot/tool result
 
 ---
 
-# 8. 浏览器 Visual QA：为什么 Agent 写完前端代码后还应该“自己看一眼”
+# 8. 问题：代码测试通过，页面就一定能用吗？——ZCode Browser Visual QA
 
 真实 Web 项目经常出现：
 
@@ -703,7 +703,7 @@ Implement
 
 ---
 
-# 9. SSH：Agent 如何从本机跨到远端服务器
+# 9. 问题：Agent 怎么从本地跨到真实服务器？——SSH
 
 ## 9.1 SSH 本身不是“AI 能力”
 
@@ -765,7 +765,7 @@ Agent
 
 ---
 
-# 10. Docker：把部署操作变成更标准的状态对象
+# 10. 问题：容器启动了，就能证明部署成功吗？——Docker / Health
 
 Docker 很适合 Agent 的一个原因，是很多操作天然结构化：
 
@@ -805,7 +805,7 @@ Docker 官方文档明确提供 `docker logs` 查看容器输出，也支持 Hea
 
 ---
 
-# 11. API：Agent 操作真实世界不一定要“点界面”
+# 11. 问题：Agent 操作系统一定要模拟人点界面吗？——API / Structured Tool
 
 Agent 可以通过 API 连接：
 
@@ -842,7 +842,7 @@ Trigger Workflow
 
 ---
 
-# 12. CI/CD：把“Agent 自己验证”升级为“仓库再次验证”
+# 12. 问题：怎样让验证不依赖 Agent 每次“记得测试”？——CI/CD
 
 Agent 在本地跑完测试并不代表结束。
 
@@ -871,7 +871,7 @@ GitHub Actions 官方将 Workflow 定义为仓库中的可配置自动化流程�
 
 ---
 
-# 13. 一个完整工程 Agent 闭环应该长什么样
+# 13. 问题：这些工具怎样连成一个完整工程闭环？
 
 把前面所有工具收束成一个真实模板：
 
@@ -919,7 +919,7 @@ GitHub Actions 官方将 Workflow 定义为仓库中的可配置自动化流程�
 
 ---
 
-# 14. 人在这个闭环里负责什么
+# 14. 问题：Agent 都能执行了，人还负责什么？
 
 工具越强，越不能把人的职责讲没。
 
@@ -952,7 +952,7 @@ Agent 适合承担：
 
 ---
 
-# 15. 为什么“给 Agent 更多工具”不一定更好
+# 15. 问题：是不是给 Agent 越多工具越好？
 
 常见误区：
 
@@ -981,7 +981,7 @@ Agent 适合承担：
 
 ---
 
-# 16. 最低可用 Agent 工程环境
+# 16. 问题：要让 Agent 真正工作，环境最少要准备什么？
 
 这一段不做“安装教程”，只建立工作环境概念。
 
@@ -1004,7 +1004,7 @@ Agent 适合承担：
 
 ---
 
-# 17. 课堂 Demo 设计
+# 17. 课堂案例：先 ZCode 闭环，再扩展到服务器与 CI
 
 ## Demo A：ZCode 工程闭环——Sensor Guard
 
