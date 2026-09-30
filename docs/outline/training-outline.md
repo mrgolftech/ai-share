@@ -1215,7 +1215,39 @@ Agent 不只能调用 LLM API。
 
 ---
 
-## 5.8 环境配置
+## 5.8 Agent Runtime / Environment Engineering
+
+模块三新增一个必须单独讲清的层：
+
+```text
+Model
+→ Harness
+→ Tool
+→ Execution Environment
+→ Git / Python / Node/npm / Docker / Compiler
+→ Dependencies / Internal Services
+```
+
+重点强调：
+
+- Terminal 是执行通道，不等于工具链已经存在；
+- ZCode 有 Git 工作流集成，但内网标准环境仍应显式安装并验证 Git CLI；
+- Python、Node/npm、Docker、编译器属于宿主机 / WSL / Container / Remote Host 的 Toolchain；
+- Remote Workspace 中 Agent Runtime 和命令都在目标环境执行；
+- 内网不能依赖 Agent 临时访问公网安装依赖；
+- 需要离线安装包、内部 PyPI/npm/OS/Container Registry、CA、Proxy、DNS、版本与 Lock 文件；
+- Agent 配置同步与 Runtime 环境构建是两个独立问题。
+
+完整案例：
+
+`docs/cases/agent-runtime-environment-intranet.md`
+
+环境 Preflight：
+
+- `demos/zcode-real-world/check-agent-env.ps1`
+- `demos/zcode-real-world/check-agent-env.sh`
+
+### 5.8.1 环境配置
 
 给工程人员一套最低可用 Agent 工作环境概念：
 
@@ -2069,7 +2101,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 3. 打磨 Agent 工作区与工具链章节：`04-agent-common-mechanisms.md` 与 `05-agent-tools-real-world.md` 已有初稿，下一步补统一 Demo、实测证据和截图；
 4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成；第一套 MCP Host 固定为 ZCode，下一步实现并实测 Raw API → ZCode MCP Tool → ZCode Skill+MCP；
 5. “如何形成可复用资产”主讲稿与证据基线已形成，并增加 ZCode AGENTS.md / Project Memory / Command / Skill / Plugin 的连续实例，用于解释资产沉淀边界；
-6. **下一建设重点**：优先完成 ZCode 两个贯穿案例实测（鹈鹕 Browser 闭环 + Sensor Guard 工程闭环），再补 SSH/Docker、CI 与模块四 API→MCP→Skill 统一 Demo；
+6. **下一建设重点**：先完成 Agent Runtime 内网标准环境与 Preflight 实测，再完成 ZCode 两个贯穿案例（鹈鹕 Browser 闭环 + Sensor Guard 工程闭环），之后补 SSH/Docker、CI 与模块四 API→MCP→Skill 统一 Demo；
 7. 为每个模块建立截图和 Demo 清单；
 
    - 当前已有讲义的统一素材清单已建立：`docs/outline/media-capture-checklist.md`；
@@ -2106,6 +2138,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块三证据基线：`docs/references/agent-tools-real-world-evidence-2026-09.md`（已有素材；已核验 Playwright、OpenAI Computer Use/Codex Sandbox、Git、Docker、GitHub Actions 官方资料）
 - ZCode 模块三贯穿案例：`demos/zcode-real-world/README.md` + `docs/cases/zcode-agent-real-world.md`（已有案例设计；并已补 `instructor-runbook.md`、`result-template.md`；官方证据基线为 `docs/references/zcode-agent-evidence-2026-09.md`，确认 Workspace/Terminal/Built-in Browser/Review/Execution Modes/AGENTS.md/Project Memory/Goal Mode 等当前实现）
 - ZCode Sensor Guard 训练项目：`demos/zcode-real-world/project/`（已有初始项目；5 条测试中设计 1 条 85°C 边界失败，待 ZCode 现场实测修复）
+- Agent Runtime / 内网工具链案例：`docs/cases/agent-runtime-environment-intranet.md`（已有初稿；明确 Harness vs Runtime、Git/Python/Node/npm、Local/WSL/Docker/SSH、内网软件供应链边界）；并新增 Windows/Linux Preflight 脚本
 - 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（已有初稿；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界）
 - 模块四证据基线：`docs/references/api-mcp-skill-evidence-2026-09.md`（已有素材；基于 MCP、OpenAI Skills/Plugins/Tool Design/Hooks 当前官方资料核验）
 - 模块四统一 Demo 设计：`demos/agent-tool-integration/README.md`（规划完成；同一训练服务依次演示 Raw API → MCP Tool → Skill+MCP，避免把三层误解为三套不同能力）
