@@ -122,6 +122,46 @@ Open WebUI 当前核心仍以 OpenAI Chat Completions 协议为主，同时对 O
 
 ---
 
+## 2.2 当前内网 Open WebUI v0.11.0 实测
+
+当前部门内网部署版本：`v0.11.0`。
+
+当前已经由实际使用验证的能力：
+
+- 用户可以创建自己的 Note / Markdown；
+- 支持上传文档；
+- 可以把这些内容作为 Knowledge 使用；
+- 对具体 Markdown / 文档可以在 Full Context 与 Focused Retrieval 之间选择；
+- 当前未配置 Embedding Model，因此会提示未向量化；
+- Knowledge 仍然可以被 Workspace / Model 配置引用；
+- 也可以在 Workspace 创建过程中通过 Knowledge 选项上传/关联文档；
+- 选择该 Workspace 后，问答可以依据其中资料回答。
+
+当前最重要的解释边界：
+
+> **能依据知识回答，不等于 Vector Retrieval 已经生效。**
+
+- Full Context：全文直接进入 Context，不依赖 Embedding；
+- Focused Retrieval：若无向量索引，Vector Retrieval 能力本身未建立；实际是否使用关键词/BM25/Knowledge Tool/其他回退，需结合当前实例 Trace 再验证。
+
+因此这套现网行为非常适合培训中演示：
+
+```text
+用户知识资产
+→ Knowledge
+→ Retrieval / Full Context
+→ Workspace
+→ Chat
+```
+
+同时用于提醒：
+
+> **产品 UI 上的“知识库”三个字，不代表底层一定只采用一种 Retrieval。**
+
+【截图占位 OW-07～13｜当前内网 v0.11.0 Note / Upload / Retrieval Mode / Embedding Warning / Workspace / Answer】
+
+【录屏占位 OW-R03｜个人 Note / Document → Workspace → 基于知识问答】
+
 # 三、Open WebUI 的几种典型应用模式
 
 【截图占位 OW-03｜P1】同一 Open WebUI 中“裸模型 Chat / Workspace Model / Knowledge / Tool”四种入口或配置的拼图，展示能力递进。
