@@ -128,6 +128,179 @@ Postman / Python / WebUI / Agent
 
 模型不是网页；WebUI 只是 API 的一种客户端。
 
+
+### 3.1 现场 Demo：用 Cherry Studio Network 把“聊天框”拆成 API 请求
+
+这一段不先给学员看 Python，而是先打开 **Cherry Studio + Chromium DevTools / Network**。
+
+目标是让大家直观看到：
+
+> **聊天界面不是模型本身。它首先是一个 API Client：负责组织 Context、文件/图片和参数，再把请求发给模型服务。**
+
+建议现场固定使用部门内网 qwen3.6，按下面顺序演示。
+
+#### Demo A：模型列表是怎么来的
+
+打开 Cherry Studio 的模型选择 / Provider 页面，清空 Network 后触发模型列表刷新。
+
+重点观察：
+
+- Request URL；
+- Method；
+- Status；
+- Response；
+- 是否请求 `/v1/models`；
+- Response 中的 model id 如何最终出现在 UI。
+
+这里要让学员建立第一层直觉：
+
+~~~text
+模型下拉框
+   ↓
+GET /v1/models
+   ↓
+JSON Response
+   ↓
+应用把模型列表渲染出来
+~~~
+
+也就是说：
+
+> **UI 中“有哪些模型”这件事，本身也可以来自 API。**
+
+截图占位：
+
+- `API-NET-01`：Cherry Studio 模型列表；
+- `API-NET-02`：Network 中的 models Request / Response。
+
+#### Demo B：发送第一条普通文本消息
+
+使用一个非常短、容易识别的固定问题，例如：
+
+~~~text
+请记住测试编号 A17，只回复“已记住”。
+~~~
+
+在 Network 中找到实际 Chat Request，展开 Payload / Request Body。
+
+重点观察：
+
+- Endpoint；
+- model；
+- messages / input；
+- role；
+- content；
+- stream；
+- Thinking / reasoning 相关参数（如果实际请求存在）；
+- Header 中的鉴权信息只说明作用，不在培训截图中暴露真实 API Key。
+
+培训不要只展示整理后的 JSON，要让大家看到：
+
+> **刚才在聊天框里输入的一句话，最终就是这样被应用组装成 HTTP Request 发出去的。**
+
+截图占位：
+
+- `API-NET-03`：第一轮文本对话 Request Payload。
+
+#### Demo C：连续追问，Context 到底怎么附加
+
+第二轮直接问：
+
+~~~text
+刚才的测试编号是什么？
+~~~
+
+然后把第一轮和第二轮 Request 并排比较。
+
+这里不提前假设 Cherry Studio 当前版本一定采用哪一种会话组织方式，而是以现场抓包为准，重点验证：
+
+1. 第二次请求是否重新带上前面的 user / assistant 消息；
+2. System Prompt 是否每轮重复发送；
+3. 当前问题位于哪里；
+4. 如果实际使用的 Endpoint 支持服务端会话状态，是否出现 response id / conversation id / previous response 等引用；
+5. 两轮请求体大小怎样变化。
+
+如果当前 OpenAI Chat Compatible 路径表现为完整 messages 历史回传，可以画成：
+
+~~~text
+第 1 轮
+System
++ User #1
+        ↓
+      Model
+
+第 2 轮
+System
++ User #1
++ Assistant #1
++ User #2
+        ↓
+      Model
+~~~
+
+这一段要纠正一个常见误解：
+
+> **通常不是“模型自己记住了上一句话”，而是应用 / Harness 在下一次模型调用时重新组织并提供相关历史；如果采用服务端有状态协议，则可能通过会话标识引用之前状态。具体以实际协议和抓包为准。**
+
+这正好为后面的 Context Window、Context Management 和 Agent Harness 铺路。
+
+截图占位：
+
+- `API-NET-04A`：第一轮 Request；
+- `API-NET-04B`：第二轮 Request；
+- `API-NET-04C`：两轮 Payload Diff / 标注图。
+
+#### Demo D：多模态图片是怎么进入请求的
+
+再发送一张非常简单、答案确定的测试图片。
+
+现场不要只看模型“看懂了图片没有”，而要在 Network 中查看：
+
+- Request Body 中图片对应的 content block；
+- 图片是 Base64 / data URL、远程 URL、上传后的文件引用，还是由客户端 / Provider Adapter 转换成其他结构；
+- 文本和图片在同一个 message / input 中怎样组合；
+- 一张图和多张图的结构有什么变化。
+
+这一段要传递的是：
+
+> **“支持图片”不是聊天框的魔法，本质上仍然是客户端按照模型 API 的多模态 Schema，把文本和图像输入编码进请求。**
+
+最终以 Cherry Studio 当前版本 + 当前 Provider 的真实 Request 为准，不把某一种图片传输形式写成所有客户端的统一标准。
+
+截图占位：
+
+- `API-NET-05`：Vision Request Payload；
+- `API-NET-06`：文本 content 与 image content 的结构标注。
+
+#### Demo E：流式输出在 Network 里是什么样
+
+最后观察一次流式请求：
+
+~~~text
+stream = true
+       ↓
+HTTP Response 保持连接
+       ↓
+SSE event / data 持续到达
+       ↓
+Cherry Studio 一边接收，一边渲染到聊天框
+~~~
+
+这样可以直接把下一节“SSE”从抽象协议变成刚刚看过的真实现象。
+
+截图占位：
+
+- `API-NET-07`：流式 Response / EventStream。
+
+### 3.2 这一组抓包 Demo 最终只留下四个结论
+
+1. **Chat UI 是模型 API 的客户端，而不是模型本身。**
+2. **多轮对话需要某种会话状态管理：历史可以被重新组装进请求，也可以由有状态协议引用；必须看真实 Request，不能凭 UI 猜。**
+3. **图片、文件、Thinking、Tool Schema 都最终要以某种协议结构进入模型调用。**
+4. **从 UI → Network → Request / Response，是理解任何 AI 应用工作机制的一种通用调试方法。**
+
+这也是后续分析 Cherry Studio、Open WebUI、Agent 和各种第三方客户端时建议学员掌握的第一种工程方法。
+
 ## 四、非流式与 SSE
 
 非流式：
