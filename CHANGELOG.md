@@ -62,3 +62,6 @@
 - 模块三讲义已嵌入 ZCode 主叙事，并新增 ZCODE-01～13、ZCODE-R01～03 素材编号。
 - 新增 ZCode 现场 Runbook 与实测结果模板，规定现场停顿问题、异常处理、环境记录和 Evidence 留档，避免 Demo 退化为产品功能巡览。
 - 新增 `docs/references/zcode-agent-evidence-2026-09.md`，基于 ZCode 当前官方文档核验 Workspace、AGENTS.md、Project Memory、Browser、Terminal、Execution Modes、Goal Mode、Command/Subagent 等事实边界。
+- ZCode 连续案例延伸到模块四、五：模块四第一套 Host 固定用 ZCode 演示 Raw API → MCP → Skill → Command/Plugin；模块五用 ZCode AGENTS.md / Project Memory / Command / Skill / Plugin 解释资产路由。
+- 新增 `demos/agent-tool-integration/zcode-implementation-plan.md`，控制后端能力不变，仅改变 API/MCP/Skill 等接入与复用层。
+- 素材清单新增 ZCode 资产边界截图 ASSET-ZC-01～03。
