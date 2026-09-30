@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.8  
+> 状态：Final Lecture Draft v1.9  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -1416,17 +1416,231 @@ model-metric
 
 ---
 
-# 3. Token 和 Context：为什么“多给资料”不是免费的
+# 3. Token 和 Context：模型真正“看到”和“生成”的到底是什么
 
 知道了 Context 是“模型当前桌面上的材料”，再讲 Token 就容易得多。
 
-模型并不是按“Word 页数”或者“中文字符数”处理输入，而是把输入编码成 Token。
+模型并不是按“Word 页数”或者“中文字符数”直接处理文本。对文本输入来说，进入大模型本体之前，首先要经过与模型配套的 Tokenizer，把字符串编码成 Token ID。
 
-这里不需要花很长时间讲 tokenizer 算法。
+这一段不把 Tokenizer 算法讲成 NLP 理论课，而是直接回答四个工程问题：
 
-只回答三个实际问题：
+1. 文本怎样变成模型能够计算的数据？
+2. 模型推理时到底输出什么？
+3. 为什么 Prefill 和 Decode 是两种不同的计算阶段？
+4. 为什么“百万 Token”在真实长上下文工作负载里并没有想象中那么多？
 
-## 3.1 为什么 Token 值得关心？
+---
+
+## 3.1 从文本到 Token，再从 Token 回到文字：一次文本 LLM 推理的完整链路
+
+可以先给学员看这一条最重要的数据流：
+
+```text
+用户输入 / System Prompt / 历史对话 / 检索结果
+                    ↓
+                Tokenizer
+                    ↓
+             Token ID 序列
+                    ↓
+                Embedding
+                    ↓
+              Transformer
+                    ↓
+     下一个 Token 的 logits / 概率分布
+                    ↓
+        Sampling / Decoding Strategy
+                    ↓
+            选出下一个 Token ID
+                    ↓
+       追加到序列，继续下一步 Decode
+                    ↓
+               Detokenize
+                    ↓
+               人类可读文本
+```
+
+【图示占位 TOKEN-01｜Text → Tokenize → Embedding → Transformer → Token → Detokenize】
+
+这里要特别纠正两个常见误解。
+
+第一：
+
+> **LLM 本体并不是直接“读汉字”或“读单词”，而是在 Token ID 映射成的向量上进行计算。**
+
+第二：
+
+> **模型每一步严格来说并不是直接“输出一句文字”，而是计算整个词表中“下一个 Token”的 logits / 概率分布，再由采样策略选出一个 Token。**
+
+因此，自回归文本大模型可以粗略理解为不断重复：
+
+```text
+已有 Token 序列
+↓
+预测下一个 Token
+↓
+把新 Token 追加回序列
+↓
+继续预测
+```
+
+也就是：
+
+```text
+P(t[n+1] | t[1], t[2], ... , t[n])
+```
+
+前端看到的“逐字打字”，底层通常更接近“逐 Token 生成并持续解码”。需要提醒：
+
+> **1 Token 不等于 1 个汉字，也不等于 1 个英文单词。**
+
+同一段文字在不同模型家族下，因为 Tokenizer / Vocabulary 不同，Token 切分和 Token 数也可能不同。
+
+当前内网 qwen3.6 正式测试已经验证：
+
+- `POST /tokenize`；
+- `POST /detokenize`；
+- Context 配置为 `131072`。
+
+课堂上不要只展示接口 PASS，直接做一个往返实验：
+
+```text
+"人工智能正在改变软件开发方式"
+        ↓ /tokenize
+[token_id_1, token_id_2, ...]
+        ↓ /detokenize
+"人工智能正在改变软件开发方式"
+```
+
+【截图占位 TOKEN-02｜内网 qwen3.6 /tokenize：文本 → Token IDs + 数量】
+
+【截图占位 TOKEN-03｜内网 qwen3.6 /detokenize：Token IDs → 文本】
+
+【录屏占位 TOKEN-R01｜同一文本执行 tokenize → detokenize 往返】
+
+这个 Demo 的目的不是让大家背 Token ID，而是建立一个直觉：
+
+> **大模型的输入输出计量单位，首先是 Token，而不是“页”“字”或者“句子”。**
+
+---
+
+## 3.1A 为什么推理还要分 Prefill 和 Decode？
+
+把完整链路再拆成两个阶段就容易理解性能指标。
+
+### Prefill：先把这一次已有的上下文“读进去”
+
+例如本轮请求一共包含 60,000 Token：
+
+```text
+System Prompt
++ 历史对话
++ 当前问题
++ 文件/知识库片段
++ Tool Result
+= 60,000 input tokens
+```
+
+模型首先要处理这些已有 Token，并建立后续生成所需的中间状态 / KV Cache。
+
+这一阶段称为：
+
+> **Prefill / Prompt Processing**
+
+所以输入越长，并不是“反正已经写在请求里了，就没有成本”。
+
+### Decode：再一个 Token、一个 Token 地往后生成
+
+Prefill 完成以后，模型开始：
+
+```text
+生成 Token 1
+↓
+追加
+↓
+生成 Token 2
+↓
+追加
+↓
+生成 Token 3
+...
+```
+
+这一阶段称为：
+
+> **Decode / Generation**
+
+所以我们后面讲性能时要区分：
+
+- 输入有多少 Token；
+- Prefill 多快；
+- 首 Token 要等多久（TTFT）；
+- 后续 Decode 每秒能生成多少 Token；
+- 最终一共输出多少 Token。
+
+【图示占位 TOKEN-04｜一次请求：60k Input → Prefill → First Token → Decode → Output】
+
+这也正好连接第五节的 TTFT / Tokens/s / Total Latency。
+
+---
+
+## 3.1B “百万 Token 很多”是一个很容易产生的错觉
+
+这里建议现场直接算一笔账。
+
+假设某种额度、计费统计或吞吐预算按 **1,000,000 input tokens** 计算。
+
+如果一次真实工程请求已经带入：
+
+```text
+60,000 input tokens
+```
+
+那么即使完全不算输出：
+
+```text
+1,000,000 / 60,000 ≈ 16.7
+```
+
+也就是说，大约十几次这样的请求，就已经接近 100 万输入 Token。
+
+【图示占位 TOKEN-05｜1,000,000 Token ÷ 60,000 Token/次 ≈ 16.7 次】
+
+但这里必须把三个概念分开，避免讲错：
+
+| 概念 | 含义 |
+|---|---|
+| Context Window | **单次推理最多能容纳多少 Token** |
+| 本次 Input Tokens | **这一轮请求实际送进去多少 Token** |
+| Token 额度 / 计费 / 吞吐统计 | **一段时间或一个账户累计处理了多少 Token** |
+
+因此：
+
+> **“模型支持 131K Context”不等于“我有 131K Token 的总额度”；“百万 Token 额度”也不等于“模型拥有百万 Token Context Window”。**
+
+而在普通多轮 Chat 中，如果应用每一轮都重新把历史消息带回请求，累计 Token 消耗还可能比直觉更快。
+
+例如每轮新增约 10k 内容，简单示意：
+
+```text
+第 1 轮：10k
+第 2 轮：20k
+第 3 轮：30k
+第 4 轮：40k
+...
+```
+
+累计消耗并不是只算最后一轮的 40k，而是这些请求分别都发生了 Prefill 和 Token 处理。
+
+这个例子后面可以继续连接到：
+
+- 长对话为什么越来越重；
+- 为什么 Agent 要做 Context Compaction；
+- 为什么 RAG 不应该把检索到的所有资料都无限塞进上下文；
+- 为什么“上下文很长”不等于“可以不做知识检索和上下文管理”。
+
+---
+
+## 3.1C 为什么 Token 值得关心？
 
 因为 Token 直接关系到：
 
@@ -1434,11 +1648,14 @@ model-metric
 - 输出长度；
 - Context 占用；
 - Prefill 工作量；
+- KV Cache；
 - 推理时间；
 - 服务吞吐；
-- API 成本。
+- API 成本或额度。
 
-【截图占位 API-01｜/tokenize 或模型接口相关实测】
+这一节最后只留一句话：
+
+> **Token 不是一个计费术语，而是理解模型输入、推理、性能、上下文和成本的共同尺度。**
 
 ## 3.2 Context Window 是什么？
 
