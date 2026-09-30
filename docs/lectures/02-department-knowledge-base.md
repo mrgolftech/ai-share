@@ -841,16 +841,37 @@ Workspace / Model 绑定 Knowledge：
 ```text
 个人
 → Note / Personal Knowledge
+→ Personal Workspace Model
 
 团队
-→ Shared Knowledge / Workspace / ACL
+→ Shared Knowledge
+→ Shared Workspace Model
+→ Group / ACL
 ```
 
-这比简单说：
+而 Workspace Model 本身也值得和 Cherry Assistant 对照理解：
+
+```text
+Base Model
++ System Prompt
++ Parameters
++ Knowledge
++ Tools
+→ Reusable Assistant
+```
+
+两边本质上都在做“应用层预设”，System Prompt 也是在后续请求中持续注入 Instructions，而不是重新训练模型。
+
+但数据管理边界不同：
+
+- Cherry Studio：桌面客户端，本地知识/配置为主；
+- Open WebUI：集中式服务端，用户的 Chat / Note / Knowledge / Workspace 由服务器侧统一持久化与访问控制。
+
+因此这比简单说：
 
 > “Open WebUI 是管理员建知识库的工具”
 
-更符合当前内网 v0.11.0 的实际使用情况。
+更符合当前内网 v0.11.0 的实际使用情况，也更能解释为什么 Open WebUI 适合作为部门 AI Portal。
 
 【截图占位 KB-21｜Shared Knowledge / Group / ACL】
 
