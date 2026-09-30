@@ -58,7 +58,15 @@ Agentic Retrieval / Agent
 
 # 二、Open WebUI：更适合“集中式模型入口 + 管理 + Workspace”
 
+【截图占位 OW-01｜P0】Open WebUI 首页 / 模型选择界面，能看出“统一 Web 入口 + 多模型”的产品定位。
+
+
 ## 2.1 接入模型
+
+【截图占位 OW-02｜P0】Open WebUI Provider / Connection 配置页，展示 Base URL、模型来源；API Key 必须脱敏。
+
+【录屏占位 WB-R01｜P1｜30–45 秒】新增/选择 Provider → 拉取模型 → 发起一次 Chat。用于说明“统一入口背后仍然是模型 API”。
+
 
 对于部门内网这种 OpenAI-compatible API，推荐路径：
 
@@ -92,6 +100,9 @@ Open WebUI 当前核心仍以 OpenAI Chat Completions 协议为主，同时对 O
 ---
 
 # 三、Open WebUI 的几种典型应用模式
+
+【截图占位 OW-03｜P1】同一 Open WebUI 中“裸模型 Chat / Workspace Model / Knowledge / Tool”四种入口或配置的拼图，展示能力递进。
+
 
 ## 3.1 模式 A：裸模型聊天
 
@@ -181,6 +192,9 @@ Prompt
 
 # 四、Open WebUI：System Prompt 与模型参数
 
+【截图占位 OW-04｜P0】Workspace Model 的 System Prompt 与 Advanced Parameters 配置页。截图时突出“模型 + Prompt + 参数 = 可复用助手配置”。
+
+
 ## 4.1 System Prompt
 
 Open WebUI 当前支持：
@@ -233,6 +247,9 @@ Open WebUI 当前支持：
 
 # 五、Open WebUI：Thinking / Reasoning 设置
 
+【截图占位 OW-05｜P1】Open WebUI Thinking/Reasoning 显示设置 + 同一模型真实请求参数/响应的对照，避免误解“UI 有开关 = 后端一定生效”。
+
+
 这里必须分清两件事。
 
 ## 5.1 “显示 Thinking”不等于“开启 Thinking”
@@ -276,6 +293,9 @@ Open WebUI 还支持部分 Provider 的：
 ---
 
 # 六、Open WebUI：图片能力要拆成两类
+
+【截图占位 OW-06｜P1】同一页面中 Vision 输入与 Image Generation 入口/结果的对照图，强调“看图”和“生图”是两类能力。
+
 
 ## 6.1 Vision：理解图片
 
@@ -473,6 +493,9 @@ Query + Candidate Document
 ---
 
 # 十、Open WebUI 的知识库与 RAG
+
+【复用截图 KB-15～17｜P0】Shared Knowledge、ACL、Focused/Agentic Retrieval。知识库章节为这些素材的唯一编号来源，本章直接复用。
+
 
 ## 10.1 Focused Retrieval
 
@@ -739,6 +762,9 @@ Answer
 
 # 十四、Cherry Studio：更适合个人桌面、多模型和知识库工作
 
+【截图占位 CH-01｜P0】Cherry Studio 主界面：Provider / Assistant / Topic / Knowledge / MCP 等入口同屏，体现“个人 AI 工作台”。
+
+
 Cherry Studio 当前已经包含：
 
 - Chat；
@@ -757,6 +783,11 @@ Cherry Studio 当前已经包含：
 ---
 
 # 十五、Cherry Studio：模型配置
+
+【截图占位 CH-02｜P0】Custom Provider 配置：Base URL、API Key、模型 ID / 拉取模型。API Key 必须脱敏。
+
+【录屏占位 WB-R02｜P0｜30–45 秒】配置内网 Provider → 拉取模型 → 选择 qwen3.6 → 发一次请求。和第一章 Network 抓包可形成前后呼应。
+
 
 ## 15.1 内置 Provider
 
@@ -821,6 +852,9 @@ Custom Provider
 ---
 
 # 十六、Cherry Studio 的 Assistant 和 Agent 要分开
+
+【截图占位 CH-03｜P1】Assistant 配置与 Agent/Tools 配置对照，突出“预设 Prompt/参数”与“可主动调用工具”的区别。
+
 
 Cherry Assistant 可以理解成：
 
@@ -897,6 +931,9 @@ Agent / Work 更强调：
 
 # 十八、Cherry Studio：模型参数、Thinking 与 Context
 
+【截图占位 CH-04｜P1】模型参数 / Thinking Depth / Context 相关设置。旁边注明“UI 设置是否映射到后端参数必须用 Network/API 验证”。
+
+
 Assistant 的模型设置可以包括：
 
 - Temperature；
@@ -925,6 +962,9 @@ Cherry 对长会话还会进行 Context Compaction。
 ---
 
 # 十九、Cherry Studio：图片能力
+
+【截图占位 CH-05｜P1】Vision 对话与 Drawing/生图入口的对照，和 OW-06 形成跨产品一致概念。
+
 
 ## 19.1 图片理解
 
@@ -974,6 +1014,11 @@ Image Model       → 生成图片
 ---
 
 # 二十、Cherry Studio 当前知识库可以完全不配置 Embedding
+
+【复用截图 KB-04｜P0】Embedding=None / BM25 配置界面。
+
+【复用截图 KB-05｜P0】同一问题的 BM25 vs Embedding Retrieval Test。
+
 
 这是这部分最值得现场演示的点。
 
@@ -1587,6 +1632,11 @@ docs/architecture/department-knowledge-architecture.md
 
 # 二十五、非常适合现场做的 Cherry RAG Demo
 
+【录屏占位 KB-R01｜P0｜60–90 秒】Cherry：建立知识库 → 添加同源资料 → Embedding=None/BM25 → Retrieval Test → 提问。
+
+【录屏占位 KB-R02｜P0｜60–90 秒】Cherry：同一问题切换 BM25 / Embedding /（如可用）Rerank，展示召回变化。必须使用同一资料、同一问题。
+
+
 准备三份我们自己的真实材料：
 
 1. qwen3.6 API 说明；
@@ -1725,3 +1775,30 @@ Keyword Retrieval
 - Knowledge Base: https://cherryai.com/docs/en/knowledge-base/knowledge-base/
 - Web Search: https://cherryai.com/docs/en/pre-basic/websearch/
 - Agent: https://cherryai.com/docs/en/advanced-basic/agent/
+
+
+---
+
+# 二十九、截图与录屏准备清单
+
+> 本章知识库相关素材尽量与教学版知识库讲义共用 `KB-xx` / `KB-Rxx` 编号，避免同一画面重复拍摄。
+
+| 编号 | 类型 | 优先级 | 内容 | 状态 |
+|---|---|---:|---|---|
+| OW-01 | 截图 | P0 | Open WebUI 统一入口 / 模型选择 | ⬜ |
+| OW-02 | 截图 | P0 | Provider / Connection | ⬜ |
+| OW-03 | 截图 | P1 | Chat → Workspace Model → Knowledge → Tool | ⬜ |
+| OW-04 | 截图 | P0 | System Prompt + Advanced Parameters | ⬜ |
+| OW-05 | 截图 | P1 | Thinking UI 与实际协议参数对照 | ⬜ |
+| OW-06 | 截图 | P1 | Vision vs Image Generation | ⬜ |
+| CH-01 | 截图 | P0 | Cherry Studio 个人工作台总览 | ⬜ |
+| CH-02 | 截图 | P0 | Custom Provider | ⬜ |
+| CH-03 | 截图 | P1 | Assistant vs Agent | ⬜ |
+| CH-04 | 截图 | P1 | Thinking / Context 参数 | ⬜ |
+| CH-05 | 截图 | P1 | Vision vs Drawing | ⬜ |
+| KB-04~05 | 复用截图 | P0 | BM25 / Embedding 对比 | ⬜ |
+| KB-12~17 | 复用截图 | P0/P1 | Cherry KB / Open WebUI Shared KB | ⬜ |
+| WB-R01 | 录屏 | P1 | Open WebUI Provider → Chat | ⬜ |
+| WB-R02 | 录屏 | P0 | Cherry Provider → 内网模型 Chat | ⬜ |
+| KB-R01 | 录屏 | P0 | Cherry 从建库到问答 | ⬜ |
+| KB-R02 | 录屏 | P0 | BM25 / Embedding / Rerank 对比 | ⬜ |
