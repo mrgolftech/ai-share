@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.4  
+> 状态：Final Lecture Draft v1.5  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -1362,7 +1362,169 @@ Model API
 
 ---
 
-# 3.5 Open WebUI v0.11.0：另一个“Chat 工作台”，但更适合作为共享知识入口
+# 3.5 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同
+
+在进入 Open WebUI 之前，先不要把它当成另一个完全不同的产品世界。
+
+先把 Cherry Studio 和 Open WebUI 中几个最常用概念一一对应起来：
+
+| Cherry Studio | Open WebUI v0.11.0 | 本质上解决什么问题 |
+|---|---|---|
+| Assistant / 助手 | Workspace Model / Model Preset | 把基础模型封装成一个可重复使用的专用入口 |
+| Assistant Instructions | System Prompt | 每轮调用模型时持续注入长期指令 |
+| Knowledge Base | Knowledge / Note / Document | 给模型补充外部知识 |
+| Assistant 关联 Knowledge | Workspace Model 关联 Knowledge | 让某个专用助手长期使用固定资料 |
+| Conversation | Chat | 在同一个应用配置下进行一次具体会话 |
+| MCP / Tool | Tools / Skills | 给模型提供外部动作或可复用能力 |
+
+【图示占位 WB-COMP-04A｜Cherry Assistant ↔ Open WebUI Workspace Model 对应关系】
+
+这张表的目的不是说：
+
+> 两个产品完全一样。
+
+而是先让大家看到：
+
+> **它们都在做“基础模型之上的应用封装”。**
+
+---
+
+## 3.5.0 用同一套 System Prompt 和同一份知识，分别创建两个“内网 API 培训助手”
+
+为了把这个对应关系讲透，建议第一讲做一个非常直观的双端对照 Demo。
+
+固定使用同一个基础模型：
+
+> 内网 `qwen3.6`
+
+固定使用同一段长期指令：
+
+```text
+你是部门内网模型 API 培训助手。
+回答优先依据已经绑定的内网 API 测试资料。
+如果资料中没有实测证据，应明确说明，不要猜测。
+```
+
+固定使用同一份知识：
+
+- Qwen API 正式测试报告；
+- 或一条包含当前实测结论的 Markdown Note。
+
+### 在 Cherry Studio 中
+
+```text
+qwen3.6
++ Assistant Instructions
++ Cherry Knowledge Base
+→ “内网 API 培训助手”
+```
+
+【截图占位 WB-COMP-04B｜Cherry Assistant：Model + Instructions + Knowledge】
+
+### 在 Open WebUI 中
+
+```text
+qwen3.6
++ Workspace Model System Prompt
++ Knowledge / Existing Note
+→ “内网 API 培训助手”
+```
+
+【截图占位 WB-COMP-04C｜Open WebUI Workspace Model：Base Model + System Prompt + Knowledge】
+
+然后固定问同一个问题：
+
+> 当前内网 Qwen 的 Responses Vision 正式测试结论是什么？如果历史上曾失败，请说明原因。
+
+两边都应该优先基于绑定资料回答。
+
+【录屏占位 WB-R03｜同模型 + 同 System Prompt + 同知识：Cherry Assistant vs Open WebUI Workspace Model】
+
+这个 Demo 最重要的不是比较回答谁更好。
+
+而是让学员看到：
+
+> **当基础模型、长期指令和知识相同时，两个产品都可以形成一个“专用助手”。**
+
+因此：
+
+```text
+Cherry Assistant
+≈ Model + Instructions + Knowledge + Parameters + Tools
+
+Open WebUI Workspace Model
+≈ Base Model + System Prompt + Knowledge + Parameters + Tools/Skills
+```
+
+【图示占位 WB-COMP-04D｜两种产品统一抽象为 Application Preset】
+
+这里给出一个非常重要的边界：
+
+> **System Prompt 的作用首先是“每次调用模型时注入长期指令”，不是重新训练模型。**
+
+同样：
+
+> **Knowledge 的作用首先是把外部资料通过 Full Context 或 Retrieval 提供给模型，也不是把知识永久写入模型参数。**
+
+所以两个产品的“智能体/工作空间模型”在这一层都可以理解成：
+
+> **Application Preset / 专用应用配置。**
+
+只有当进一步加入：
+
+- Tool Calling；
+- Runtime；
+- 连续行动；
+- Observe；
+- Verify；
+- Iterate；
+
+才进入第三讲所说的完整 Agent 工作方式。
+
+---
+
+## 3.5.0A 为什么这组对应关系对后面理解 Agent 很重要？
+
+因为从这里开始，学员会看到一个连续演进：
+
+```text
+Base Model
+↓
+System Prompt
+↓
+Knowledge
+↓
+Parameters
+↓
+Tools
+↓
+Reusable Assistant
+↓
+再加 Runtime / Loop / Verification
+↓
+Agent
+```
+
+【图示占位 WB-COMP-04E｜从 Base Model → Assistant → Agent 的能力叠加】
+
+也就是说：
+
+> Cherry Assistant 和 Open WebUI Workspace Model 已经不是“裸模型”，但也还不等于完整工程 Agent。
+
+它们正好处于：
+
+```text
+Model
+→ Chat Application
+→ Specialized Assistant
+→ Agent
+```
+
+这条演进链的中间层。
+
+这会让后面“为什么 Chat 不够、Agent 多了什么”变得非常自然。
+
+---
 
 Cherry Studio 更适合用来观察：
 
@@ -2571,6 +2733,24 @@ Harness 执行和反馈
 - WB-COMP-04：Cherry Assistant vs Open WebUI Workspace Model；
 - WB-COMP-05：个人知识 → 团队知识演进图。
 
+### WB-COMP-04A～04E：Assistant / Workspace Model 对应关系
+
+必须准备：
+
+- WB-COMP-04A：功能对应表；
+- WB-COMP-04B：Cherry Assistant 的 Model + Instructions + Knowledge；
+- WB-COMP-04C：Open WebUI Workspace Model 的 Base Model + System Prompt + Knowledge；
+- WB-COMP-04D：两边统一抽象为 Application Preset；
+- WB-COMP-04E：Base Model → Assistant → Agent 能力叠加图。
+
+准备：
+
+- WB-COMP-01：Cherry Desktop / Local Data → Model API；
+- WB-COMP-02：Browser → Open WebUI Server / Data → Model API；
+- WB-COMP-03：两者数据边界/使用场景对照表；
+- WB-COMP-04：Cherry Assistant vs Open WebUI Workspace Model；
+- WB-COMP-05：个人知识 → 团队知识演进图。
+
 ### OW-07～13：Open WebUI v0.11.0 个人知识 / Workspace
 
 按当前内网已经走通的实际流程拍：
@@ -2771,6 +2951,27 @@ api/qwen/results/20260930_095033/
 8. 展示依据资料回答。
 
 建议同一份资料至少保留一次 Full Context 演示，以明确说明全文注入不依赖 Embedding。
+
+## WB-R03：Cherry Assistant vs Open WebUI Workspace Model
+
+固定：
+
+- 同一个 `qwen3.6`；
+- 同一段 System Prompt；
+- 同一份 Qwen API 测试资料；
+- 同一个问题。
+
+步骤：
+
+1. Cherry 创建/打开“内网 API 培训助手”；
+2. 展示 Instructions + Knowledge；
+3. 提问并看回答；
+4. Open WebUI 创建/打开对应 Workspace Model；
+5. 展示 System Prompt + Knowledge；
+6. 提同一个问题；
+7. 对比两边都如何基于“长期指令 + 知识”工作。
+
+不要比较模型谁更聪明，重点只观察“应用封装机制相同”。
 
 ## OW-R04～05：Note 对话与复用
 
