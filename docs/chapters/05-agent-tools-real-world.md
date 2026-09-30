@@ -414,7 +414,156 @@ docker logs --tail 100 app
 
 ---
 
-## 4.3 Shell 也带来最大的风险面之一
+## 4.3 Python、Node.js 还是系统 CLI？
+
+先纠正术语：
+
+> **真正应该比较的是 Python 与 Node.js；npm 是 Node.js 的包管理器，角色更接近 Python 的 pip。**
+
+Agent 环境不应该二选一地只留 Python 或 Node.js。
+
+更合理的工具选择规则是：
+
+~~~text
+已经有成熟、稳定、可审计的专用 CLI？
+        ↓ Yes
+优先直接调用 CLI
+        ↓ No / 需要复杂逻辑
+Python / Node.js 编排
+        ↓
+需要特殊协议能力时
+直接 API / SDK / CDP
+~~~
+
+### 为什么系统 CLI 仍然重要
+
+虽然 Python 能：
+
+- 调进程；
+- 操作文件；
+- 发 HTTP；
+- 解析 JSON；
+- 建立 SSH；
+- 调 Docker API；
+
+但如果任务已经有成熟 CLI，通常没必要让 Agent 重新实现一层。
+
+例如：
+
+~~~text
+Git 状态       → git status / git diff
+HTTP 探测      → curl
+文本搜索       → rg / grep
+容器状态       → docker ps / docker logs
+远端命令       → ssh
+文件打包       → tar / zip
+进程/端口      → 系统原生命令
+~~~
+
+原因是：
+
+- CLI 已经经过大量工程验证；
+- 输入输出明确；
+- Agent 调用成本低；
+- 容易复现；
+- 容易人工复核；
+- 通常能复用现有配置、认证、Context。
+
+所以：
+
+> **Python 不是替代所有 CLI 的“万能命令”，而是更适合把多个步骤组合成稳定程序。**
+
+### Python 更擅长什么
+
+优先 Python 的典型情况：
+
+- API 测试和数据处理；
+- CSV / JSON / Excel / 文档处理；
+- 统计分析、机器学习；
+- 批量文件处理；
+- 复杂条件、重试、状态机；
+- 调用多个 CLI / API 后汇总结果；
+- 自定义测试脚本；
+- 需要将临时 Agent 操作沉淀成可维护程序。
+
+可以把它理解成：
+
+> **Python 更像通用自动化和数据处理胶水。**
+
+### Node.js 更擅长什么
+
+优先 Node.js / TypeScript 的典型情况：
+
+- 前端项目本身就是 JS / TS；
+- npm 生态依赖；
+- Web 构建工具链；
+- Playwright Test；
+- Playwright CLI / Playwright MCP；
+- Puppeteer；
+- 与浏览器、DOM、Web 前端代码强耦合的自动化；
+- 现成 MCP / Agent 工具本身是 Node 包。
+
+Playwright 当前官方同时支持 JavaScript/TypeScript 和 Python，核心浏览器自动化能力两边都有；但 Playwright 面向 Coding Agent 的 `playwright-cli` 当前要求 Node.js 20+，Playwright MCP 也直接通过 `npx` 使用。
+
+因此：
+
+> **“浏览器自动化必须 Node”不成立，但当前 Agent 浏览器工具链中 Node.js 往往更方便。**
+
+### CDP 应该用哪一个
+
+Chrome DevTools Protocol 本身是语言无关的 JSON 协议。
+
+Python 和 Node.js 都可以：
+
+~~~text
+connect CDP
+→ DOM
+→ Network
+→ Runtime
+→ Performance
+→ Debugger
+~~~
+
+Playwright Python 官方提供 `CDPSession` 和 `connect_over_cdp()`；Node 端 Playwright 同样支持，而 Puppeteer 本身就是 Node.js 浏览器自动化库，并以 CDP 作为 Chrome 自动化的重要底层协议。
+
+因此按任务选：
+
+| 场景 | 优先选择 |
+|---|---|
+| 一次性查看页面/点击/截图，Agent 已有 Browser Tool | Agent Browser Tool |
+| Coding Agent 做轻量浏览器自动化 | Playwright CLI（Node） |
+| 需要结构化长期 Browser Agent | Playwright MCP / Browser Tool |
+| JS/TS Web 项目 E2E | Node.js + Playwright Test |
+| Python API/数据项目顺便做浏览器验证 | Python + Playwright |
+| 深入 Chrome 专有 CDP / DevTools 自动化 | Node + Puppeteer 或任一成熟 CDP client |
+| 只需 HTTP，不需要渲染页面 | curl / HTTP client，不要启动浏览器 |
+
+### 一个更重要的原则：优先沿用项目原生技术栈
+
+如果仓库本来是：
+
+~~~text
+Python Project
+→ 优先 pytest / Python scripts
+
+TypeScript Project
+→ 优先 npm scripts / Playwright Test
+
+C/C++ Project
+→ 优先 CMake / compiler / native tests
+~~~
+
+不要为了“Agent 喜欢 Python”给一个 TypeScript 项目额外造一套 Python 自动化层。
+
+一句话：
+
+> **Agent 最好的工具不是它“理论上能用”的工具，而是项目已经验证、团队已经维护、结果最容易复现的工具。**
+
+**图示占位：ENV-05｜Shell / CLI vs Python vs Node.js 决策树**
+
+---
+
+## 4.4 Shell 也带来最大的风险面之一
 
 因为 Shell 可能影响：
 
