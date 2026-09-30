@@ -1166,6 +1166,40 @@ ZCode 当前官方明确说明：
 
 这是企业内网推广时必须单独治理的两件事。
 
+## 16.5 内网还要区分“远端无公网”和“完全隔离公网”
+
+ZCode 当前 Remote Development 支持：
+
+~~~text
+Desktop 下载 Remote Runtime
+→ SFTP 上传到远端
+→ 远端不需要访问公网
+~~~
+
+所以对于：
+
+> **远端开发服务器无法上公网，但桌面端可以下载所需资源**
+
+这一类场景，官方已有明确路径。
+
+但如果：
+
+> **桌面端与远端都处于完全隔离公网环境**
+
+当前官方文档没有明确给出完整 air-gapped Remote Runtime 预置流程。
+
+因此正式内网部署前必须专项验证：
+
+- Desktop Installer 是否能完全离线；
+- Remote Runtime 是否可以预下载并人工导入；
+- Plugin / MCP 依赖如何本地分发；
+- 软件升级如何离线管理；
+- 模型、Git、Package Registry 是否全部可走内网。
+
+不要把“远端无需公网”误讲成“整套 ZCode 已确认支持全离线部署”。
+
+另外，ZCode Remote Development 自身使用内置 SSH client；系统 `ssh` CLI 对 ZCode 连接不是绝对前提，但对通用 CLI 运维工作仍然有价值，因此本培训把 OpenSSH Client 定义为条件项。
+
 核心结论：
 
 > **Agent 的能力上限不仅取决于模型和 Harness，也取决于它所在环境是否预先提供稳定、可复现的 Toolchain 与依赖供应链。**
