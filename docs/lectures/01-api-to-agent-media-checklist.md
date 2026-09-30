@@ -29,6 +29,7 @@
 | PROMPT-* | P1 | Prompt 骨架、社区框架、Prompt/Rules/Skill/Test 边界 | ⬜ |
 | API-POST-* | P0 | Postman / curl GET + POST | ⬜ |
 | API-APP-* | P0 | 同一 Model API → 翻译 / JSON / Vision OCR / Visual QA / 分类 | ⬜ |
+| API-SPEED-* | P0 | Token 输出速率体感 + TTFT/Tokens/s/Total Latency 应用影响 | ⬜ |
 | API-TEST-* | P0 | qwen_api_training_test.py + r4 28 PASS / 1 SKIP | ⬜ |
 | CH-API-* | P0 | Cherry 三种 Endpoint Type / Network 对照 | ⬜ |
 | CH-ASSIST-* | P0 | Assistant / Instructions / 模型 / 参数 | ⬜ |
@@ -151,6 +152,19 @@
 - Postman / curl `GET /v1/models`；
 - Postman `POST /v1/chat/completions`；
 - “Postman / Python / Cherry / Open WebUI / Agent → 同一个 Model API”图。
+
+### API-SPEED-00～03：输出速率与应用体验
+
+准备：
+
+- API-SPEED-00：`TTFT + Output Tokens / Decode Tokens/s + Extra Latency ≈ Total Latency` 直觉图；
+- API-SPEED-01：`demos/api-applications/token-output-speed/index.html` 单速率界面；
+- API-SPEED-02：不同应用对 TTFT / Tokens/s / Tool Latency 的敏感度对照图；
+- API-SPEED-03：Chat 单次调用 vs Agent 多步累计时延图。
+
+课堂重点：
+
+> 不把 Tokens/s 当成孤立跑分。短输出应用通常更敏感于 TTFT，长输出应用越来越受 Decode Tokens/s 影响，Agent 还要看多步累计和工具耗时。
 
 ### API-APP-01～06：同一个 API，不只有 Chat
 
@@ -546,6 +560,25 @@ api/qwen/results/20260930_095033/
 目的：
 
 > 证明“上传文件”只是 UI 动作，底层可能是完全不同的数据路径。
+
+## API-SPEED-R01：Token 输出速率体感
+
+时长建议：45～60 秒。
+
+步骤：
+
+1. 打开 `demos/api-applications/token-output-speed/index.html`；
+2. 单速率依次切换 `5 → 20 → 50 → 100 tok/s`；
+3. 切到 Race Mode，展示 `5 / 30 / 120 tok/s`；
+4. 停留在 TTFT / Tokens/s / Total Latency 解释卡片。
+
+目的：
+
+> 让学员先“看见速度差异”，再进入 model-metric 的真实性能数据。
+
+边界：
+
+> 这是体感模拟器，不是实际模型 Benchmark，不用演示值评价某个模型。
 
 ## API-APP-R01：同一 API 串联 4 个非 Chat 小应用
 
