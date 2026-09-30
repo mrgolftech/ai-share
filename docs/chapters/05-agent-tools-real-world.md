@@ -198,6 +198,75 @@ Model
 
 **截图占位：TOOL-01 Agent Tool Loop 总图**
 
+
+## 2.2 一个容易漏掉的层：有 Tool，不等于环境里真的有这个命令
+
+前面的 Tool Call 图还缺一层：
+
+~~~text
+Model
+  ↓
+Harness
+  ↓
+Tool / Terminal
+  ↓
+Execution Environment
+  ↓
+Git / Python / Node / npm / Docker / Compiler
+  ↓
+Project Dependencies / Internal Services
+~~~
+
+这对工程 Agent 特别重要。
+
+例如 Harness 给了 Agent 一个 Terminal Tool，只表示：
+
+> **Agent 可以请求执行 Shell 命令。**
+
+它并不自动保证当前环境里存在：
+
+- git；
+- python；
+- pip；
+- node；
+- npm；
+- docker；
+- cmake；
+- gcc / MSVC；
+- 项目依赖。
+
+所以需要严格区分：
+
+### Harness Capability
+
+Agent 有没有：
+
+- Terminal；
+- File；
+- Browser；
+- Git / Review UI；
+- MCP；
+- Permission。
+
+### Runtime Capability
+
+Agent 当前所在环境有没有：
+
+- 对应可执行程序；
+- 正确 PATH；
+- 正确版本；
+- 项目依赖；
+- 内网证书；
+- Package Registry；
+- 网络权限。
+
+这也是为什么：
+
+> **同一个模型、同一个 Agent、同一个 Prompt，换一台机器可能完全不同。**
+
+**图示占位：ENV-01｜Model → Harness → Tool → Runtime → Toolchain 分层图**
+
+
 ---
 
 # 3. 问题：Agent 怎么接触一个已有项目？——ZCode Workspace / File
@@ -284,6 +353,12 @@ Model
 ## 4.1 Shell 的本质不是“黑窗口”
 
 Shell 提供的是一个非常通用的程序执行接口。
+
+但必须先强调：
+
+> **Terminal 是通道，不是工具链本身。**
+
+如果当前执行环境没有 Python，那么 Agent 输入 `python test.py` 仍然只会得到 command not found；如果 npm registry 在内网不可达，Agent 再聪明也无法凭空下载依赖。
 
 只要环境里安装了对应工具，Agent 就可能通过 Shell 调用：
 
@@ -983,7 +1058,20 @@ Agent 适合承担：
 
 # 16. 问题：要让 Agent 真正工作，环境最少要准备什么？
 
-这一段不做“安装教程”，只建立工作环境概念。
+这一段在内网培训中需要重点讲，不只是“安装教程”，而是 **Agent Runtime Engineering**。
+
+完整案例：
+
+`docs/cases/agent-runtime-environment-intranet.md`
+
+环境检查脚本：
+
+- `demos/zcode-real-world/check-agent-env.ps1`
+- `demos/zcode-real-world/check-agent-env.sh`
+
+先建立一个判断：
+
+> **Agent Harness 提供执行能力的入口；宿主机 / WSL / 容器 / 远端服务器提供真正的 Toolchain。**
 
 建议工程人员至少理解这些组件：
 
@@ -998,9 +1086,89 @@ Agent 适合承担：
 | 浏览器自动化 | Playwright | UI/E2E/Visual QA |
 | 编辑/Agent | CLI / IDE / Desktop / Web Agent | Harness Surface |
 
+## 16.1 ZCode 的 Git 到底算不算“内置”
+
+当前 ZCode 官方明确提供 Git 状态、Branch、Commit、Review 等内置工作流；但 Windows 安装文档又说明 Git Bash 只有检测到已安装时才出现，远程开发文档则明确 Git 操作运行在目标环境。
+
+因此本培训采用更谨慎的说法：
+
+> **ZCode 内置了 Git 工作流集成，但不要据此假设它提供一个可供所有 Terminal / Script 使用的独立 Git CLI Runtime。**
+
+内网标准环境仍然要求：
+
+~~~bash
+git --version
+~~~
+
+通过验收。
+
+## 16.2 Python / npm 要不要提前装
+
+要。
+
+对本地 Workspace：
+
+> 安装在宿主机。
+
+对 WSL：
+
+> 安装在 WSL 发行版中。
+
+对 Docker：
+
+> 写入标准镜像。
+
+对 SSH Remote：
+
+> 安装在远端开发机。
+
+尤其是内网环境，不应该依赖 Agent 现场联网执行 `pip install`、`npm install`、`apt install` 来“自举”。
+
+## 16.3 内网环境还要多准备一层
+
+除了 Toolchain，还要准备：
+
+- 离线安装包；
+- 内部 PyPI；
+- 内部 npm Registry；
+- apt/yum 内部源或基础镜像；
+- Container Registry；
+- Git Server；
+- Internal CA；
+- Proxy / NO_PROXY；
+- DNS；
+- 软件白名单；
+- 固定版本和 Lock 文件。
+
+因此内网 Agent 的实际基础设施更接近：
+
+~~~text
+Agent
+→ Standard Runtime
+→ Approved Toolchain
+→ Internal Package Supply Chain
+→ Internal Services
+~~~
+
+## 16.4 Remote Development 更能说明这个问题
+
+ZCode 当前官方明确说明：
+
+> Remote Workspace 中 File、Terminal、Git 和 Agent Runtime 都在目标环境运行。
+
+而且官方进一步提醒：
+
+> Sync Skill / MCP / Plugin 成功，不代表远端已经有 npx、Python dependencies 或它们依赖的 CLI。
+
+所以：
+
+> **同步 Agent 配置 ≠ 构建执行环境。**
+
+这是企业内网推广时必须单独治理的两件事。
+
 核心结论：
 
-> **Agent 的能力上限不仅取决于模型，也取决于工作环境里有哪些可靠工具。**
+> **Agent 的能力上限不仅取决于模型和 Harness，也取决于它所在环境是否预先提供稳定、可复现的 Toolchain 与依赖供应链。**
 
 ---
 
@@ -1135,6 +1303,10 @@ local test pass
 | TOOL-09 | P1 | UI 自动操作 vs Structured API Tool | ⬜ |
 | TOOL-10 | P0 | Commit → GitHub Actions → Pass/Fail | ⬜ |
 | TOOL-11 | P0 | 12 步工程 Agent 闭环图 | ⬜ |
+| ENV-01 | P0 | Model → Harness → Tool → Runtime → Toolchain 分层图 | ⬜ |
+| ENV-02 | P0 | ZCode Terminal 环境检查：git/python/node/npm/curl/ssh | ⬜ |
+| ENV-03 | P0 | Local / WSL / Docker / SSH 的执行环境位置对比 | ⬜ |
+| ENV-04 | P0 | 公网自动安装 vs 内网内部镜像/离线包 | ⬜ |
 
 ## 18.2 录屏
 
@@ -1145,6 +1317,8 @@ local test pass
 | TOOL-R03 | P0 | SSH → Docker → Logs → Health Check | ⬜ |
 | TOOL-R04 | P0 | Commit → Push → CI | ⬜ |
 | TOOL-R05 | P1 | API Tool 与 GUI 操作完成同一任务对比 | ⬜ |
+| ENV-R01 | P0 | 环境 Preflight：工具缺失 → 环境补齐 → 同任务成功 | ⬜ |
+| ENV-R02 | P1 | npm/pip 公网源失败 → 内部源成功 | ⬜ |
 
 ---
 
