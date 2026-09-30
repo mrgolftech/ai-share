@@ -17,6 +17,35 @@
 - 操作系统；
 - Workspace 路径。
 
+## 1.1 Environment Preflight
+
+正式录制前先在 ZCode Terminal 中运行环境检查。
+
+Windows：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\check-agent-env.ps1
+```
+
+Linux / WSL：
+
+```bash
+bash ./check-agent-env.sh
+```
+
+至少确认：
+
+- Git；
+- Python + pip；
+- Node + npm；
+- curl；
+- SSH；
+- 项目需要时的 Docker。
+
+如果缺失，不让 Agent现场联网“现装现用”；先按内网标准环境补齐，再开始正式案例。
+
+这一幕也建议录下来，编号：**ENV-R01**。
+
 准备两套 Workspace：
 
 1. 鹈鹕 Demo 空目录；
