@@ -54,6 +54,37 @@ Goal
 
 ---
 
+## 1.1 先做环境 Preflight
+
+在任何 ZCode 案例之前，先检查 Agent 真正能调用的宿主环境：
+
+~~~text
+git --version
+python --version
+python -m pip --version
+node --version
+npm --version
+curl --version
+ssh -V
+~~~
+
+可直接使用：
+
+- `check-agent-env.ps1`
+- `check-agent-env.sh`
+
+这一段故意放在正式任务之前，因为：
+
+> **有 Terminal Tool，不代表 Runtime 已经具备 Git / Python / Node/npm。**
+
+内网环境尤其不允许默认依赖 Agent 临时联网安装。
+
+详细说明：
+
+`docs/cases/agent-runtime-environment-intranet.md`
+
+---
+
 # 2. 两层案例，不用一个案例硬讲所有问题
 
 ## Case A：视觉闭环——鹈鹕骑自行车
