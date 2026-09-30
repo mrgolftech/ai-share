@@ -1061,6 +1061,36 @@ docs/chapters/04-agent-common-mechanisms.md
 
 ---
 
+## 4.3 第一套连续案例：ZCode 贯穿模块三～五
+
+为了降低教学时频繁切换 Agent UI 带来的认知负担，模块三～五的第一套连续案例统一使用 **ZCode**：
+
+```text
+模块三
+Workspace / File / Terminal / Browser / Git / Permission
+        ↓
+模块四
+Raw API → MCP → Skill → Command / Plugin
+        ↓
+模块五
+AGENTS.md → Memory → Command → Skill → Script/Test/CI → Team Assets
+```
+
+目的不是把 ZCode 变成培训主角，而是保持一个稳定 Surface，把注意力放到底层机制。
+
+后续 Codex、Hermes、OpenCode、WorkBuddy 等用于说明：
+
+> **相同问题在不同 Harness 中如何实现，以及哪些资产可以迁移。**
+
+ZCode 当前案例资产：
+
+- `demos/zcode-real-world/`
+- `docs/cases/zcode-agent-real-world.md`
+- `docs/references/zcode-agent-evidence-2026-09.md`
+- `demos/agent-tool-integration/zcode-implementation-plan.md`
+
+---
+
 # 模块三：Agent 如何操作真实世界
 
 ## 5.1 要回答的核心问题
@@ -2037,8 +2067,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 1. 完成模块一现有 Qwen API 讲义、证据、图表和演示脚本；
 2. 编写“为什么 Chat 不够”章节；
 3. 打磨 Agent 工作区与工具链章节：`04-agent-common-mechanisms.md` 与 `05-agent-tools-real-world.md` 已有初稿，下一步补统一 Demo、实测证据和截图；
-4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成，下一步实现并实测 Raw API → MCP Tool → Skill+MCP；
-5. “如何形成可复用资产”主讲稿与证据基线已形成，已统一 Prompt / Project Rules / Skill / Script / Test / CI / Template / Memory / Knowledge Base 的沉淀边界；
+4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成；第一套 MCP Host 固定为 ZCode，下一步实现并实测 Raw API → ZCode MCP Tool → ZCode Skill+MCP；
+5. “如何形成可复用资产”主讲稿与证据基线已形成，并增加 ZCode AGENTS.md / Project Memory / Command / Skill / Plugin 的连续实例，用于解释资产沉淀边界；
 6. **下一建设重点**：优先完成 ZCode 两个贯穿案例实测（鹈鹕 Browser 闭环 + Sensor Guard 工程闭环），再补 SSH/Docker、CI 与模块四 API→MCP→Skill 统一 Demo；
 7. 为每个模块建立截图和 Demo 清单；
 
