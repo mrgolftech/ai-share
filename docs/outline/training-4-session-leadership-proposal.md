@@ -209,4 +209,4 @@ Problem → Requirement → Constraint → Research → Architecture → Plan �
 
 `docs/outline/media-capture-checklist.md`
 
-管理。
+统一管理规范和入口；四讲具体素材分别由对应 `docs/lectures/*-media-checklist.md` 管理。
