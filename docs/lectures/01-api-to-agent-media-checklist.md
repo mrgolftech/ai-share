@@ -18,6 +18,29 @@
 
 ---
 
+## 1. 本讲素材总控表
+
+| 素材组 | 优先级 | 主要内容 | 状态 |
+|---|---:|---|---|
+| API-NET-* | P0 | Cherry models / Chat / Context / Vision / SSE 抓包 | ⬜ |
+| API-PROTO-* | P0 | OpenAI Chat / Responses / Anthropic 三协议 | ⬜ |
+| API-POST-* | P0 | Postman / curl GET + POST | ⬜ |
+| API-TEST-* | P0 | qwen_api_training_test.py + r4 28 PASS / 1 SKIP | ⬜ |
+| CH-API-* | P0 | Cherry 三种 Endpoint Type / Network 对照 | ⬜ |
+| CH-ASSIST-* | P0 | Assistant / Instructions / 模型 / 参数 | ⬜ |
+| CH-KB-* | P0 | Cherry 知识库创建、召回、对话勾选 | ⬜ |
+| CH-WEB-* | P0 | Cherry 联网检索 | ⬜ |
+| WB-COMP-* | P0 | Cherry vs Open WebUI；Assistant vs Workspace Model | ⬜ |
+| OW-* | P0 | Open WebUI v0.11.0 Note / Knowledge / Workspace | ⬜ |
+| API-03~05 | P0 | Thinking / Tool Call / Tool Result | ⬜ |
+| MM-* | P0 | /metrics + model-metric 总览 / Benchmark | ⬜ |
+| CHAT-* / ZCODE-* | P0 | Chat vs Agent 最小闭环 | ⬜ |
+| API-R* / CH-R* / OW-R* / WB-R* / MM-R* | P0/P1 | 第一讲动态演示与备用录屏 | ⬜ |
+
+> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
+
+---
+
 # 14. 第一讲截图执行清单
 
 ## 14.1 P0 必拍截图
@@ -172,14 +195,6 @@
 - WB-COMP-04C：Open WebUI Workspace Model 的 Base Model + System Prompt + Knowledge；
 - WB-COMP-04D：两边统一抽象为 Application Preset；
 - WB-COMP-04E：Base Model → Assistant → Agent 能力叠加图。
-
-准备：
-
-- WB-COMP-01：Cherry Desktop / Local Data → Model API；
-- WB-COMP-02：Browser → Open WebUI Server / Data → Model API；
-- WB-COMP-03：两者数据边界/使用场景对照表；
-- WB-COMP-04：Cherry Assistant vs Open WebUI Workspace Model；
-- WB-COMP-05：个人知识 → 团队知识演进图。
 
 ### OW-07～13：Open WebUI v0.11.0 个人知识 / Workspace
 
