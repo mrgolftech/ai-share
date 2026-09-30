@@ -160,6 +160,9 @@ Markdown / TXT / CSV / YAML / JSON
 
 ## 4.2 PDF：可以作为知识源，但必须验证解析结果并保留原件
 
+【复用截图 KB-06A / KB-06｜P0】原 PDF 页面 → Parsed Text → Chunk 三联图。技术稿重点标注解析错误、页码丢失、表格/多栏等风险位置。
+
+
 文本型、版式简单的 PDF 可以直接进入知识库；风险主要来自扫描件、复杂多栏、表格、公式和图示。
 
 扫描型 PDF 必须：
@@ -376,6 +379,9 @@ Vector Search 很有价值。
 ---
 
 # 八、BM25、Embedding、Rerank 的职责
+
+【复用截图 KB-04 / KB-05 / KB-10｜P0】Embedding=None/BM25、BM25 vs Embedding Retrieval Test、Top-K/Rerank 配置。此处只解释机制，实际操作录屏复用 `KB-R02`。
+
 
 BM25 回答：
 
@@ -1262,6 +1268,11 @@ Open WebUI oikb 当前使用 SHA-256 Diff，只同步新增、修改和删除文
 
 # 十七、权限与数据安全必须在 Retrieval 前执行
 
+【复用图示 KB-21｜P0】错误流程“先检索后过滤” vs 正确流程“先 ACL 再 Retrieval”。
+
+【复用录屏 KB-R03｜P0】Open WebUI Shared Knowledge / Group 权限实际验证。
+
+
 错误方式：
 
 ~~~text
@@ -1307,6 +1318,9 @@ LLM
 ---
 
 # 十八、引用与可追溯性是硬要求
+
+【复用截图 KB-22｜P0】一个带 Source / Section / Version / Commit 或页码引用的回答。技术稿中应放大引用字段，而不是只截最终自然语言。
+
 
 回答最好能够回到：
 
@@ -1746,6 +1760,9 @@ Rerank 应解决：
 
 ## Demo A：Cherry Studio —— 知识怎么建
 
+【素材占位｜P0】静态复用 `KB-12～14`；动态复用 `KB-R01`（建库到问答）与 `KB-R02`（BM25/Embedding/Rerank 对比）。
+
+
 Cherry 负责演示：
 
 ~~~text
@@ -1771,6 +1788,9 @@ Source
 > **Cherry Agent 可以承接 Cherry 自己的 RAG KB；RAG 与 Agent 并不是互斥路线。**
 
 ## Demo B：Open WebUI —— 知识怎么共享和治理
+
+【素材占位｜P0】静态复用 `KB-15～17`；动态复用 `KB-R03`（Shared KB + ACL）与 `KB-R04`（Pipeline vs Agentic）。
+
 
 Open WebUI 不再重复完整的建库教学。
 
@@ -1804,6 +1824,9 @@ Shared Knowledge Base
 ~~~
 
 ## Demo C：Agent —— 承接原始知识和 RAG 知识
+
+【素材占位｜P0】静态复用 `KB-18～19`；动态复用 `KB-R05`（Shared KB → Git → API/Metrics 的跨源取证）。
+
 
 Agent 不应该再演示成第三套互斥知识库。
 
@@ -1973,3 +1996,25 @@ demos/knowledge-retrieval/README.md
 - 中文 Embedding / Reranker 的模型与资源选型。
 
 在这些测试完成之前，讲义中的检索方案均应表述为“**候选设计 / 推荐验证顺序**”，而不是“部门已验证最佳方案”。
+
+
+---
+
+# 附二：本技术稿的素材引用索引
+
+本技术稿不再另建一套截图编号，统一复用教学版的 `KB-01～KB-22` 与 `KB-R01～KB-R06`。这样后续替换真实截图时只维护一份素材。
+
+| 技术主题 | 静态素材 | 动态素材 |
+|---|---|---|
+| 知识源 / 不同资产类型 | KB-02、KB-03 | — |
+| Parse / Chunk | KB-06A、KB-06 | KB-R01 |
+| BM25 / Embedding / Rerank | KB-04、KB-05、KB-10 | KB-R02 |
+| Long Context / Evidence Budget | KB-08、KB-08B、KB-09 | — |
+| Full / Pipeline / Agentic | KB-11、KB-17 | KB-R04 |
+| Cherry Studio | KB-12～14 | KB-R01、KB-R02 |
+| Open WebUI | KB-15～17 | KB-R03、KB-R04 |
+| Agent 多源取证 | KB-18、KB-19 | KB-R05 |
+| ACL | KB-21 | KB-R03 |
+| 引用与可追溯 | KB-22 | KB-R05 |
+| No-answer / 冲突 | — | KB-R06 |
+
