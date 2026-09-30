@@ -1233,6 +1233,7 @@ Model
 - Terminal 是执行通道，不等于工具链已经存在；
 - ZCode 有 Git 工作流集成，但内网标准环境仍应显式安装并验证 Git CLI；
 - Python、Node/npm、Docker、编译器属于宿主机 / WSL / Container / Remote Host 的 Toolchain；
+- 增加 CLI / Python / Node.js 选择规则：成熟专用 CLI 优先；复杂编排/数据处理优先 Python；Web/JS/浏览器工具链优先考虑 Node.js；最终沿用项目原生技术栈；
 - Remote Workspace 中 Agent Runtime 和命令都在目标环境执行；
 - 内网不能依赖 Agent 临时访问公网安装依赖；
 - 需要离线安装包、内部 PyPI/npm/OS/Container Registry、CA、Proxy、DNS、版本与 Lock 文件；
