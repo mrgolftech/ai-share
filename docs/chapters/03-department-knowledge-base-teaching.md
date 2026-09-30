@@ -1308,51 +1308,130 @@ Agent 可能这样工作：
 
 ---
 
-## 13.2 Open WebUI：部门共享知识入口
+## 13.2 Open WebUI v0.11.0：从个人知识工作台走向部门共享知识入口
 
-【录屏占位 KB-R03｜P0｜60–90 秒】Open WebUI：管理员/有权限用户创建或打开 Shared Knowledge → 绑定 Model/入口 → 不同用户或 Group 验证可见性。敏感账号信息脱敏。
+这一部分必须以当前内网已经走通的实际使用为起点，而不是只讲管理员侧。
 
-【录屏占位 KB-R04｜P1｜60–90 秒】同一个 Shared KB，依次展示 Focused/Pipeline Retrieval 与 Native Knowledge Tool/Agentic Retrieval（以当前部署实际支持为准）。重点录模型是否主动决定再次检索，而不是只看最终答案。
+当前内网部署：`v0.11.0`。
 
+当前已实际验证：
 
-Open WebUI 更适合讲：
+- 用户可以创建自己的 Note / Markdown；
+- 可以上传文档；
+- 可以形成自己的 Knowledge；
+- 针对文档可以选择 Full Context / Focused Retrieval；
+- 当前没有配置 Embedding Model，因此会提示未向量化；
+- Knowledge 仍可在 Workspace / Model 中引用；
+- 也可以在创建 Workspace 时通过 Knowledge 选项上传/关联文档；
+- 选择对应 Workspace 后可以依据这些资料问答。
 
-- 多用户；
-- Shared Knowledge；
-- Group / ACL；
-- Hybrid Search；
-- Rerank；
-- Full Context；
-- Agentic Knowledge；
-- 增量同步。
+【录屏占位 KB-R03A｜P0｜60–90 秒】个人 Note / Document → Knowledge → Workspace → 问答。
 
-可以把它理解成：
+【录屏占位 KB-R03B｜P0｜60–90 秒】同一 Markdown：Full Context vs Focused Retrieval；把当前未向量化提示一起录入，并查看 Retrieval / Tool Trace。
 
-> **部门 Shared Knowledge Service / AI Portal。**
+【录屏占位 KB-R03C｜P0｜60–90 秒】Shared Knowledge → Group / ACL → 不同用户可见性。
 
-部门统一维护：
+### 个人知识和共享知识不是一回事
 
-- Parser；
-- Embedding；
-- Rerank；
-- 安全策略；
+可以分成两层：
 
-知识库管理员维护：
+```text
+个人
+→ Note / Personal Knowledge
+→ 自己的 Workspace / 工作助手
 
-- 资料；
+团队
+→ Shared Knowledge
+→ Group / ACL / Version / Governance
+```
+
+所以 Open WebUI 不应该只被理解成：
+
+> “管理员给所有人建一个知识库。”
+
+普通用户首先就可以把自己的：
+
+- 实验记录；
+- Markdown 笔记；
+- 技术资料；
+- 项目文档；
+
+组织成可复用知识。
+
+然后真正需要进入部门共享层时，再增加：
+
+- Owner；
 - Metadata；
-- 权限；
-- 更新。
+- ACL；
+- Version；
+- 更新策略。
 
-普通用户：
+### Full Context 和 Focused Retrieval 正好可以现场讲清
 
-- 查询自己有权看到的 Knowledge。
+**Full Context**
 
-【截图占位 KB-15：Open WebUI Shared Knowledge】
+```text
+Document
+→ Entire Content
+→ Context
+→ Model
+```
 
-【截图占位 KB-16：Open WebUI Group / Knowledge ACL】
+短文档、规则、每轮必须完整遵守的资料很适合。
 
-【截图占位 KB-17：Open WebUI Focused RAG / Agentic Knowledge 对比】
+它不依赖 Vector Retrieval。
+
+**Focused Retrieval**
+
+```text
+Question
+→ Retrieval
+→ Relevant Evidence
+→ Context
+→ Model
+```
+
+适合长文档和大知识集。
+
+但重点是：
+
+> **Focused Retrieval 的质量必须验收。**
+
+### 当前没有 Embedding，为什么还是能回答？
+
+当前内网实例会明确提示未向量化。
+
+因此不能把当前结果描述成：
+
+> “Vector RAG 已经正常工作。”
+
+更准确：
+
+- Full Context 可以直接全文注入，不需要 Embedding；
+- Focused Retrieval 当前到底走关键词/BM25、Knowledge Tool 还是其他 fallback，要继续通过 Trace 验证；
+- “答案正确”只能证明最终有相关证据进入了模型，不能反推具体 Retrieval 机制。
+
+这恰好是很好的工程训练：
+
+> **产品 UI、最终答案和底层实现要分别观察。**
+
+【截图占位 KB-15：Open WebUI Workspace / Knowledge 总览】
+
+【截图占位 KB-15A：个人 Note / Markdown】
+
+【截图占位 KB-16：Full Context / Focused Retrieval】
+
+【截图占位 KB-16A：未配置 Embedding / 未向量化提示】
+
+【截图占位 KB-16B：Workspace 绑定 Knowledge】
+
+【截图占位 KB-16C：选择 Workspace 后基于资料回答】
+
+【截图占位 KB-21：Shared Knowledge / Group / ACL】
+
+因此更准确的定位是：
+
+> **Open WebUI = 个人知识工作台 + 多用户 AI Portal + 共享知识治理入口。**
 
 ---
 
@@ -1419,7 +1498,7 @@ Cherry Studio
 → 看知识怎样 Parse / Chunk / Retrieve
 
 Open WebUI
-→ 看同类知识怎样共享、授权、集中治理
+→ 先看个人 Note/Document 怎样进入 Workspace，再看知识怎样共享、授权、集中治理
 
 Agent
 → 看知识怎样和 Git / API / Metrics 一起被主动调用
