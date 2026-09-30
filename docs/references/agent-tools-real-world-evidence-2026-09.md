@@ -214,3 +214,68 @@ container state
 改为：
 
 > 已有实测证据 / 可用于培训。
+
+
+---
+
+## Playwright：Python / Node.js 与 Agent Browser Tooling
+
+### 官方事实
+
+Playwright 官方 Supported Languages 文档说明：
+
+- JavaScript / TypeScript、Python、Java、.NET 共用同一底层实现；
+- 核心浏览器自动化能力在各语言都支持；
+- 差异主要体现在测试框架生态；
+- Node.js 版本配套 Playwright Test；
+- Python 官方推荐 pytest plugin。
+
+来源：
+- https://playwright.dev/docs/languages
+- https://playwright.dev/python/docs/languages
+
+Playwright 当前面向 Coding Agent 的 playwright-cli 官方文档：
+
+- 定位为 coding agents 的 token-efficient browser automation；
+- prerequisite 为 Node.js 20+。
+
+来源：
+- https://playwright.dev/docs/getting-started-cli
+
+Playwright MCP 当前通过 npx 运行，因此 Node/npm 是其直接运行依赖。
+
+Playwright Python 官方提供：
+
+- browser.new_browser_cdp_session()
+- browser_type.connect_over_cdp()
+
+说明 Python 同样可以直接访问 CDP。
+
+来源：
+- https://playwright.dev/python/docs/api/class-browser
+- https://playwright.dev/python/docs/api/class-browsertype
+
+### CDP 官方事实
+
+Chrome DevTools Protocol 是由命令和事件组成的结构化 JSON 协议，官方生态列出了 JavaScript / TypeScript、Python、Java、Go 等多种 client。
+
+来源：
+- https://chromedevtools.github.io/devtools-protocol/
+
+### Puppeteer
+
+Puppeteer 当前官方定义为 JavaScript browser automation library；Chrome 默认通过 CDP 自动化。
+
+来源：
+- https://pptr.dev/guides/what-is-puppeteer
+- https://pptr.dev/faq
+
+### 培训结论
+
+> 浏览器/CDP 不是只能 Node.js；Python 同样能够完整自动化 Chromium。
+
+但：
+
+> 当前 coding-agent 浏览器工具链里，Playwright CLI/MCP、Puppeteer 等工具使 Node.js 成为很有价值的标准运行时。
+
+因此内网 Agent 标准环境建议同时预置 Python 与 Node.js，而不是二选一。
