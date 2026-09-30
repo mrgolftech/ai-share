@@ -158,6 +158,11 @@ docs/chapters/02-chat-workbenches-and-rag.md
 
 > **Chat 更擅长 Prompt → Answer；工程 Agent 更强调 Goal → Plan → Read → Act → Observe → Verify → Iterate → Deliver。**
 
+【截图占位 CHAT-01｜P0】同一个任务的 Chat 界面：模型已经给出代码/步骤，但尚未真正操作文件、浏览器或测试。
+
+【截图占位 CHAT-02｜P0】同一个任务的 Agent 界面：左侧任务/对话，右侧或终端中能看到文件修改、命令、Browser/Test 结果。用于与 CHAT-01 成对展示。
+
+
 至于：
 
 - 为什么同一个模型放进 Codex、Claude Code、OpenCode、Hermes、Pi 等 Harness 后表现不同；
@@ -224,6 +229,11 @@ Deliver
 
 Harness 会把执行结果重新放回上下文，让模型继续判断。
 
+【图示占位 CHAT-03｜P0】Prompt→Answer 与 Goal→Plan→Read→Act→Observe→Verify→Iterate→Deliver 双流程图。
+
+【录屏占位 CHAT-R01｜P0｜30–45 秒】Agent 完成一次最小闭环：读取文件 → 修改 → 运行 → 看到错误/结果 → 再修改 → 验证。不要录成长时间“等模型思考”，只保留关键动作。
+
+
 ---
 
 ## 六、统一 Demo：同一个“鹈鹕骑自行车”题同时测试模型和 Harness
@@ -275,6 +285,15 @@ Goal
 ~~~
 
 这一轮主要观察 **Harness Capability**。
+
+【截图占位 CHAT-04｜P1】同一模型的“Chat 一次输出”与“Agent 最终浏览器结果 + Diff/Test”并排截图。
+
+【录屏占位 CHAT-R02｜P0｜60–120 秒】鹈鹕统一 Demo 的 Chat 路径：Prompt → 返回 HTML → 人工复制/保存/打开 → 发现问题。
+
+【录屏占位 CHAT-R03｜P0｜60–120 秒】同一模型、同一 Prompt 的 Agent 路径：写文件 → 打开 Browser → 观察 → 修复 → 再验证 → 交付。
+
+> CHAT-R02 与 CHAT-R03 后续可剪成左右对照视频；原始录屏要分别保留，避免现场演示失败时没有备用素材。
+
 
 这样可以避免一个常见错误：
 
@@ -334,3 +353,21 @@ Goal
 - Open WebUI Tools / Server-side Tool Calling：https://docs.openwebui.com/
 - Cherry Studio Agent / MCP：https://cherryai.com/docs/
 - Codex：项目规则与 Sandbox/Approval 以当前 OpenAI Codex 官方仓库和文档为准。
+
+
+---
+
+## 十、本章截图与录屏准备清单
+
+| 编号 | 类型 | 优先级 | 内容 | 用途 | 状态 |
+|---|---|---:|---|---|---|
+| CHAT-01 | 截图 | P0 | Chat 只返回答案/代码 | 建立“Prompt → Answer”直觉 | ⬜ |
+| CHAT-02 | 截图 | P0 | Agent 文件/命令/验证界面 | 建立“Goal → Deliver”直觉 | ⬜ |
+| CHAT-03 | 图示 | P0 | Chat vs Agent 双流程 | 本章核心收束 | ⬜ |
+| CHAT-04 | 截图 | P1 | 同模型 Chat vs Agent 最终结果 | 防止把 Harness 优势误归因模型 | ⬜ |
+| CHAT-R01 | 录屏 | P0 | 最小 Read→Edit→Run→Verify 闭环 | 说明模型输出不是任务结束 | ⬜ |
+| CHAT-R02 | 录屏 | P0 | 鹈鹕 Chat 人工接力流程 | 对照组 | ⬜ |
+| CHAT-R03 | 录屏 | P0 | 鹈鹕 Agent 自主闭环 | 实验组 | ⬜ |
+| KB-12~19 | 复用截图 | P1 | Cherry / Open WebUI / Agent 知识使用 | 本章第三节只做入口，不重复拍 | ⬜ |
+
+> 本章不重复录制 Cherry/Open WebUI 知识库全过程，直接复用知识库章节的 `KB-xx` / `KB-Rxx` 素材。
