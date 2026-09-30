@@ -758,6 +758,133 @@ L4 用户界面验证
 
 ## 7.1 Browser Use：目标导向的网页理解与交互
 
+### 7.1.1 内置浏览器、Browser Use 与宿主机 Chrome 是三件事
+
+这一层必须拆开讲：
+
+~~~text
+内置浏览器
+= Agent 产品内部提供的 Browser Surface / Browser Runtime
+
+Browser Use
+= Agent 驱动网页的能力层
+
+宿主机 Chrome
+= 用户平时使用的外部浏览器实例
+~~~
+
+三者不是同一个概念。
+
+#### ZCode 当前实现
+
+ZCode 当前官方说明：
+
+- 桌面端有独立 Built-in Browser Panel；
+- Agent 对它的控制能力来自官方 **Browser Use plugin**；
+- Agent 可以打开 URL、点击、填表、滚动、截图，并根据页面当前状态继续执行；
+- Built-in Browser 有自己的 Session State，不与日常 Chrome 持续共享；
+- 当前可以从 Chrome 一次性导入 cookies / local storage（Windows 暂不支持）；
+- Agent 默认只操作自己打开的 tab。
+
+因此更准确的关系是：
+
+~~~text
+ZCode Agent
+  ↓
+Browser Use plugin
+  ↓
+ZCode Built-in Browser
+  ↓
+Web page
+~~~
+
+对于普通本地前端验证、公开网页访问、表单检查：
+
+> **已经可以直接使用 ZCode 内置浏览器，不需要再去控制宿主机 Chrome。**
+
+只有当任务依赖用户真实 Chrome Profile、已有登录态、浏览器扩展或某个已经打开的外部浏览器上下文时，才需要考虑把宿主机浏览器纳入任务。
+
+ZCode 当前官方文档没有公开说明 Browser Use plugin 内部具体是通过 Playwright、CDP 还是其他浏览器控制实现完成，因此培训中不应把实现细节猜成某一种技术。
+
+#### Codex / ChatGPT Desktop 当前实现
+
+当前 OpenAI 官方将以下能力明确区分：
+
+~~~text
+In-app Browser
+= ChatGPT / Codex Desktop 内置浏览器
+
+Browser Use
+= Codex 操作网页的能力
+  ├─ 可以操作 In-app Browser
+  └─ 也可以通过 Codex Chrome extension 使用宿主机 Chrome
+
+Computer Use
+= 操作 Windows / macOS 桌面应用
+~~~
+
+In-app Browser 使用自己的 Browser State，不共享用户日常 Chrome Profile。
+
+因此：
+
+> **如果只是让 Codex 打开网站、测试本地页面、浏览公共网页，直接使用 In-app Browser 即可。**
+
+如果任务需要：
+
+- 已登录的 Chrome Session；
+- 用户当前打开的 Chrome tabs；
+- Chrome Profile；
+- Chrome extensions；
+
+才切换到 **Codex Chrome extension**。
+
+另外，Codex Developer Mode 当前可以给 Browser Use / In-app Browser 提供更深的 CDP 访问，用于：
+
+- Console；
+- Network；
+- Page State；
+- JavaScript Performance；
+
+但这属于更深层调试权限，并不是普通 Browser Use 的前提。
+
+#### 与 Computer Use 的关系
+
+如果任务仍然发生在网页内部：
+
+~~~text
+URL
+DOM
+表单
+按钮
+网页交互
+~~~
+
+优先 Browser Use / Browser Tool。
+
+如果任务已经跨出网页，例如：
+
+~~~text
+Windows 文件对话框
+桌面软件
+系统设置
+原生 GUI
+其他没有 Browser DOM 的应用
+~~~
+
+才进入 Computer Use。
+
+所以不要理解成：
+
+> “内置浏览器只是显示页面，真正操作还得靠 Computer Use。”
+
+更准确的是：
+
+> **Browser Use 已经负责网页内部交互；Computer Use 是网页之外的更通用 GUI 执行层。**
+
+**图示占位：TOOL-06A｜Built-in Browser / Browser Use / Host Chrome / Computer Use 分层图**
+
+
+
 典型过程：
 
 ```text
