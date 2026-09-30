@@ -20,11 +20,14 @@ def main() -> None:
     add_connection_args(parser)
     args = parser.parse_args()
 
-    client = DemoClient(config_from_args(args))
+    cfg = config_from_args(args)
+    client = DemoClient(cfg)
     ensure_demo_assets()
 
     print("=" * 72)
     print("Same Model API → Translation → JSON → Vision OCR → Visual QA")
+    print(f"Base URL: {cfg.base_url}")
+    print(f"Model   : {cfg.model}")
     print("=" * 72)
 
     translate.run(client)
