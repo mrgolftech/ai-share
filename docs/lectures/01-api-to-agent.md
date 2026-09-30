@@ -1911,6 +1911,84 @@ Harness 执行和反馈
 
 要求能看到多个连续 event/data chunk。
 
+
+### API-POST-01～03：直接 GET / POST 与客户端关系
+
+必须准备：
+
+- Postman / curl `GET /v1/models`；
+- Postman `POST /v1/chat/completions`；
+- “Postman / Python / Cherry / Open WebUI / Agent → 同一个 Model API”图。
+
+### API-PROTO-01～04：三种 API 协议
+
+必须使用当前内网 qwen3.6 的真实请求准备：
+
+1. OpenAI Chat：`messages / choices / tool_calls`；
+2. OpenAI Responses：`input / output / function_call / events`；
+3. Anthropic Messages：`content blocks / tool_use / tool_result`；
+4. 三协议对比图。
+
+### CH-API-01～02C：Cherry 三协议接入
+
+拍当前实际安装版本：
+
+- Provider / Model 的 Endpoint Type 或协议配置；
+- `/v1/chat/completions`；
+- `/v1/responses`；
+- `/v1/messages`。
+
+不要为了讲义强行模拟不存在的 UI；以当前 Cherry 真实配置方式为准。
+
+### API-TEST-00～04：自动验收证据
+
+准备：
+
+- `qwen_api_training_test.py` 文件头与覆盖范围；
+- r4 正式结果 28 PASS / 1 SKIP / 0 FAIL / 0 ERROR；
+- 单条 record；
+- 结果目录；
+- 协议/能力矩阵。
+
+### CH-ASSIST-01～06：助手与对话配置
+
+拍：
+
+- 新建 / 编辑助手；
+- Instructions；
+- 默认模型；
+- Temperature / Top-P / Max Tokens / Stream / Context；
+- 对话顶部模型切换；
+- Knowledge / Web Search / Tool/MCP 等入口；
+- “UI 开关 → Context / Parameter / Tool”映射图。
+
+### CH-KB-01～04：Cherry 最小知识库流程
+
+拍：
+
+1. 新建知识库；
+2. 添加文件 / 笔记 / 目录 / 链接中的实际可用入口；
+3. Parse / Chunk 或资料处理结果；
+4. Recall Test；
+5. 对话勾选知识库。
+
+第一讲只用于说明知识如何进入 Context；第二讲继续复用并展开 Retrieval 原理。
+
+### CH-WEB-01：联网检索
+
+拍：
+
+- 输入区联网按钮；
+- 当前搜索服务配置；
+- 一次带 Search Result / Citation 的回答。
+
+### CH-TOOL-01～02：MCP / Tool
+
+拍：
+
+- 助手 MCP / Tool 配置；
+- 一次 Tool Call / Tool Result。
+
 ### API-TEST-03：结果资产目录
 
 拍摄：
