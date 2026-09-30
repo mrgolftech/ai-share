@@ -1362,6 +1362,297 @@ Model API
 
 ---
 
+# 3.5 Open WebUI v0.11.0：另一个“Chat 工作台”，但更适合作为共享知识入口
+
+Cherry Studio 更适合用来观察：
+
+- Provider；
+- API；
+- Network；
+- Assistant；
+- 模型参数；
+- 个人知识和工具。
+
+部门当前内网还部署了 **Open WebUI v0.11.0**。
+
+这正好可以用来说明：
+
+> **Chat Workbench 不只有一种形态。**
+
+Open WebUI 更适合展示另一类需求：
+
+- 多用户入口；
+- Workspace；
+- 个人笔记；
+- 文档上传；
+- Knowledge；
+- 可复用的模型/工作空间配置；
+- 后续共享与权限治理。
+
+【截图占位 OW-01｜当前内网 Open WebUI v0.11.0 首页 / Workspace 总览】
+
+第一讲不要在这里展开完整 RAG 原理。
+
+只让大家看见一个事实：
+
+> **除了对话历史以外，Chat 工作台还可以把用户自己持续维护的笔记和文档变成可复用 Context / Knowledge。**
+
+---
+
+## 3.5.1 个人笔记：知识不一定来自“上传 PDF”
+
+当前内网 v0.11.0 已实际走通：
+
+- 用户可以创建自己的笔记；
+- 笔记可以作为持续维护的 Markdown 内容；
+- 可以上传文档；
+- 后续在问答中把这些内容作为知识使用。
+
+【截图占位 OW-07｜Open WebUI Notes：个人 Markdown 笔记】
+
+【截图占位 OW-08｜Note / Knowledge 中上传文档】
+
+这里可以用一个非常接地气的例子：
+
+> 我今天测试了内网 qwen3.6，发现 Anthropic 的 Thinking 关闭参数还有兼容差异。
+
+不一定先写一份正式 PDF。
+
+完全可以先记成一条个人 Markdown Note。
+
+这让大家理解：
+
+> **知识资产不只有“正式文件”，个人工作笔记也可以逐步成为 AI 可复用上下文。**
+
+但第二讲会继续强调：
+
+> 个人笔记不等于部门 Source of Truth。什么时候应该升级成正式知识，需要治理。
+
+---
+
+## 3.5.2 同一个 Markdown 文档为什么可以选“完整文档”和“聚焦检索”？
+
+这是当前内网 Open WebUI v0.11.0 很适合现场演示的一点。
+
+对具体 Markdown / 文档，可以选择类似两种模式：
+
+```text
+Full Context / 完整文档
+vs
+Focused Retrieval / 聚焦检索
+```
+
+【截图占位 OW-09｜同一 Markdown：Full Context / Focused Retrieval 切换】
+
+先不讲算法，只讲直觉。
+
+### 完整文档
+
+```text
+Document
+↓
+整篇内容进入本轮 Context
+↓
+Model
+```
+
+适合：
+
+- 短文档；
+- 风格指南；
+- 规则说明；
+- 每次都应该完整看到的材料。
+
+优点：
+
+> 简单直接，不依赖向量召回。
+
+代价：
+
+> 文档越长，占用 Context 越多。
+
+### 聚焦检索
+
+```text
+Question
+↓
+Retrieval
+↓
+Relevant Parts
+↓
+Context
+↓
+Model
+```
+
+适合：
+
+- 长文档；
+- 多份资料；
+- 每次只需要其中局部内容。
+
+优点：
+
+> 不需要每轮把整篇文档都塞进去。
+
+代价：
+
+> 系统必须先“找对”。
+
+这里先埋一个伏笔：
+
+> **第二讲真正要解决的，就是“Focused Retrieval 到底怎样找、怎样验证找对没有”。**
+
+---
+
+## 3.5.3 没有配置 Embedding，为什么仍然能用知识回答？
+
+这是当前内网 v0.11.0 特别值得讲的真实现象。
+
+当前实例没有配置 Embedding Model，因此在相关知识内容上会提示：
+
+> **没有向量化 / 未建立向量索引。**
+
+【截图占位 OW-10｜当前内网提示：未配置 Embedding / 未向量化】
+
+但实际已经走通：
+
+1. 创建自己的知识 / 笔记；
+2. 上传文档；
+3. 在 Workspace 中引用该知识库；
+4. 或直接在 Workspace 创建时的 Knowledge 选项中上传/关联文档；
+5. 选择这个 Workspace / 对应模型配置进行问答；
+6. 模型能够依据其中资料回答。
+
+【截图占位 OW-11｜Workspace 绑定 Knowledge】
+
+【截图占位 OW-12｜选择该 Workspace 后依据文档问答】
+
+【录屏占位 OW-R03｜个人 Note/Document → Workspace Knowledge → 问答】
+
+这时必须把结论讲严谨：
+
+> **“能依据知识回答”不等于“向量检索已经生效”。**
+
+如果使用的是 Full Context：
+
+> 整篇内容直接进入 Context，不需要 Embedding。
+
+如果选择的是 Focused Retrieval：
+
+> Vector Retrieval 通常需要向量化；当前没有 Embedding 时，究竟走了关键词/BM25、Knowledge Tool、其他检索路径还是某种回退，需要结合当前实例配置和 Tool Trace 再验证。
+
+因此培训现场不要说：
+
+> “Open WebUI 没 Embedding 也能正常做向量 RAG。”
+
+正确说法：
+
+> **当前内网未配置 Embedding，但知识仍可被 Workspace 引用并用于回答；Full Context 明确不依赖向量检索，Focused Retrieval 的实际检索路径需要进一步实测确认。**
+
+这个案例非常适合说明：
+
+> **看到回答正确，不要反推底层机制；工程判断要看配置、请求和 Trace。**
+
+---
+
+## 3.5.4 Workspace：为什么它比“临时上传一个附件”更进一步？
+
+一次聊天临时上传文件解决的是：
+
+> 这次对话需要这份资料。
+
+Workspace / 可复用模型配置解决的是：
+
+> 这一类工作长期都需要这批资料和设置。
+
+当前内网 v0.11.0 已经走通：
+
+```text
+个人 Note / Document
+        ↓
+Knowledge
+        ↓
+Workspace / 模型配置绑定
+        ↓
+选择该 Workspace
+        ↓
+持续问答
+```
+
+【图示占位 OW-13｜Note/Document → Knowledge → Workspace → Chat】
+
+这与 Cherry Assistant 很相似：
+
+```text
+Cherry Assistant
+= Model + Instructions + Knowledge + Tools
+
+Open WebUI Workspace / Model
+= Base Model + Prompt + Knowledge + Capabilities
+```
+
+具体产品结构不同，但解决的是同一类问题：
+
+> **把一次性的 Chat 配置沉淀成可重复使用的工作上下文。**
+
+---
+
+## 3.5.5 Cherry 和 Open WebUI 放在第一讲里，不是为了比较“谁更好”
+
+第一讲只比较它们帮助我们看清的机制。
+
+| 问题 | Cherry Studio 更适合演示 | Open WebUI 更适合演示 |
+|---|---|---|
+| Provider / API | 强 | 可展示 |
+| Network Request | 强 | 可展示 |
+| 三协议切换 | 强 | 非本讲重点 |
+| 个人 Assistant | 强 | Workspace/Model |
+| 参数 | 强 | 支持 |
+| 个人知识 | 支持 | Notes + Knowledge 很直观 |
+| 共享知识入口 | 可用 | 更适合部门场景 |
+| Workspace | 桌面工作台 | 多用户/知识/模型组合 |
+
+这一页不要得出：
+
+> Cherry 更好 / Open WebUI 更好。
+
+而是让大家学会：
+
+> **先看需求，再选工作台。**
+
+---
+
+## 3.5.6 第一讲和第二讲如何分工
+
+第一讲只让学员看到：
+
+```text
+Document / Note
+↓
+Full Context or Retrieval
+↓
+Context
+↓
+Model
+```
+
+第二讲再回答：
+
+- 为什么要 Parse；
+- 为什么要 Chunk；
+- 没有 Embedding 会少什么；
+- BM25 / Vector / Hybrid 的区别；
+- Focused Retrieval 怎样验收；
+- Full Context 什么时候更好；
+- Knowledge、Workspace 和部门 Source of Truth 怎样分层。
+
+所以 Open WebUI 这个案例会在两场复用：
+
+> **第一讲看“产品是怎么用的”；第二讲看“知识为什么这样设计”。**
+
+---
+
 # 4. Thinking：为什么有些问题值得“多想一会儿”
 
 接下来用一个简单任务和一个复杂任务对比。
@@ -1934,6 +2225,35 @@ Harness 执行和反馈
 - 输入区联网按钮；
 - 当前搜索服务配置；
 - 一次带 Search Result / Citation 的回答。
+
+### OW-07～13：Open WebUI v0.11.0 个人知识 / Workspace
+
+按当前内网已经走通的实际流程拍：
+
+- OW-07：个人 Note / Markdown；
+- OW-08：上传文档；
+- OW-09：Full Context / Focused Retrieval 切换；
+- OW-10：未配置 Embedding / 未向量化提示；
+- OW-11：Workspace 绑定 Knowledge；
+- OW-12：选择 Workspace 后依据知识问答；
+- OW-13：Note/Document → Knowledge → Workspace → Chat 图。
+
+### OW-R03：个人知识到 Workspace 问答
+
+完整录屏：
+
+```text
+创建 Note / Knowledge
+→ 上传 Markdown / 文档
+→ 查看 Full Context / Focused Retrieval
+→ 展示未向量化提示
+→ Workspace 引用 Knowledge
+→ 选择 Workspace
+→ 固定问题
+→ 回答依据资料
+```
+
+建议同时保留一次 Full Context 模式，以明确证明“不依赖 Embedding 也能使用全文上下文”。
 
 ### CH-TOOL-01～02：MCP / Tool
 
