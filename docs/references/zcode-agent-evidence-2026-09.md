@@ -122,6 +122,48 @@ Create HTML
 
 ## 5. Terminal / ADE Tools
 
+### 5.1 Git 集成与 Git Runtime
+
+当前官方 FAQ 把 ZCode 描述为带有内置 Git commit / Git state / Review 工作流的 ADE。
+
+但安装文档同时说明：
+
+- Windows Terminal 的 Git Bash 只有在系统检测到已经安装时才出现；
+- Auto 模式找不到 Git Bash 会回退到 CMD。
+
+远程开发文档进一步说明：
+
+- Git 操作运行在目标 WSL / SSH / Docker 环境；
+- 目标容器需要提前具备项目需要的 shell、Git、Node.js 或其他 toolchain。
+
+因此当前证据足以支持：
+
+> **ZCode 内置 Git 工作流集成。**
+
+但不足以支持：
+
+> **ZCode 桌面安装包一定向 Agent Terminal 提供一个独立、完整、可任意调用的 Git CLI Runtime。**
+
+培训与内网部署采用保守工程策略：
+
+> 显式安装 Git，并用 `git --version` 验证。
+
+### 5.2 Python / Node / npm 属于执行环境
+
+ZCode Terminal 官方定位是运行当前 Workspace 中的 build / test / dev server / logs。
+
+ZCode Hooks 官方示例明确指出某些 Hook 依赖 `node` 存在于系统 PATH。
+
+Remote Development 官方文档还明确提醒：
+
+> Sync Skill / MCP / Plugin 不会检查远端是否有 `npx`、正确 Python dependencies 或其他 CLI。
+
+因此可稳定讲：
+
+> **Python、Node/npm、项目依赖由宿主机或目标 Runtime 提供，不应视为 Harness 自动附带。**
+
+
+
 来源：
 
 - https://zcode.z.ai/en/docs/ADE-tools
@@ -290,3 +332,36 @@ Rules
 10. 最终 Diff。
 
 完成后本文件应新增“我们的实测”章节，并把官方能力与实测结果分开记录。
+
+
+---
+
+## 12. 内网环境的额外事实
+
+ZCode Install 当前明确：
+
+- App Proxy 需要在 Settings 中显式配置；
+- 空白不代表自动继承系统 HTTP_PROXY；
+- 配置的 Proxy 会覆盖模型请求、MCP Server、Agent 运行的命令行工具以及 App 请求；
+- 可以配置企业 PEM Root CA；
+- 可以设置 No Proxy。
+
+Remote Development 当前明确：
+
+- Agent Runtime 在目标环境；
+- Skills / MCP / Plugins 需要显式 Sync；
+- Sync 成功不代表依赖满足；
+- Marketplace Plugin 如果需要远程重新安装，远端必须能访问其来源。
+
+因此内网标准化需要把以下内容一起纳入 Agent Environment：
+
+- Toolchain；
+- PATH；
+- CA；
+- Proxy / NO_PROXY；
+- DNS；
+- Git 服务；
+- PyPI / npm / OS package mirror；
+- Container Registry；
+- 软件白名单；
+- 版本与 Lock 文件。
