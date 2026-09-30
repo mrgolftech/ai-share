@@ -22,11 +22,110 @@
    - 或同等含义的 Embedding 缺失状态；
 6. Knowledge 仍然可以被 Workspace / 模型配置引用；
 7. 也可以在 Workspace 创建过程的 Knowledge 选项中上传/关联文档；
-8. 选择对应 Workspace 后，问答可以依据其中资料回答。
+8. 选择对应 Workspace 后，问答可以依据其中资料回答；
+9. Workspace / Model 可以配置 System Prompt，形成类似 Cherry Assistant 的可复用专用助手；
+10. Note 页面可以直接围绕该 Note 进行对话；
+11. 创建 Workspace / Model 时可以附加已有 Note / Knowledge，后续持续复用。
 
 当前培训结论：
 
 > **Open WebUI 当前内网版本既可以作为个人知识工作台，也可以进一步承载 Workspace / Shared Knowledge 场景。**
+
+---
+
+# 2.1 数据存储与部署边界
+
+当前内网 Open WebUI 是集中式 Web / Server 部署。
+
+培训中采用如下表述：
+
+> **用户通过浏览器访问，Chat、Note、Knowledge、Workspace、上传文件等主要由 Open WebUI 服务端持久化和管理。**
+
+Open WebUI 官方部署文档显示，默认上传文件保存在服务器 `DATA_DIR`，数据库保存账号、Chat、配置、Knowledge 等记录；规模化后可改用 PostgreSQL、共享文件系统或对象存储。
+
+因此“服务端”不等于“公网云”。
+
+部门内网服务器同样属于：
+
+> **Server-side / Centralized Deployment。**
+
+这与 Cherry Studio 的 Desktop / Local-first 数据管理形成直接对照。
+
+同时提醒：
+
+> 数据存在哪里与模型请求发到哪里是两个问题。即使资料存内网服务器，只要模型 Provider 是外部服务，被选入 Context 的内容仍会发送给对应 Provider。
+
+---
+
+# 2.2 Workspace Model 与 Cherry Assistant 的对应关系
+
+当前 Open WebUI Workspace Model 可以组合：
+
+- Base Model；
+- System Prompt；
+- Parameters；
+- Knowledge；
+- Tools / Skills。
+
+这与 Cherry Assistant 的：
+
+- Model；
+- Instructions；
+- Parameters；
+- Knowledge；
+- MCP / Tools；
+
+解决的是同一类应用问题：
+
+> **把基础模型包装成可重复使用的专用助手。**
+
+两者本质上都是 Application Preset / Wrapper，不是模型 Fine-tuning。
+
+只有当再叠加：
+
+- Tool Calling；
+- Runtime；
+- Loop；
+- Verification；
+
+才进入第三讲所说的完整 Agent 工作方式。
+
+---
+
+# 2.3 Note 的两个实际用法
+
+当前内网 v0.11.0 已走通：
+
+## Note-centered Chat
+
+```text
+Markdown Note
+→ Note Chat
+→ 围绕当前笔记问答 / 修改
+```
+
+从用户体验看，可以理解为：
+
+> **直接围绕自己的持久笔记进行 AI 协作。**
+
+但培训中不直接称为 Vector RAG。
+
+## Note → Workspace
+
+```text
+Existing Note / Knowledge
+→ Workspace Model
+→ System Prompt
+→ Chat
+```
+
+这样可以把：
+
+> 临时实验笔记
+
+逐步变成：
+
+> 某个长期专用 Workspace 的知识背景。
 
 ---
 
@@ -202,3 +301,13 @@ Knowledge
 # 6. 培训中的一句话
 
 > **知识能被模型用到，和知识通过什么 Retrieval 被找到，是两个问题。先观察证据，再判断机制。**
+
+
+# 7. 数据与 Workspace 官方参考
+
+- https://docs.openwebui.com/features/workspace/
+- https://docs.openwebui.com/features/workspace/models/
+- https://docs.openwebui.com/features/workspace/knowledge/
+- https://docs.openwebui.com/features/notes/
+- https://docs.openwebui.com/tutorials/maintenance/backups/
+- https://docs.openwebui.com/getting-started/advanced-topics/scaling/
