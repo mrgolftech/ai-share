@@ -18,6 +18,25 @@
 
 ---
 
+## 1. 本讲素材总控表
+
+| 素材组 | 优先级 | 主要内容 | 状态 |
+|---|---:|---|---|
+| KB-01~03 | P0 | 裸模型 vs 带资料、知识资产、Source of Truth | ⬜ |
+| KB-04~07 | P0 | RAG、BM25/Vector、Parse、Chunk、Metadata | ⬜ |
+| KB-08~11 | P0 | 长上下文、Evidence Budget、Rerank、Retrieval 路由 | ⬜ |
+| KB-12~13 | P0 | Cherry Knowledge / Retrieval Test | ⬜ |
+| KB-15~16C | P0 | Open WebUI Note / Full Context / Focused / Workspace | ⬜ |
+| KB-18~22 | P0 | Agent 多源取证、ACL、引用、统一知识架构 | ⬜ |
+| KB-R01~02 | P0 | Cherry 建库、BM25 vs Vector/Hybrid | ⬜ |
+| KB-R03A~C | P0 | Open WebUI 个人知识、Retrieval 模式、Shared ACL | ⬜ |
+| KB-R05 | P0 | Agent：KB → Git → API/Metrics | ⬜ |
+| KB-R06 | P1 | 版本冲突 + No-answer | ⬜ |
+
+> 第二讲所有工具尽量使用**同一套 Qwen API / model-metric 真实资料**，避免因语料变化干扰比较。
+
+---
+
 # 24. 第二讲截图执行清单
 
 ## 24.1 P0 必拍
