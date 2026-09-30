@@ -1,0 +1,1227 @@
+# 模块三：Agent 如何操作真实世界——从 Tool Call 到可验证的工程闭环
+
+> 状态：已有初稿 / 可进入教学打磨  
+> 更新日期：2026-09-30  
+> 对应培训主线：**模型怎么调用 → 为什么 Chat 不够 → Agent 如何操作真实世界 → 如何让 Agent 掌握工具**  
+> 上一章：`04-agent-common-mechanisms.md`  
+> 下一章：API / MCP / Skill / Plugin / Command / Hook
+
+---
+
+## 0. 这一章不讲“工具列表”，而讲一件事
+
+前一章已经建立了一个统一认识：
+
+> **Agent = Model + Harness。**
+
+但学员很容易留下第二个疑问：
+
+> **模型本身明明只能生成 Token，它为什么能够改文件、执行命令、开浏览器、登录服务器，甚至完成部署？**
+
+答案不是“模型突然会操作电脑了”，而是：
+
+> **Harness 把模型连接到一组外部工具；模型负责选择动作和生成参数，工具负责真实执行，执行结果再回到模型，形成连续闭环。**
+
+这一章只围绕一个统一工作循环展开：
+
+```text
+Goal
+  ↓
+Read / Observe
+  ↓
+Choose Tool
+  ↓
+Act
+  ↓
+Get Tool Result
+  ↓
+Verify
+  ↓
+Need more work?
+  ├─ Yes → Iterate
+  └─ No  → Deliver
+```
+
+对工程任务，可以进一步压缩为：
+
+> **读 → 做 → 看结果 → 验证 → 留痕 → 交付。**
+
+---
+
+# 1. 先看一个最小真实任务
+
+假设任务不是“告诉我怎么改”，而是：
+
+> 在一个现有 Web 项目中修改一个按钮文案，并确认页面真的显示正确。
+
+普通 Chat 最多能做到：
+
+1. 猜测项目结构；
+2. 给出一段代码；
+3. 告诉用户“请自行修改和测试”。
+
+Agent 需要真正完成：
+
+```text
+读取仓库
+→ 找到目标文件
+→ 修改文件
+→ 运行测试/构建
+→ 启动服务
+→ 打开浏览器
+→ 检查页面
+→ 如果异常继续修复
+→ 查看 Diff
+→ 输出结果
+```
+
+这里至少已经出现了：
+
+- File System；
+- Search；
+- Shell；
+- Git；
+- Browser；
+- Test；
+- Verification。
+
+这正是 Agent 与“只会对话”的关键区别。
+
+> **Agent 的价值不是一次 Tool Call，而是能够围绕目标连续组织多个 Tool Call。**
+
+---
+
+# 2. Tool Call 到底发生了什么
+
+## 2.1 模型并不是直接“执行命令”
+
+可以把工具调用理解成三步。
+
+### 第一步：Harness 告诉模型“有哪些工具”
+
+例如：
+
+```text
+read_file(path)
+write_file(path, content)
+run_command(command)
+open_browser(url)
+git_diff()
+```
+
+模型看到的是工具名称、用途、参数 Schema，而不是直接得到操作系统控制权。
+
+### 第二步：模型选择工具并生成参数
+
+例如：
+
+```json
+{
+  "tool": "run_command",
+  "arguments": {
+    "command": "pytest -q"
+  }
+}
+```
+
+### 第三步：Harness 真正执行，并把结果返回
+
+例如：
+
+```text
+12 passed, 1 failed
+FAILED tests/test_api.py::test_health
+```
+
+模型再根据这个结果判断下一步。
+
+所以更准确的结构是：
+
+```text
+Model
+  ↓ tool request
+Harness
+  ↓ execute
+OS / Browser / API / Remote Service
+  ↓ result
+Harness
+  ↓ tool result
+Model
+```
+
+**截图占位：TOOL-01 Agent Tool Loop 总图**
+
+---
+
+# 3. File System：Agent 与工程项目连接的第一层
+
+## 3.1 为什么文件能力如此基础
+
+真实工程信息大量存在于文件中：
+
+- 源代码；
+- 配置；
+- README；
+- AGENTS.md；
+- 测试；
+- 日志；
+- CSV / JSON；
+- Markdown；
+- 构建产物。
+
+如果 Agent 只能接收用户粘贴的一小段文本，它看到的是一个“问题切片”。
+
+如果 Agent 可以读取 Workspace，它面对的是：
+
+> **一个有目录结构、有依赖关系、有历史状态的工程对象。**
+
+---
+
+## 3.2 文件操作不是“把整个仓库塞进上下文”
+
+这是教学中要特别纠正的一点。
+
+合理方式通常是：
+
+```text
+先看目录
+→ 搜索关键词/符号
+→ 读取相关文件
+→ 只展开必要片段
+→ 修改
+→ 再读取/对比结果
+```
+
+而不是：
+
+```text
+把所有文件全文一次性发给模型
+```
+
+原因很现实：
+
+- 上下文有限；
+- 长上下文有 Prefill 成本；
+- 无关内容增加干扰；
+- Agent 往往需要动态决定“下一步再读什么”。
+
+这与知识库章节的结论一致：
+
+> **外部检索解决“先找到什么”，Context Management 解决“最终给模型多少”。**
+
+---
+
+## 3.3 搜索比盲读更重要
+
+常见工具包括：
+
+- 文件名搜索；
+- 文本搜索；
+- `grep` / `rg`；
+- 符号索引；
+- AST / Language Server；
+- Git 历史。
+
+教学不要把“read file”讲成唯一方式。
+
+真正高效的 Agent 往往是：
+
+> **先定位，再读取；先缩小范围，再展开上下文。**
+
+**截图占位：TOOL-02 Workspace 目录 + 搜索 + 局部读取**
+
+---
+
+# 4. Shell：为什么它是工程 Agent 的“通用插座”
+
+## 4.1 Shell 的本质不是“黑窗口”
+
+Shell 提供的是一个非常通用的程序执行接口。
+
+只要环境里安装了对应工具，Agent 就可能通过 Shell 调用：
+
+- `git`
+- `python`
+- `pytest`
+- `node`
+- `npm`
+- `docker`
+- `curl`
+- `ssh`
+- 编译器
+- 格式化器
+- 静态检查器
+- 自研 CLI
+
+因此可以把 Shell 理解成：
+
+> **Agent 连接已有工程工具链的通用入口。**
+
+---
+
+## 4.2 为什么不应该让模型重新实现所有能力
+
+例如要检查 HTTP 接口：
+
+差的方法：
+
+> 让模型“凭知识”猜接口是否正常。
+
+更好的方法：
+
+```bash
+curl -sS http://127.0.0.1:8000/health
+```
+
+要运行测试：
+
+```bash
+pytest -q
+```
+
+要看容器：
+
+```bash
+docker ps
+docker logs --tail 100 app
+```
+
+这里传递的工程原则是：
+
+> **模型负责不确定性判断；成熟工具负责确定性执行。**
+
+---
+
+## 4.3 Shell 也带来最大的风险面之一
+
+因为 Shell 可能影响：
+
+- 文件；
+- 网络；
+- 凭据；
+- 进程；
+- 容器；
+- 远端服务器。
+
+所以必须和前一章的 Permission / Sandbox 一起理解。
+
+例如可以区分：
+
+```text
+只读命令
+→ 工作区内写入
+→ 安装依赖
+→ 网络访问
+→ Docker / 系统操作
+→ SSH / 生产环境操作
+```
+
+风险越高，越应该：
+
+- 限制环境；
+- 明确审批；
+- 保留日志；
+- 建立回滚；
+- 用测试和健康检查验证。
+
+OpenAI Codex 当前官方配置就明确区分审批策略和 Sandbox Mode，这说明“Agent 能执行”与“Agent 被允许执行什么”是两回事。
+
+**截图占位：TOOL-03 Terminal Tool Call + Approval / Sandbox**
+
+---
+
+# 5. Git：不仅是托管代码，更是 Agent 的状态与审计基础
+
+## 5.1 为什么 Agent 特别需要 Git
+
+Agent 会频繁修改文件。
+
+如果没有 Git，最危险的问题是：
+
+> **到底改了什么？哪些是原来的？失败后怎么回退？**
+
+Git 提供了一套天然的工程状态机制：
+
+```text
+Current Commit
+   ↓
+Working Tree
+   ↓ edit
+git status
+   ↓
+git diff
+   ↓ test
+commit
+   ↓
+push / PR
+   ↓
+CI
+```
+
+Git 官方文档把 `git status` 定义为查看 Working Tree / Index 与 HEAD 的差异，`git diff` 用于比较工作区、索引和提交之间的变化。
+
+对 Agent 来说，这些不是“额外功能”，而是验证链的一部分。
+
+---
+
+## 5.2 教学重点：先 Diff，再相信“我已经改好了”
+
+Agent 的自然语言总结可能遗漏内容。
+
+Diff 是更可靠的事实。
+
+建议建立固定动作：
+
+```text
+修改前：确认当前 branch / SHA / working tree
+修改后：git status
+       → git diff
+       → test
+       → 必要时 build / browser
+       → commit
+```
+
+一句话：
+
+> **不要只检查 Agent 说了什么，要检查仓库实际发生了什么。**
+
+**截图占位：TOOL-04 git status + git diff + test 三联图**
+
+---
+
+## 5.3 Git 还是多 Agent / 长任务的边界工具
+
+长任务常见风险：
+
+- 改动越来越多；
+- 中间方案失败；
+- 多个 Agent 修改同一文件；
+- 用户中途切换方向。
+
+合理做法可以包括：
+
+- 小步提交；
+- 独立 Branch；
+- Worktree；
+- PR；
+- Commit SHA；
+- Tag / Release。
+
+因此 Git 不只是“保存代码”。
+
+更准确地说：
+
+> **Git 为 Agent 提供可比较、可回退、可审计的状态边界。**
+
+---
+
+# 6. Test：为什么“命令成功”仍然不等于任务成功
+
+## 6.1 三种常见误判
+
+### 误判一：命令退出码是 0，所以功能一定正确
+
+不一定。
+
+Build 成功只能证明：
+
+> 构建过程没有按当前规则失败。
+
+### 误判二：单元测试通过，所以用户界面一定正常
+
+不一定。
+
+前端可能：
+
+- 按钮被遮挡；
+- 字体异常；
+- 页面溢出；
+- 请求失败但测试没有覆盖；
+- Console 报错。
+
+### 误判三：页面能打开，所以业务流程一定正确
+
+也不一定。
+
+需要进一步：
+
+- 点击；
+- 输入；
+- 提交；
+- 检查状态；
+- 验证返回结果。
+
+---
+
+## 6.2 Verification 要分层
+
+建议培训使用四层验证：
+
+```text
+L1 静态检查
+   lint / typecheck / compile
+
+L2 自动化测试
+   unit / integration / API test
+
+L3 运行态验证
+   health check / logs / real request
+
+L4 用户界面验证
+   browser / visual QA / end-to-end
+```
+
+注意：
+
+> 这不是固定行业等级，而是本培训为了帮助工程师理解验证层次而使用的教学分层。
+
+**图示占位：TOOL-05 Verification Ladder**
+
+---
+
+# 7. Browser Use、Playwright、Computer Use、Crawler：不要混成一件事
+
+这是这一章最容易讲乱的地方。
+
+---
+
+## 7.1 Browser Use：目标导向的网页理解与交互
+
+典型过程：
+
+```text
+打开页面
+→ 观察页面结构
+→ 找到元素
+→ 点击/输入
+→ 读取变化
+→ 决定下一步
+```
+
+它强调的是：
+
+> **Agent 围绕目标理解网页并交互。**
+
+实现可以基于：
+
+- DOM / Accessibility Tree；
+- 浏览器控制协议；
+- 截图 + 视觉；
+- Playwright；
+- 专用 Browser Agent。
+
+因此 Browser Use 是一个能力概念，不等于某一个固定库。
+
+---
+
+## 7.2 Playwright：程序化、可重复、可断言的 Web 自动化
+
+Playwright 的教学重点不是“它也能点击网页”，而是：
+
+> **它能够把浏览器过程写成可重复执行和可断言的测试。**
+
+官方文档强调：
+
+- Actionability checks；
+- Auto-waiting；
+- Web-first assertions；
+- 自动重试直到满足条件或超时。
+
+例如：
+
+```javascript
+await page.getByRole('button', { name: '保存' }).click();
+await expect(page.getByText('保存成功')).toBeVisible();
+```
+
+这比：
+
+> “我看了一眼，应该保存成功了。”
+
+更适合回归测试。
+
+---
+
+## 7.3 Computer Use：更通用的 GUI 操作
+
+Computer Use 面向的范围更广：
+
+- Browser；
+- Desktop App；
+- 远程桌面；
+- 没有结构化 API 的 GUI。
+
+OpenAI 当前官方 Computer Use 文档描述的基本循环是：
+
+```text
+Model observes screenshot/tool result
+→ requests mouse/keyboard/code actions
+→ environment executes
+→ returns new observation
+→ model continues
+```
+
+它解决的是：
+
+> **当任务必须通过 GUI 完成时，如何让 Agent 看见并操作界面。**
+
+---
+
+## 7.4 Crawler：目标通常是“获取数据”，不是“完成 UI 任务”
+
+爬虫更强调：
+
+- 下载网页；
+- 提取正文；
+- 遍历链接；
+- 结构化数据；
+- 批量采集。
+
+它不一定需要像人一样：
+
+- 点击按钮；
+- 拖拽；
+- 操作菜单；
+- 完成业务流程。
+
+---
+
+## 7.5 四者怎么选
+
+| 需求 | 优先方式 |
+|---|---|
+| 有稳定 API | API / Structured Tool |
+| 要做网页 E2E 验证 | Playwright |
+| 要探索式操作网页 | Browser Use |
+| 只有 GUI，没有可用 API/DOM | Computer Use |
+| 要大规模抓取公开网页内容 | Crawler / HTTP Fetch |
+
+核心原则：
+
+> **结构化接口通常优先于视觉模拟操作；可重复自动化通常优先于一次性人工式点击。**
+
+这不是说 Computer Use “不高级”，而是：
+
+> **工具越结构化，输入输出通常越明确，也越容易测试和审计。**
+
+**图示占位：TOOL-06 Browser / Playwright / Computer Use / Crawler 对比**
+
+---
+
+# 8. 浏览器 Visual QA：为什么 Agent 写完前端代码后还应该“自己看一眼”
+
+真实 Web 项目经常出现：
+
+```text
+代码检查通过
+测试通过
+构建通过
+但页面不好用
+```
+
+因此对 UI 任务推荐：
+
+```text
+Implement
+→ Run App
+→ Browser Open
+→ Interact
+→ Screenshot
+→ Console / Network
+→ Visual Check
+→ Fix
+→ Re-test
+```
+
+需要检查的不只是“页面出现了”：
+
+- 首屏布局；
+- 文本是否被截断；
+- 移动/桌面尺寸；
+- Button 是否可点击；
+- Form 状态；
+- Loading / Empty / Error；
+- Console Error；
+- API Request；
+- 页面跳转；
+- 关键截图。
+
+本培训后续真实项目案例会继续使用：
+
+> **自动化测试 + Browser Visual QA**
+
+而不是二选一。
+
+**截图占位：TOOL-07 浏览器页面 + Console + Screenshot + 修复后结果**
+
+---
+
+# 9. SSH：Agent 如何从本机跨到远端服务器
+
+## 9.1 SSH 本身不是“AI 能力”
+
+SSH 是成熟的远程连接工具。
+
+Agent 的变化在于：
+
+> 模型可以围绕目标连续决定要执行哪些远程命令，并根据结果继续行动。
+
+例如：
+
+```text
+目标：部署新版本并验证服务
+
+Agent
+→ ssh server
+→ cd /srv/app
+→ 查看当前版本
+→ docker compose pull
+→ docker compose up -d
+→ docker ps
+→ docker logs
+→ curl /health
+→ 发现错误
+→ 查看配置
+→ 修复
+→ restart
+→ 再验证
+```
+
+从“给你几条命令”变成：
+
+> **观察—执行—再观察—再执行。**
+
+---
+
+## 9.2 远端操作一定要区分环境
+
+至少区分：
+
+- 本地开发环境；
+- 测试环境；
+- 预生产；
+- 生产。
+
+对高风险环境必须明确：
+
+- 哪些命令允许自动执行；
+- 哪些需要人工批准；
+- 是否允许删除；
+- 是否允许改数据库；
+- 凭据如何提供；
+- 如何回滚；
+- 是否有维护窗口。
+
+培训中必须持续强调：
+
+> **Agent 自动化不取消生产变更纪律。**
+
+---
+
+# 10. Docker：把部署操作变成更标准的状态对象
+
+Docker 很适合 Agent 的一个原因，是很多操作天然结构化：
+
+```text
+image
+container
+port
+environment
+volume
+log
+health
+```
+
+常见闭环：
+
+```bash
+docker ps
+docker inspect ...
+docker logs --tail 100 ...
+docker compose pull
+docker compose up -d
+curl /health
+```
+
+Docker 官方文档明确提供 `docker logs` 查看容器输出，也支持 Healthcheck 机制。
+
+这使 Agent 不必只依赖“进程好像启动了”，而可以结合：
+
+- Container State；
+- Logs；
+- Health；
+- Real Request；
+
+做更可靠判断。
+
+**截图占位：TOOL-08 SSH + Docker + logs + health request**
+
+---
+
+# 11. API：Agent 操作真实世界不一定要“点界面”
+
+Agent 可以通过 API 连接：
+
+- GitHub；
+- CI/CD；
+- 企业内部系统；
+- 搜索服务；
+- 监控；
+- 数据平台；
+- 自研业务系统；
+- 设备管理平台；
+- 模型服务。
+
+如果系统已经有 API，一般应该优先考虑结构化调用。
+
+例如：
+
+```text
+Create Issue
+Get Metrics
+Start Job
+Query Device
+Upload Artifact
+Trigger Workflow
+```
+
+而不是打开浏览器模拟点击。
+
+这正好为下一章铺路：
+
+> **API 解决“系统提供什么能力”；MCP 等机制解决“如何更标准地把这些能力暴露给 Agent”；Skill 解决“怎样把能力组合成可靠工作方法”。**
+
+**图示占位：TOOL-09 UI 操作 vs API Tool 的两条路径**
+
+---
+
+# 12. CI/CD：把“Agent 自己验证”升级为“仓库再次验证”
+
+Agent 在本地跑完测试并不代表结束。
+
+更可靠的闭环是：
+
+```text
+Agent local test
+→ commit
+→ push
+→ CI
+→ independent runner
+→ build/test/check
+→ pass/fail
+→ if fail, return to fix
+```
+
+GitHub Actions 官方将 Workflow 定义为仓库中的可配置自动化流程，可由事件、手动或计划触发，并由 Job / Step 执行构建、测试、部署等任务。
+
+教学重点不是 GitHub Actions YAML 语法，而是：
+
+> **把验证规则写进仓库，让它不依赖某次对话里的“记得测试”。**
+
+因此 CI 是可复用工程资产，也是 Agent 可靠性基础设施。
+
+**截图占位：TOOL-10 Commit → Actions → Failed/Passed**
+
+---
+
+# 13. 一个完整工程 Agent 闭环应该长什么样
+
+把前面所有工具收束成一个真实模板：
+
+```text
+1. Read rules
+   AGENTS.md / README / requirements
+
+2. Inspect state
+   branch / SHA / git status / environment
+
+3. Locate
+   search / grep / read relevant files
+
+4. Plan
+   decide minimal changes + verification
+
+5. Modify
+   edit files / generate code
+
+6. Local verify
+   lint / typecheck / unit test / API test
+
+7. Runtime verify
+   start service / logs / health request
+
+8. UI verify (if needed)
+   browser / Playwright / screenshot / console
+
+9. Review changes
+   git diff
+
+10. Deliver
+   commit / push / PR
+
+11. Independent verify
+   CI
+
+12. Report
+   changed files + test evidence + limitations
+```
+
+这比“写一个 Prompt 让模型生成代码”更接近真实工程。
+
+**图示占位：TOOL-11 工程 Agent 12 步闭环**
+
+---
+
+# 14. 人在这个闭环里负责什么
+
+工具越强，越不能把人的职责讲没。
+
+推荐统一分工：
+
+> **模型负责判断和生成，工具负责执行，自动化测试负责验证，人负责目标、约束和最终判断。**
+
+人尤其要负责：
+
+- 目标是否正确；
+- 是否允许改这些文件；
+- 是否可以访问外网；
+- 是否可以执行 Docker；
+- 是否可以 SSH；
+- 是否可以操作生产；
+- 是否允许提交/推送；
+- 验收标准是什么；
+- 最终结果是否接受。
+
+Agent 适合承担：
+
+- 搜索；
+- 重复命令；
+- 文件修改；
+- 测试；
+- 浏览器检查；
+- 日志收集；
+- Diff；
+- 证据整理。
+
+---
+
+# 15. 为什么“给 Agent 更多工具”不一定更好
+
+常见误区：
+
+> 工具越多，Agent 越强。
+
+实际还要考虑：
+
+- Tool Description 是否清晰；
+- 参数是否容易生成正确；
+- 返回结果是否过长；
+- 是否存在功能重叠；
+- 权限是否过大；
+- 错误是否可恢复；
+- 是否有验证工具；
+- Tool Result 是否污染 Context。
+
+因此工具设计的目标不是：
+
+> “能接的都接上。”
+
+而是：
+
+> **给任务提供足够、明确、可验证的行动空间。**
+
+这也是下一章 MCP / Skill 设计要继续回答的问题。
+
+---
+
+# 16. 最低可用 Agent 工程环境
+
+这一段不做“安装教程”，只建立工作环境概念。
+
+建议工程人员至少理解这些组件：
+
+| 类别 | 典型工具 | Agent 用途 |
+|---|---|---|
+| 版本管理 | Git | 状态、Diff、Commit、协作 |
+| 脚本 | Python | 数据、API、自动化 |
+| 前端/工具链 | Node.js / npm | Web、Playwright、构建 |
+| 容器 | Docker | 可复现运行与部署 |
+| 网络 | curl | API/Health 验证 |
+| 远程 | SSH | 服务器运维 |
+| 浏览器自动化 | Playwright | UI/E2E/Visual QA |
+| 编辑/Agent | CLI / IDE / Desktop / Web Agent | Harness Surface |
+
+核心结论：
+
+> **Agent 的能力上限不仅取决于模型，也取决于工作环境里有哪些可靠工具。**
+
+---
+
+# 17. 课堂 Demo 设计
+
+## Demo A：最小 Read → Edit → Test → Diff
+
+### 目的
+
+证明 Agent 不是只给代码。
+
+### 固定任务
+
+在一个小仓库中：
+
+1. 读取 AGENTS.md；
+2. 找到一个小 Bug；
+3. 修改；
+4. 运行测试；
+5. 打印 Git Diff；
+6. 汇报。
+
+### 必须保留证据
+
+- Agent 读取规则；
+- Tool Trace；
+- 测试失败/通过；
+- Git Diff。
+
+对应录屏：**TOOL-R01**
+
+---
+
+## Demo B：代码测试通过，但浏览器发现 UI 问题
+
+### 目的
+
+说明：
+
+> **Test != Visual QA。**
+
+### 流程
+
+```text
+修改 UI
+→ build/test pass
+→ 启动服务
+→ Playwright / Browser 打开
+→ 发现文本截断/按钮异常
+→ 修改
+→ 再截图
+```
+
+对应录屏：**TOOL-R02**
+
+---
+
+## Demo C：SSH 远端部署闭环
+
+### 目的
+
+展示从“告诉用户命令”到“Agent 连续执行运维任务”。
+
+### 流程
+
+```text
+SSH
+→ 查看当前容器
+→ 拉取/启动
+→ 查看 logs
+→ health check
+→ 返回版本与状态
+```
+
+训练环境优先，不建议把第一次现场演示直接放到关键生产环境。
+
+对应录屏：**TOOL-R03**
+
+---
+
+## Demo D：Commit → Push → CI
+
+### 目的
+
+说明：
+
+> **验证规则应该离开聊天窗口，进入仓库。**
+
+### 流程
+
+```text
+local test pass
+→ commit
+→ push
+→ Actions
+→ show workflow
+→ show pass/fail
+```
+
+对应录屏：**TOOL-R04**
+
+---
+
+# 18. 本章截图 / 录屏清单
+
+## 18.1 静态素材
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| TOOL-01 | P0 | Model → Tool Request → Harness → Execute → Tool Result 总图 | ⬜ |
+| TOOL-02 | P0 | Workspace：目录 + Search + Read | ⬜ |
+| TOOL-03 | P0 | Terminal Tool Call + Approval / Sandbox | ⬜ |
+| TOOL-04 | P0 | git status + git diff + test | ⬜ |
+| TOOL-05 | P0 | 静态检查/自动测试/运行态/UI 四层验证图 | ⬜ |
+| TOOL-06 | P0 | Browser Use / Playwright / Computer Use / Crawler 对比图 | ⬜ |
+| TOOL-07 | P0 | Browser + Console + Screenshot + 修复对照 | ⬜ |
+| TOOL-08 | P0 | SSH + Docker + logs + health | ⬜ |
+| TOOL-09 | P1 | UI 自动操作 vs Structured API Tool | ⬜ |
+| TOOL-10 | P0 | Commit → GitHub Actions → Pass/Fail | ⬜ |
+| TOOL-11 | P0 | 12 步工程 Agent 闭环图 | ⬜ |
+
+## 18.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| TOOL-R01 | P0 | Read → Edit → Test → Diff 最小闭环 | ⬜ |
+| TOOL-R02 | P0 | Test Pass → Browser Visual QA → Fix | ⬜ |
+| TOOL-R03 | P0 | SSH → Docker → Logs → Health Check | ⬜ |
+| TOOL-R04 | P0 | Commit → Push → CI | ⬜ |
+| TOOL-R05 | P1 | API Tool 与 GUI 操作完成同一任务对比 | ⬜ |
+
+---
+
+# 19. 讲师节奏建议
+
+这章不要连续讲 30 分钟概念。
+
+建议节奏：
+
+### 第一段：5 分钟
+
+问题：
+
+> 模型只能出 Token，为什么能改电脑？
+
+展示 TOOL-01。
+
+---
+
+### 第二段：10 分钟
+
+直接做 TOOL-R01：
+
+> Read → Edit → Test → Diff
+
+边做边解释 File / Shell / Git。
+
+---
+
+### 第三段：8 分钟
+
+讲 Browser / Playwright / Computer Use / Crawler。
+
+立即接 TOOL-R02。
+
+---
+
+### 第四段：8 分钟
+
+SSH / Docker / API / CI。
+
+展示 TOOL-R03 / TOOL-R04 的预录或关键截图。
+
+---
+
+### 最后 3 分钟
+
+只收束三句话：
+
+> **模型不是执行器，工具才是。**  
+> **工具调用不是终点，验证才是闭环。**  
+> **Agent 自动化越深入，权限、留痕和回滚越重要。**
+
+---
+
+# 20. 本章与下一章如何衔接
+
+这一章解决：
+
+> **Agent 怎样动手。**
+
+下一章继续解决：
+
+> **这么多外部能力，应该怎样标准化提供给 Agent，并变成可复用工作方法？**
+
+自然过渡：
+
+```text
+Shell / File / Browser / API
+          ↓
+这些都是“工具能力”
+          ↓
+工具怎样接入 Agent？
+          ↓
+API / MCP / Plugin
+          ↓
+工具怎样组成稳定流程？
+          ↓
+Skill / Command / Hook
+```
+
+---
+
+# 21. 本章最后只留下五个结论
+
+1. **模型本身不直接操作真实世界，Harness 通过 Tool Call 把模型连接到文件、Shell、浏览器、API 和远端系统。**
+2. **Shell 是通用执行入口，但 File / Git / Browser / API 等结构化工具往往更容易约束、验证和审计。**
+3. **Git 的价值不只是托管代码，它为 Agent 提供状态、Diff、回退和审计边界。**
+4. **Browser Use、Playwright、Computer Use、Crawler 解决的问题不同；结构化 API 和可重复自动化通常应优先。**
+5. **真正的工程闭环不是“Agent 执行成功”，而是 Read → Act → Observe → Verify → Iterate → Deliver。**
+
+---
+
+# 22. 事实边界与参考资料
+
+本章概念部分优先使用稳定机制；涉及具体产品行为时，以当前官方文档为准。
+
+## 官方资料
+
+- Playwright Auto-waiting / Actionability  
+  https://playwright.dev/docs/actionability
+- Playwright Assertions  
+  https://playwright.dev/docs/test-assertions
+- Playwright 官方首页（Testing / CLI / MCP）  
+  https://playwright.dev/
+- OpenAI Computer Use  
+  https://developers.openai.com/api/docs/guides/tools-computer-use
+- OpenAI Codex 配置：Approval / Sandbox  
+  https://developers.openai.com/docs/config-file/config-basic
+- Git status  
+  https://git-scm.com/docs/git-status
+- Git diff  
+  https://git-scm.com/docs/git-diff
+- Docker logs  
+  https://docs.docker.com/reference/cli/docker/container/logs/
+- Docker Healthcheck / Running Containers  
+  https://docs.docker.com/engine/containers/run/
+- GitHub Actions Workflows  
+  https://docs.github.com/en/actions/concepts/workflows-and-actions/workflows
+
+## 仓库内关联资料
+
+- `docs/chapters/04-agent-common-mechanisms.md`
+- `docs/references/coding-agent-comparison-2026-09.md`
+- `docs/chapters/01-intranet-qwen-api.md`
+- `docs/cases/model-metric-api-observability.md`
+- `docs/outline/media-capture-checklist.md`
+
+## 后续实测要求
+
+以下内容不要仅靠讲义结论，需补真实素材：
+
+- TOOL-R01：真实仓库 Read/Edit/Test/Diff；
+- TOOL-R02：Playwright / Browser Visual QA；
+- TOOL-R03：SSH / Docker 部署；
+- TOOL-R04：GitHub Actions；
+- TOOL-R05：API Tool vs GUI。
+
+如果后续实测与本章描述不一致：
+
+> **以实测为准，修改讲义。**
