@@ -60,3 +60,5 @@
 - 新增 `demos/zcode-real-world/README.md` 与 `docs/cases/zcode-agent-real-world.md`，设计鹈鹕 Browser 闭环和 Sensor Guard 工程闭环两层案例。
 - 新增 `demos/zcode-real-world/project/` 训练项目：AGENTS.md + Python 实现 + unittest，初始状态固定为 5 tests / 1 boundary failure；源码不泄露 Bug 提示。
 - 模块三讲义已嵌入 ZCode 主叙事，并新增 ZCODE-01～13、ZCODE-R01～03 素材编号。
+- 新增 ZCode 现场 Runbook 与实测结果模板，规定现场停顿问题、异常处理、环境记录和 Evidence 留档，避免 Demo 退化为产品功能巡览。
+- 新增 `docs/references/zcode-agent-evidence-2026-09.md`，基于 ZCode 当前官方文档核验 Workspace、AGENTS.md、Project Memory、Browser、Terminal、Execution Modes、Goal Mode、Command/Subagent 等事实边界。
