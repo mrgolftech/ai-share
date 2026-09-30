@@ -184,6 +184,33 @@ git clone ...
 | CA | 部门内部根证书 | HTTPS / Internal Registry |
 | PATH | 标准化 PATH | 让 Agent 找到工具 |
 
+## 6.1 Python、Node.js、系统 CLI 怎么分工
+
+部门标准环境建议三者共存，而不是用一个替掉另外两个。
+
+| 层 | 主要用途 | 典型工具 |
+|---|---|---|
+| 系统/专用 CLI | 最直接、确定性执行 | git、curl、rg、docker、ssh、编译器 |
+| Python | API、数据、文档、脚本、复杂编排 | pytest、pandas、Playwright Python |
+| Node.js/npm | Web、JS/TS、浏览器 Agent 工具链 | Playwright Test/CLI/MCP、Puppeteer、前端构建 |
+
+推荐选择顺序：
+
+1. 项目已经有现成命令/脚本：直接复用。
+2. 有成熟专用 CLI：优先 CLI。
+3. 需要复杂编排、数据处理或状态机：Python。
+4. Web / JS / Browser tooling：优先考虑 Node.js。
+5. 最后才直接实现底层协议。
+
+这避免两个常见误区：
+
+- “Python 什么都能做，所以只装 Python”；
+- “Web Agent 都必须 Node.js”。
+
+Playwright 的核心浏览器自动化能力同时支持 Python 与 JavaScript/TypeScript；但当前 Playwright CLI / MCP 与 Puppeteer 等 Agent/浏览器工具链对 Node.js 更直接。
+
+---
+
 ## P1：工程增强层
 
 | 能力 | 建议组件 |
