@@ -241,6 +241,40 @@
 
 解释消息如何被提交给模型。
 
+
+### Cherry Studio Network 现场抓包
+
+模块一增加一组主 Demo：
+
+> **从 Cherry Studio 聊天界面直接打开 DevTools / Network，观察模型应用到底怎样调用 API。**
+
+现场依次观察：
+
+1. 刷新模型列表时的 `GET /v1/models`；
+2. 第一轮普通文本 Chat Request；
+3. 第二轮连续追问时，历史消息 / 会话状态如何进入下一次模型调用；
+4. 多模态图片在 Request Body 中采用什么实际结构；
+5. `stream=true` 后 SSE / EventStream 怎样持续返回。
+
+原则：
+
+> **不预设 Cherry Studio 当前版本一定怎样组织上下文或图片，而是以实际 Network Request / Response 为准。**
+
+这一 Demo 用来建立：
+
+~~~text
+Chat UI
+→ Client / Harness
+→ HTTP Request
+→ Model API
+→ Streaming Response
+→ UI Render
+~~~
+
+的第一层工程直觉，并为 Context、Vision、SSE 和后续 Agent Harness 铺路。
+
+对应截图占位：`API-NET-01` ～ `API-NET-07`。
+
 ---
 
 ## 3.4 流式与非流式
@@ -799,7 +833,7 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 ---
 
-## 4.7 九个代表性 Agent：先横向比较，再收束到 Harness 共性
+## 4.7 十个代表性 Agent：先横向比较，再收束到 Harness 共性
 
 培训至少覆盖：
 
@@ -812,6 +846,7 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 - Cline；
 - Kilo Code；
 - Hermes Agent。
+- WorkBuddy。
 
 不逐个介绍菜单，也不做简单“谁最好”的排名。
 
@@ -839,7 +874,7 @@ Workspace 让模型面对的不再只是一段 Prompt，而是一个真实项目
 
 `docs/references/coding-agent-comparison-2026-09.md`
 
-### 4.7.1 三种代表路线
+### 4.7.1 五种代表路线
 
 **厂商旗舰 Harness：**
 
@@ -919,6 +954,24 @@ Hermes 用于展示 Agent 从“完成一次编码任务”继续扩展到持久
 - 是否错误声称“已完成”。
 
 这样可以把“公网 Harness Benchmark”转换成与部门实际部署直接相关的证据。
+
+### 4.7.3A WorkBuddy：Chat Surface 背后的 Workspace 与 Runtime
+
+WorkBuddy 作为补充案例，重点不做 Coding Agent 排名，而是解释三个机制：
+
+- Skill Marketplace / 社区 Skill；
+- Chat / Task Surface 背后的 Workspace、文件、终端、Browser 和产物；
+- 企业智能体的云端 Runtime / Sandbox。
+
+它适合用来说明：
+
+> **界面像 Chat，不代表后端只是 Prompt → Answer；当会话绑定 Workspace、Tools 和 Runtime 后，同一个对话入口已经可以成为完整 Agent 工作台。**
+
+同时必须明确：
+
+> **并非所有 Chat 产品或所有会话都天然拥有完整虚拟容器。是否存在 Sandbox、是否持久化、能执行什么，需要按具体产品和模式验证。**
+
+建议截图编号：`AGENT-WB-01` ～ `AGENT-WB-04`。
 
 ### 4.7.4 最后收束到 Agent Harness
 
@@ -2036,6 +2089,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Qwen API 实测结果（已有实测证据）
 - Qwen API 实测报告（已有实测证据）
 - 第一章 API 培训讲义（可用于培训）
+- Cherry Studio Network 抓包主 Demo（已有讲义设计，待现场截图：models / 首轮 Chat / 多轮 Context / Vision / SSE）
 - Qwen v2 Agent Tool Loop 与多模态 Vision 实测（已有实测证据）
 - Thinking 失败项专项复测（已有实测证据）
 - Token 输出速率体感 Demo（可用于培训，基于 Apache-2.0 开源项目改造，可离线运行）
@@ -2044,7 +2098,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 ## 待建设
 
 - 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；知识库现采用“双稿制”：`docs/chapters/03-department-knowledge-base-teaching.md` 为培训主讲教学版，按“问题→例子→原理→结论”重构并预留 KB-01～KB-22 截图/图示占位；`docs/chapters/03-department-knowledge-base.md` 保留为完整技术稿和深入阅读材料；架构文档为 `docs/architecture/department-knowledge-architecture.md`；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，证据基线为 `docs/references/knowledge-base-rag-evidence-2026-09.md`，涵盖 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，以及 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget；教学版已完成 v0.2 第一轮“首次学习者降阶”重构：新增开卷考试统一类比、RAG“先查再给再答”、Embedding/Vector Index 非知识本体解释、Parse 与 Chunk 分拆、长上下文证据下沉、Top-K/Rerank/Evidence Budget 统一直觉、Agentic Retrieval“逐步取证”解释、问题类型→检索方式速查表和讲师节奏分层；当前待补 KB-01～KB-22 及扩展占位截图/图示，并在后续验证阶段补 BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 实测）
-- Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；9 个 Agent 横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo）
+- Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；10 个 Agent（新增 WorkBuddy）横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo；WorkBuddy 的 Chat→Workspace→Skill→Runtime 截图已规划为 AGENT-WB-01～04）
 - 模块三：Agent 工具与真实世界
 - 模块四：API / MCP / Skill 等关系
 - 模块五：可复用资产与知识体系
