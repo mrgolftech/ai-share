@@ -212,6 +212,19 @@
 
 > **章节结构负责“知识怎样组织”，四场讲座负责“现场怎样讲”。两者不要求一一对应。**
 
+素材管理原则：
+
+> **一讲一稿、一讲一清单。**
+
+每场讲义对应独立素材清单：
+
+- 第一讲：`docs/lectures/01-api-to-agent-media-checklist.md`
+- 第二讲：`docs/lectures/02-department-knowledge-base-media-checklist.md`
+- 第三讲：`docs/lectures/03-agent-common-runtime-tools-media-checklist.md`
+- 第四讲：`docs/lectures/04-agent-engineering-practice-media-checklist.md`
+
+总控文件 `docs/outline/media-capture-checklist.md` 只维护统一规范、四讲入口和跨讲复用素材，不再重复维护所有明细。
+
 当前四场最终讲义正文：
 
 - 第一讲：`docs/lectures/01-api-to-agent.md`
