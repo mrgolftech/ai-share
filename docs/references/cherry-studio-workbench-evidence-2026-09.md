@@ -147,6 +147,37 @@ Cherry Studio 当前官方文档将：
 
 - https://github.com/CherryHQ/cherry-studio-docs/blob/main/pre-basic/settings/README.md
 
+## 8. 数据边界：Desktop / Local-first
+
+Cherry Studio 官方知识库文档明确说明：
+
+- 加入知识库的数据保存在本地；
+- 添加文档时会在 Cherry Studio 本地数据目录保存副本；
+- Knowledge 的索引与检索属于本机知识工作流。
+
+因此培训中可将 Cherry 定位为：
+
+> **Desktop / Local-first Personal AI Workspace。**
+
+但必须同时说明：
+
+> **Local Storage ≠ 所有内容永远不离开本机。**
+
+当调用远程 / 内网模型 API 时，被选入最终 Prompt / Context 的内容仍然会发送到对应 Model Provider。
+
+因此真正的数据边界应该拆成：
+
+1. 原始文件 / Knowledge 存在哪里；
+2. Embedding 在哪里计算；
+3. Model Provider 在哪里；
+4. 哪些证据最终进入 Request。
+
+官方参考：
+
+- https://docs.cherry-ai.com/cherry-studio-wen-dang/en-us/knowledge-base/knowledge-base-data
+
+---
+
 ## 8. 培训使用边界
 
 第一讲：
