@@ -55,3 +55,8 @@
 - 新增反过度沉淀原则：AGENTS.md 不作为项目百科全书；专项流程按需加载为 Skill；确定性步骤逐步下沉为 Script/Test/CI；关键项目事实不只依赖产品 Memory。
 - 新增 `docs/references/reusable-agent-assets-evidence-2026-09.md`，核验 AGENTS.md 开放格式、Codex 当前 Context/AGENTS 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等资料。
 - 模块五新增 ASSET-01～09、ASSET-R01～04 素材占位；培训讲义下一阶段转入真实案例、统一 Demo 实现和实测证据补齐。
+
+- 确定 ZCode 作为模块三第一套贯穿 Agent 案例，不按产品功能列表授课，而采用“问题 → ZCode 画面 → 底层机制 → 可迁移结论”。
+- 新增 `demos/zcode-real-world/README.md` 与 `docs/cases/zcode-agent-real-world.md`，设计鹈鹕 Browser 闭环和 Sensor Guard 工程闭环两层案例。
+- 新增 `demos/zcode-real-world/project/` 训练项目：AGENTS.md + Python 实现 + unittest，初始状态固定为 5 tests / 1 boundary failure；源码不泄露 Bug 提示。
+- 模块三讲义已嵌入 ZCode 主叙事，并新增 ZCODE-01～13、ZCODE-R01～03 素材编号。
