@@ -883,6 +883,225 @@ Windows 文件对话框
 
 **图示占位：TOOL-06A｜Built-in Browser / Browser Use / Host Chrome / Computer Use 分层图**
 
+### 7.1.2 Agent 操作宿主机浏览器时，到底谁在发 CDP 命令
+
+需要把“浏览器能力”继续拆成几层：
+
+~~~text
+Agent
+  ↓
+Harness / Browser Tool
+  ↓
+控制客户端
+  ├─ 产品内置 Browser Use
+  ├─ Playwright CLI
+  ├─ Playwright MCP
+  ├─ Playwright Library
+  ├─ Chrome DevTools MCP
+  ├─ Browser Extension
+  └─ 自定义 CDP Client
+  ↓
+Browser
+  ├─ Agent Built-in Browser
+  └─ Host Chrome / Edge
+~~~
+
+CDP 本身不是 Python 或 Node.js 程序，而是 Chromium 暴露的一套调试/控制协议。Chrome 可以通过 Remote Debugging 暴露 WebSocket endpoint；客户端通过该 endpoint 发送 CDP 命令和接收事件。
+
+因此：
+
+> **Agent 使用 CDP 时，不一定“现场写 Python/Node 代码”。**
+
+可能有四种情况：
+
+1. Harness 已经内置浏览器工具，Agent 只调用 Browser Tool；
+2. Agent 通过 Playwright CLI / MCP，由 Playwright 代替它和浏览器通信；
+3. Agent 通过 Chrome DevTools MCP，由 MCP Server 代替它发 CDP；
+4. 没有现成工具时，Agent 才自己写 Python / Node.js 代码，通过 Playwright、Puppeteer 或 WebSocket Client 发 CDP。
+
+所以更准确的链路是：
+
+~~~text
+Model
+→ Tool Call / Shell Command
+→ Browser Automation Client
+→ CDP / Browser Protocol
+→ Chrome
+~~~
+
+而不是：
+
+~~~text
+Model
+→ 必须自己生成 Python
+→ CDP
+~~~
+
+### 7.1.3 操作宿主机已有 Chrome，目前常见三种接入方式
+
+#### 方式 A：浏览器扩展
+
+适合：
+
+- 复用当前 Chrome Profile；
+- 已登录 Session；
+- SSO / 2FA；
+- 已打开 Tab；
+- 浏览器扩展。
+
+当前例子：
+
+- Codex Chrome extension；
+- Playwright MCP Extension mode。
+
+这类方案优势是：
+
+> **直接进入用户已经在用的浏览器上下文。**
+
+#### 方式 B：Remote Debugging / CDP
+
+Chrome/Chromium 自带 CDP，不需要单独安装“CDP”。
+
+但必须：
+
+- 在 Chrome 中启用 Remote Debugging；或
+- 以 `--remote-debugging-port` 启动；
+- 再提供一个 CDP Client 连接。
+
+Chrome 官方当前还支持通过 `chrome://inspect/#remote-debugging` 显式允许远程调试连接。
+
+典型链路：
+
+~~~text
+Agent
+→ Playwright / Chrome DevTools MCP / Puppeteer
+→ CDP endpoint
+→ Existing Chrome
+~~~
+
+所以：
+
+> **CDP 协议不需要安装，但“说 CDP 的客户端”仍然需要。**
+
+#### 方式 C：Playwright 自己启动浏览器
+
+最适合：
+
+- E2E；
+- 回归测试；
+- 隔离环境；
+- 不想污染用户日常浏览器状态。
+
+典型链路：
+
+~~~text
+Agent
+→ Playwright
+→ Dedicated Chromium / Chrome / Firefox / WebKit
+~~~
+
+此时通常不需要操作用户正在使用的 Chrome。
+
+### 7.1.4 Playwright 到底要不要安装
+
+要，除非当前 Agent 产品已经内置等价浏览器能力，你根本不需要自己搭 Playwright。
+
+当前 Playwright 有三种常见 Agent 接入方式：
+
+| 方式 | 环境要求 | Agent 怎样用 |
+|---|---|---|
+| Playwright CLI | Node.js 20+ | Agent 直接执行简洁 CLI 命令 |
+| Playwright MCP | Node.js 20+ + MCP Client | Agent 调 `browser_navigate` / `browser_click` 等工具 |
+| Playwright Library | Node.js / Python / Java / .NET | Agent 写代码调用 API |
+
+当前官方把 Playwright CLI 定位为 coding agents 的 token-efficient browser automation；MCP 更适合需要持续浏览器状态和结构化工具调用的 Agent loop。
+
+因此，对通用 Coding Agent：
+
+> **如果已经有 Node.js，Playwright CLI 是当前非常自然的浏览器自动化入口。**
+
+如果是：
+
+- 长时间探索；
+- 希望 Browser Tool 直接出现在 Agent 工具列表；
+- 多轮保持 Session；
+
+可以优先考虑 Playwright MCP。
+
+### 7.1.5 没有 Node.js 时怎么办
+
+不是“Browser Automation 就做不了了”。
+
+至少有三条路：
+
+#### 路径 1：Agent 已自带 Browser Use
+
+例如 ZCode Built-in Browser、Codex In-app Browser：
+
+> 不需要额外安装 Playwright，也不要求你自己写 Python。
+
+#### 路径 2：Python + Playwright
+
+安装：
+
+~~~text
+pip install playwright
+playwright install
+~~~
+
+然后 Agent 可以生成和执行 Python 自动化脚本。
+
+如果只是连接已经存在的 Chromium CDP endpoint，而不是让 Playwright 启动自己的 Browser，核心仍然是安装 Python Playwright Library；是否还需要下载 Playwright Browser binaries 取决于是否需要 Playwright 自己启动浏览器。
+
+#### 路径 3：直接使用其他 Browser Tool / MCP
+
+例如：
+
+- 产品自带 Browser Tool；
+- Chrome DevTools MCP；
+- 其他可用 Browser MCP。
+
+因此：
+
+> **Node.js 不是浏览器自动化的理论前提；但当前 Playwright CLI/MCP 生态明确依赖 Node.js 20+，所以完整 Agent 工作站仍然很值得预装 Node.js。**
+
+### 7.1.6 课堂推荐的选择顺序
+
+~~~text
+Agent 已有可靠 Built-in Browser？
+        ↓ Yes
+直接 Browser Use
+        ↓ No
+
+需要用户现有 Chrome 登录态？
+        ↓ Yes
+Chrome Extension / Existing Browser Connection
+        ↓ No
+
+是 Coding Agent 临时做页面验证？
+        ↓
+Playwright CLI
+
+是长期、结构化 Browser Agent？
+        ↓
+Playwright MCP
+
+是 Python 项目并已有 Python Runtime？
+        ↓
+Python Playwright
+
+需要 Chrome 独有的底层 Network / Runtime / Performance？
+        ↓
+CDP / Chrome DevTools MCP
+~~~
+
+核心原则：
+
+> **优先高层、稳定、可验证的 Browser Tool；只有需要更底层浏览器内部状态时才下沉到 CDP。**
+
+**图示占位：TOOL-06B｜Browser Tool → Playwright CLI/MCP/Library → CDP → Host Chrome 技术栈**
+
+
 
 
 典型过程：
