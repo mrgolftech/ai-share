@@ -1875,7 +1875,7 @@ Examples
 
 ### 4.2.1 可以认识几个社区常见框架，但不要迷信【备用】
 
-### RTF
+#### RTF
 
 ```text
 Role
@@ -1887,7 +1887,7 @@ Format
 
 > 很短、输出要求明确的日常任务。
 
-### CO-STAR
+#### CO-STAR
 
 社区常见表达：
 
@@ -1904,7 +1904,7 @@ Response
 
 > 文案、沟通、面向特定受众的内容生产。
 
-### CRISPE
+#### CRISPE
 
 常见版本强调：
 
@@ -2144,7 +2144,7 @@ Cherry 对话输入区可以选择已经创建的知识库，助手也可以预�
 
 建议第一讲只做一个最小演示。
 
-### 创建一个训练知识库
+#### 创建一个训练知识库
 
 资料只放：
 
@@ -2411,7 +2411,7 @@ Browser
 - Qwen API 正式测试报告；
 - 或一条包含当前实测结论的 Markdown Note。
 
-### 在 Cherry Studio 中
+#### 在 Cherry Studio 中
 
 ```text
 qwen3.6
@@ -2422,7 +2422,7 @@ qwen3.6
 
 【截图占位 WB-COMP-04B｜Cherry Assistant：Model + Instructions + Knowledge】
 
-### 在 Open WebUI 中
+#### 在 Open WebUI 中
 
 ```text
 qwen3.6
@@ -2609,7 +2609,7 @@ Focused Retrieval / 聚焦检索
 
 先不讲算法，只讲直觉。
 
-### 完整文档
+#### 完整文档
 
 ```text
 Document
@@ -2634,7 +2634,7 @@ Model
 
 > 文档越长，占用 Context 越多。
 
-### 聚焦检索
+#### 聚焦检索
 
 ```text
 Question
@@ -2780,7 +2780,7 @@ Open WebUI Workspace / Model
 
 > **它们运行在哪里，数据主要落在哪里，谁负责管理，以及面向个人还是面向集中共享。**
 
-### Cherry Studio：桌面客户端，本机持久化为主
+#### Cherry Studio：桌面客户端，本机持久化为主
 
 Cherry Studio 是桌面应用。
 
@@ -2836,7 +2836,7 @@ Retriever 选出相关内容
 
 ---
 
-### Open WebUI：服务端部署，浏览器只是入口
+#### Open WebUI：服务端部署，浏览器只是入口
 
 部门当前内网部署的是：
 
@@ -2887,7 +2887,7 @@ Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge �
 
 ---
 
-### 两个产品的数据边界，一张表讲清
+#### 两个产品的数据边界，一张表讲清
 
 | 维度 | Cherry Studio | 内网 Open WebUI v0.11.0 |
 |---|---|---|
@@ -2918,7 +2918,7 @@ Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge �
 
 现在把两边最容易混淆的功能放到一起。
 
-### Cherry Assistant
+#### Cherry Assistant
 
 可以预先保存：
 
@@ -2928,7 +2928,7 @@ Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge �
 - Knowledge；
 - MCP / Tools。
 
-### Open WebUI Workspace / Model
+#### Open WebUI Workspace / Model
 
 当前 Open WebUI 官方定义也允许把：
 
@@ -3004,7 +3004,7 @@ Specialized Assistant / Workspace Model
 
 当前内网 v0.11.0 已经实际走通两个很有价值的使用方式。
 
-### 方式一：直接围绕 Note 对话
+#### 方式一：直接围绕 Note 对话
 
 用户创建一份 Markdown Note 后，可以直接在笔记场景中和模型对话。
 
@@ -3024,7 +3024,7 @@ Specialized Assistant / Workspace Model
 
 ---
 
-### 方式二：已有 Note 进入 Workspace Knowledge
+#### 方式二：已有 Note 进入 Workspace Knowledge
 
 当前内网也已经实际走通：
 
@@ -3155,7 +3155,7 @@ Model
 
 > **叙事转折：** 到这里我们已经知道输入会被 Tokenize、Context 要 Prefill、输出要逐 Token Decode。现在再看 Thinking、TTFT、Tokens/s、KV Cache 和共享服务指标，就不再是孤立参数。
 
-### 5.2.1 Thinking：为什么有些问题值得“多想一会儿”？【主讲】
+## 5.1 Thinking：为什么有些问题值得“多想一会儿”？【主讲】
 
 接下来用一个简单任务和一个复杂任务对比。
 
@@ -3808,7 +3808,7 @@ Harness 的详细结构留到第三讲。
 
 更准确的说法是：
 
-## Chat 很适合
+### Chat 很适合
 
 - 一个独立问题；
 - 文案改写；
@@ -3817,7 +3817,7 @@ Harness 的详细结构留到第三讲。
 - 一次性分析；
 - 小段代码。
 
-## 复杂任务开始需要 Agent
+### 复杂任务开始需要 Agent
 
 当任务包含：
 
