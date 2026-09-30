@@ -18,6 +18,25 @@
 
 ---
 
+## 1. 本讲素材总控表
+
+| 素材组 | 优先级 | 主要内容 | 状态 |
+|---|---:|---|---|
+| METHOD-* | P0 | Prompt→Code vs 完整工程链、最终工程闭环 | ⬜ |
+| BM-01~12 | P0 | BMQuiz 需求、架构、Rules、Test、Visual QA、CI/CD | ⬜ |
+| BM-R01~03 | P0 | BMQuiz Visual QA / Deploy / 小需求完整闭环 | ⬜ |
+| SERVER-* | P0 | Docker / logs / health / smoke | ⬜ |
+| FC-01~12 | P0 | FileCheck Core→CLI/GUI、Safety、CI、Release | ⬜ |
+| FC-R01~03 | P0 | FileCheck 小需求、Build/Release、Backup/Restore | ⬜ |
+| MM-CASE-* | P1 | model-metric 语义验证 | ⬜ |
+| IPSEC-* | P1 | 数据 → 假设 → 工程证据 | ⬜ |
+| HF-* | P1 | HyperFrames 工程化内容生产 | ⬜ |
+| SEC-* | P2 | 授权环境接口/安全验证闭环 | ⬜ |
+
+> 第四讲原则：**BMQuiz + FileCheck 两个纵向案例做深；其他案例只用来证明方法的适用范围。**
+
+---
+
 # 39. 第四讲截图执行清单
 
 ## 39.1 BMQuiz P0
