@@ -700,6 +700,50 @@ Raw Model
 - Knowledge 绑定 Agent；
 - MCP / Web Search / Work。
 
+### Cherry Studio 与 Open WebUI 的数据边界
+
+第一讲增加一组工作台对照，不做“谁更好”的产品排名，而是比较：
+
+```text
+Cherry Studio
+→ Desktop / Local-first
+→ 本机管理个人配置、Knowledge、Assistant
+→ 通过 API 调模型
+
+Open WebUI v0.11.0
+→ Browser / Server-side
+→ 服务端集中管理 Chat、Note、Knowledge、Workspace、ACL
+→ 服务端调模型
+```
+
+当前内网 Open WebUI 已实测：
+
+- 个人 Note / Markdown；
+- Note 场景直接对话；
+- 上传文档；
+- Full Context / Focused Retrieval；
+- 未配置 Embedding / 未向量化提示；
+- Workspace / Model 设置 System Prompt；
+- Workspace 绑定已有 Note / Knowledge；
+- 选择 Workspace 后基于知识问答。
+
+Cherry Assistant 与 Open WebUI Workspace Model 都可以理解为：
+
+```text
+Base Model
++ System Prompt / Instructions
++ Parameters
++ Knowledge
++ Tools
+→ Reusable Application Preset
+```
+
+二者都不是重新训练模型，也不应仅因为 UI 中叫 Assistant/Model 就等同于完整 Agent。
+
+数据边界必须讲清：
+
+> **Local / Server-side Storage 与 Model Provider 是两个独立维度。资料存在本机或内网服务器，不代表进入模型 Context 的内容不会通过 API 发送给配置的 Model Provider。**
+
 ### 用 Cherry Studio 解释“RAG 不等于向量数据库”
 
 Cherry Studio 当前官方知识库支持：
