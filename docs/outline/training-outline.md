@@ -2074,7 +2074,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 现有讲义截图/录屏占位与总清单（已有初稿：`docs/outline/media-capture-checklist.md`；API、Chat→Agent、Open WebUI/Cherry、知识库、Agent 共性机制、Agent 真实世界工具链均已建立编号；当前待用户按 P0 清单补真实截图与录屏）
 - 模块三主讲稿：`docs/chapters/05-agent-tools-real-world.md`（已有初稿；覆盖 File/Search、Shell、Git、Verification、Browser Use/Playwright/Computer Use/Crawler、SSH、Docker、API、CI/CD，并设计 TOOL-01～11 与 TOOL-R01～05）
 - 模块三证据基线：`docs/references/agent-tools-real-world-evidence-2026-09.md`（已有素材；已核验 Playwright、OpenAI Computer Use/Codex Sandbox、Git、Docker、GitHub Actions 官方资料）
-- ZCode 模块三贯穿案例：`demos/zcode-real-world/README.md` + `docs/cases/zcode-agent-real-world.md`（已有案例设计；官方资料确认 Workspace/Terminal/Built-in Browser/Review/Execution Modes/AGENTS.md/Goal Mode 均适合映射模块三机制）
+- ZCode 模块三贯穿案例：`demos/zcode-real-world/README.md` + `docs/cases/zcode-agent-real-world.md`（已有案例设计；并已补 `instructor-runbook.md`、`result-template.md`；官方证据基线为 `docs/references/zcode-agent-evidence-2026-09.md`，确认 Workspace/Terminal/Built-in Browser/Review/Execution Modes/AGENTS.md/Project Memory/Goal Mode 等当前实现）
 - ZCode Sensor Guard 训练项目：`demos/zcode-real-world/project/`（已有初始项目；5 条测试中设计 1 条 85°C 边界失败，待 ZCode 现场实测修复）
 - 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（已有初稿；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界）
 - 模块四证据基线：`docs/references/api-mcp-skill-evidence-2026-09.md`（已有素材；基于 MCP、OpenAI Skills/Plugins/Tool Design/Hooks 当前官方资料核验）
