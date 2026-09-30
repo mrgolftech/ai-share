@@ -126,6 +126,9 @@ AGENT-R05-tool-loop.mp4
 | ASSET-01~08 | 图示/截图 | 仓库资产地图、资产路由、规则/Skill/Memory/CI 边界 | 可复用资产 | ⬜ |
 | ASSET-R01~02 | 录屏 | 资产路由互动 + 长 Prompt → Skill 对比 | 可复用资产 | ⬜ |
 | ASSET-ZC-01~03 | 截图 | ZCode AGENTS.md/Memory、Command/Skill、Plugin 资产边界 | 可复用资产 | ⬜ |
+| METHOD-02 | 图示 | Prompt→Code vs 完整工程链 | 方法论收束 | ⬜ |
+| METHOD-06 | 图示 | 全培训最终 Agent 工程闭环 | 方法论收束 | ⬜ |
+| METHOD-07 | 图示 | 五问任务决策卡 | 方法论收束 | ⬜ |
 
 ---
 
@@ -473,7 +476,27 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 12. 推荐的实际采集顺序
+# 12. 最终方法论收束
+
+完整占位位于：
+
+`docs/chapters/08-agent-engineering-methodology.md`
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| METHOD-01 | P1 | 四类任务 → Chat / Knowledge / Agent 路由 | ⬜ |
+| METHOD-02 | P0 | Prompt→Code vs 完整工程链 | ⬜ |
+| METHOD-03 | P1 | Model / Harness / Runtime 三层 | ⬜ |
+| METHOD-04 | P0 | Act → Observe → Verify → Iterate | ⬜ |
+| METHOD-05 | P1 | 模型 / Thinking 分级路由 | ⬜ |
+| METHOD-06 | P0 | 全培训最终 Agent 工程闭环 | ⬜ |
+| METHOD-07 | P0 | 五问任务决策卡 | ⬜ |
+
+本章原则：以静态图为主，不新增大量录屏。
+
+---
+
+# 13. 推荐的实际采集顺序
 
 不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
 
@@ -494,7 +517,7 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 13. 后续落盘约定
+# 14. 后续落盘约定
 
 实际素材建议逐步落到：
 
