@@ -193,3 +193,20 @@ Problem → Requirement → Constraint → Research → Architecture → Plan �
 - 第四讲：6 + 7 + 8。
 
 如后续实测、领导意见或培训时长发生变化，可以调整讲座内部顺序和案例比例，但原则上保持四场核心问题不变。
+
+
+## 八、最终讲义正文
+
+四场正式讲义正文已经建立：
+
+- `docs/lectures/01-api-to-agent.md`
+- `docs/lectures/02-department-knowledge-base.md`
+- `docs/lectures/03-agent-common-runtime-tools.md`
+- `docs/lectures/04-agent-engineering-practice.md`
+- `docs/lectures/README.md`
+
+讲义中的截图、录屏和 Demo 编号统一由：
+
+`docs/outline/media-capture-checklist.md`
+
+管理。
