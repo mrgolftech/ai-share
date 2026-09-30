@@ -476,7 +476,43 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 12. 最终方法论收束
+# 12. 完整工程案例：BMQuiz / Server
+
+完整讲义：
+
+- `docs/cases/bmquiz-end-to-end-agent-development.md`
+- `docs/cases/agent-server-operations.md`
+
+## 12.1 BMQuiz 静态素材
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| BM-01 | P0 | oldquiz 与当前 BMQuiz V2 对比 | ⬜ |
+| BM-02 | P0 | Product Function Spec 关键内容 | ⬜ |
+| BM-03 | P0 | Constraint → Architecture 映射 | ⬜ |
+| BM-04 | P0 | 当前系统架构 | ⬜ |
+| BM-05 | P1 | 前端分层与数据流 | ⬜ |
+| BM-06 | P0 | AGENTS.md 关键规则 | ⬜ |
+| BM-07 | P0 | Document-first 工程地图 | ⬜ |
+| BM-08 | P0 | Server CI 关键步骤 | ⬜ |
+| BM-09 | P0 | Visual QA Git 演进时间线 | ⬜ |
+| BM-10 | P0 | Frontend → Server → Auth/Sync Git 历史 | ⬜ |
+| BM-11 | P0 | CI/CD Pipeline | ⬜ |
+| BM-12 | P0 | BMQuiz Git 演进总时间线 | ⬜ |
+
+## 12.2 BMQuiz / Server 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| BM-R01 | P0 | UI 修改 → Visual QA → 修复闭环 | ⬜ |
+| BM-R02 | P0 | Release → SSH Deploy → Health → Smoke | ⬜ |
+| BM-R03 | P0 | 一个小增量需求的完整 Agent Loop | ⬜ |
+| SERVER-R01 | P0 | BMQuiz Docker 部署/更新/验证 | ⬜ |
+| SERVER-R02 | P0 | model-metric systemd 更新/日志/语义验证 | ⬜ |
+
+---
+
+# 13. 最终方法论收束
 
 完整占位位于：
 
@@ -496,7 +532,7 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 13. 推荐的实际采集顺序
+# 14. 推荐的实际采集顺序
 
 不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
 
@@ -517,7 +553,7 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 14. 后续落盘约定
+# 15. 后续落盘约定
 
 实际素材建议逐步落到：
 
