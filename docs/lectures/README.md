@@ -10,6 +10,10 @@
 
 `docs/lectures/01-api-to-agent.md`
 
+素材清单：
+
+`docs/lectures/01-api-to-agent-media-checklist.md`
+
 核心问题：
 
 > Chat、模型、API、Tool、Harness、Agent 到底是什么关系？
@@ -38,6 +42,10 @@
 
 `docs/lectures/02-department-knowledge-base.md`
 
+素材清单：
+
+`docs/lectures/02-department-knowledge-base-media-checklist.md`
+
 核心问题：
 
 > 部门有哪些知识、怎样处理、怎样检索、怎样治理、怎样让 Cherry / Open WebUI / Agent 共用？
@@ -62,6 +70,10 @@
 讲义：
 
 `docs/lectures/03-agent-common-runtime-tools.md`
+
+素材清单：
+
+`docs/lectures/03-agent-common-runtime-tools-media-checklist.md`
 
 核心问题：
 
@@ -94,6 +106,10 @@
 
 `docs/lectures/04-agent-engineering-practice.md`
 
+素材清单：
+
+`docs/lectures/04-agent-engineering-practice-media-checklist.md`
+
 纵向案例：
 
 - `docs/cases/bmquiz-end-to-end-agent-development.md`
@@ -120,10 +136,20 @@
 
 ---
 
+# 素材管理
+
+总控规范：
+
+`docs/outline/media-capture-checklist.md`
+
+原则：
+
+> **一讲一稿、一讲一清单；总控文件只维护规范、入口和跨讲复用。**
+
 # 当前生产顺序
 
 1. 四讲讲义内容 Review；
-2. 按 `docs/outline/media-capture-checklist.md` 完成 P0 素材；
+2. 按四场各自的 `*-media-checklist.md` 完成 P0 素材；
 3. 优先录制每场 2～4 个最关键动态闭环；
 4. 补 BMQuiz / FileCheck 历史证据；
 5. 完成知识库同源三层 Demo；
