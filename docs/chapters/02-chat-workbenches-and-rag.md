@@ -1818,6 +1818,109 @@ Keyword Retrieval
 
 ---
 
+# 二十八、Cherry Studio 与 Open WebUI：真正的应用差别首先是数据边界
+
+只比较功能，会发现两者越来越相似：
+
+- 模型；
+- System Prompt；
+- 参数；
+- Knowledge；
+- 文件；
+- Tool。
+
+更稳定的差异来自部署形态。
+
+## Cherry Studio
+
+```text
+Desktop
+→ Local Data / Knowledge / Assistant
+→ Model API
+```
+
+适合：
+
+- 个人桌面；
+- 本地资料；
+- 多 Provider；
+- 工程师自己的 Assistant / Knowledge。
+
+## Open WebUI
+
+当前内网：`v0.11.0`。
+
+```text
+Browser
+→ Central Open WebUI Server
+→ Chat / Note / Knowledge / Workspace / ACL
+→ Model API
+```
+
+适合：
+
+- 多终端；
+- 多用户；
+- 个人 Note；
+- Personal Workspace；
+- Shared Knowledge；
+- Group / ACL；
+- 部门统一 Portal。
+
+## Assistant 与 Workspace Model
+
+两者均可抽象为：
+
+```text
+Base Model
++ System Prompt
++ Knowledge
++ Parameters
++ Tools
+→ Specialized Assistant
+```
+
+System Prompt 本质仍是在模型调用时进入 Instructions / Context，不是 Fine-tuning。
+
+## Open WebUI Note
+
+当前内网已实测：
+
+```text
+Note
+→ Note Chat
+```
+
+以及：
+
+```text
+Existing Note / Knowledge
+→ Workspace Model
+→ System Prompt
+→ Chat
+```
+
+因此 Note 不只是“一次聊天附件”，而是可以持续维护并复用的个人知识资产。
+
+## 数据边界
+
+Cherry Local-first 和 Open WebUI Server-side 只描述：
+
+> 数据主要在哪里持久化和管理。
+
+真正的隐私/安全判断还要继续看：
+
+- Embedding Provider；
+- Model Provider；
+- Search Provider；
+- 哪些内容进入最终 Request。
+
+因此不能简单写：
+
+> “本地客户端 = 内容不会离开本机。”
+
+---
+
 # 二十八、官方资料
 
 ## Open WebUI
