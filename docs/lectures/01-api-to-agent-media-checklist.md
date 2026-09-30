@@ -28,6 +28,7 @@
 | FILE-* | P0 | 临时附件 / 原生 File Input / Vision / Knowledge 四条路径 | ⬜ |
 | PROMPT-* | P1 | Prompt 骨架、社区框架、Prompt/Rules/Skill/Test 边界 | ⬜ |
 | API-POST-* | P0 | Postman / curl GET + POST | ⬜ |
+| API-APP-* | P0 | 同一 Model API → 翻译 / JSON / Vision OCR / Visual QA / 分类 | ⬜ |
 | API-TEST-* | P0 | qwen_api_training_test.py + r4 28 PASS / 1 SKIP | ⬜ |
 | CH-API-* | P0 | Cherry 三种 Endpoint Type / Network 对照 | ⬜ |
 | CH-ASSIST-* | P0 | Assistant / Instructions / 模型 / 参数 | ⬜ |
@@ -40,7 +41,7 @@
 | CHAT-* / ZCODE-* | P0 | Chat vs Agent 最小闭环 | ⬜ |
 | API-R* / CH-R* / OW-R* / WB-R* / MM-R* | P0/P1 | 第一讲动态演示与备用录屏 | ⬜ |
 
-> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
+> 第一讲优先拍摄顺序：**Cherry 三协议 → GET/POST → API 非 Chat 小应用 → 自动测试 → model-metric → Cherry/Open WebUI 工作台 → Context → Tool Loop → Chat vs Agent**。
 
 ---
 
@@ -150,6 +151,31 @@
 - Postman / curl `GET /v1/models`；
 - Postman `POST /v1/chat/completions`；
 - “Postman / Python / Cherry / Open WebUI / Agent → 同一个 Model API”图。
+
+### API-APP-01～06：同一个 API，不只有 Chat
+
+准备一组尽量统一风格的素材：
+
+- API-APP-01：同一个 Model API 分叉到 Chat / Translation / JSON / Vision / Visual QA / Classification / Agent；
+- API-APP-02：英文技术句子 → 中文翻译；
+- API-APP-03：测试记录 → JSON → Parse / Schema Validation；
+- API-APP-04：自制字符图片 → Vision 识别；
+- API-APP-05：自有网页截图 → Visual QA 问题列表；
+- API-APP-06：测试记录 → NORMAL / REVIEW / INVALID 分类。
+
+要求：
+
+> 所有演示尽量固定同一个 Base URL、同一个 qwen3.6，只改变 Input / Prompt / Output Contract。
+
+工程边界：
+
+- 不用第三方真实 CAPTCHA，使用自制验证码样式图片；
+- 当前内网如果未正式验证 `response_format/json_schema`，只演示 Prompt JSON + 本地校验；
+- 不能把“能输出 JSON”表述成“Structured Outputs 已兼容”。
+
+对应 Demo 规范：
+
+`demos/api-applications/README.md`
 
 ### API-PROTO-01～04：三种 API 协议
 
@@ -521,6 +547,28 @@ api/qwen/results/20260930_095033/
 
 > 证明“上传文件”只是 UI 动作，底层可能是完全不同的数据路径。
 
+## API-APP-R01：同一 API 串联 4 个非 Chat 小应用
+
+时长建议：60～90 秒。
+
+建议连续展示：
+
+1. 技术英文 → 中文翻译；
+2. 测试记录 → JSON；
+3. 自制字符图片 → Vision 识别；
+4. 自有网页截图 → Visual QA JSON。
+
+要求始终让观众看到：
+
+- Base URL 没变；
+- Model 没变；
+- API 调用模式没变；
+- 变化的是 Input / Prompt / Output Contract。
+
+目的：
+
+> **把“模型 API = 聊天接口”这个认知彻底打破。**
+
 ## API-R10：自动测试脚本
 
 建议使用预录 + 现场打开正式结果。
@@ -563,12 +611,16 @@ Agent：
 
 # 16. 第一讲现场 Demo 与备用策略
 
-现场建议真正实时做四项：
+现场建议真正实时做四项，并准备一条 P0 的 API 小应用串联录屏：
 
 1. Cherry 配置内网模型，并用同一 Prompt 切 OpenAI Chat / Responses / Anthropic 三种协议，看 Network Endpoint；
 2. Open WebUI v0.11.0：个人 Note / 文档 → Knowledge → Workspace → 基于资料问答；
 3. Cherry 多轮 Context；
 4. 最小 Agent Read/Edit/Test Loop。
+
+P0 预录：
+
+- API-APP-R01：同一 qwen3.6 API 连续完成翻译 / JSON / Vision OCR / Visual QA，用 60～90 秒证明“API 不等于 Chat”。
 
 Postman、自动测试、model-metric、Thinking、Vision、Tool Loop 根据现场时长选择实时或预录；其中完整 r4 测试、并发压测和长 Thinking 优先使用预录。
 
