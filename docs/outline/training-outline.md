@@ -210,7 +210,15 @@
 
 原则：
 
-> **章节结构负责“知识怎样组织”，系列场次负责“现场怎样讲”。两者不要求一一对应。**
+> **章节结构负责“知识怎样组织”，四场讲座负责“现场怎样讲”。两者不要求一一对应。**
+
+当前四场最终讲义正文：
+
+- 第一讲：`docs/lectures/01-api-to-agent.md`
+- 第二讲：`docs/lectures/02-department-knowledge-base.md`
+- 第三讲：`docs/lectures/03-agent-common-runtime-tools.md`
+- 第四讲：`docs/lectures/04-agent-engineering-practice.md`
+- 总索引：`docs/lectures/README.md`
 
 ---
 
@@ -2240,6 +2248,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 8 个内容单元：`docs/outline/training-series-plan.md`（继续保留用于内容维护，不作为现场场次安排）
 - 完整工程案例框架：`docs/cases/end-to-end-agent-engineering-cases.md`（已有框架；BMQuiz V2 与 FileCheck 固定为两个纵向主案例）
 - BMQuiz V2 完整工程案例：`docs/cases/bmquiz-end-to-end-agent-development.md`（已有第一版主讲底稿；已按真实仓库与 Git 历史串联需求、约束、架构、AGENTS、Plan、实现、测试、Visual QA、Server CI、Docker/GHCR、部署、验证与资产沉淀；待补原始对话与截图/录屏）
+- FileCheck 完整工程案例：`docs/cases/filecheck-end-to-end-agent-development.md`（已按当前 v0.2.3 README / pyproject / main 代码与 CI 核验；覆盖 Windows/Offline/Win7 约束、Core→CLI/GUI、可靠性、CustomTkinter、CI、PyInstaller、Release；待补 Git 历史与实操录屏）
 - Agent 服务器运维案例：`docs/cases/agent-server-operations.md`（已有案例设计；BMQuiz Docker + model-metric systemd，待真实录屏与执行证据）
 
 - API 官方参考资料（已有素材）
@@ -2251,7 +2260,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块三：Agent 工具与真实世界（已有初稿；**第一套贯穿主案例已固定为 ZCode**，案例规范为 `demos/zcode-real-world/README.md`，已建立 Sensor Guard 训练项目和 `docs/cases/zcode-agent-real-world.md`；当前缺口为 ZCode 实际录屏/截图，以及 SSH/Docker、Commit→CI 等后续真实案例证据）
 - 模块四：API / MCP / Skill 等关系（主讲稿已可用于培训，官方证据基线已形成；后续只补最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据与素材）
 - 模块五：可复用资产与知识体系（主讲稿已可用于培训，证据基线已形成；后续只补仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
-- **当前下一建设重点：按四讲组织授课材料**。第一讲补 API/Chat/Agent 录屏，第二讲完成知识库同源三层 Demo 与建设方案，第三讲补多 Agent 共性/Browser/Runtime/MCP/Skill 演示，第四讲完成 BMQuiz 与 FileCheck 两个纵向工程案例并组织横向专题案例
+- **四场最终讲义正文已建立**：当前下一建设重点转为 P0 截图/录屏与 Demo 实测。第一讲补 API/Chat/Agent 素材，第二讲完成知识库同源三层 Demo，第三讲补多 Agent 共性/Browser/Runtime/MCP/Skill 演示，第四讲补 BMQuiz 与 FileCheck 历史证据和实操录屏，并准备 model-metric/IPsec/HyperFrames 短案例
 - Agent 服务器运维：案例设计已完成，后续补 BMQuiz Docker 与 model-metric systemd 的真实执行证据和录屏
 - 四讲串联检查：检查四场之间的重复、术语一致性、案例复用、过渡和节奏；8 个内容单元只作为后台内容维护
 - 其他专题案例：IPsec VPN 数据分析、HyperFrames、授权机制/协议研究、网站安全测试后续逐个补证据与讲义
