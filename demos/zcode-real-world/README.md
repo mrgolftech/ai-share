@@ -3,6 +3,8 @@
 > 状态：案例设计完成，训练项目已建立，待 ZCode 实测与录屏  
 > 日期：2026-09-30  
 > 对应讲义：`docs/chapters/05-agent-tools-real-world.md`  
+讲师执行脚本：`demos/zcode-real-world/instructor-runbook.md`  
+实测记录模板：`demos/zcode-real-world/result-template.md`  
 > 主 Agent：ZCode Agent  
 > 原则：用具体 ZCode 界面讲清底层机制，但不把培训做成 ZCode 功能说明书。
 
