@@ -1,6 +1,6 @@
 # 模块四：如何让 Agent 掌握工具——API、Tool、MCP、Skill、Plugin、Command、Hook
 
-> 状态：已有初稿 / 待统一 Demo 与实测  
+> 状态：可用于培训 / 统一 Demo 与实测后补  
 > 更新日期：2026-09-30  
 > 上一章：`05-agent-tools-real-world.md`  
 > 对应培训主线：**Agent 如何操作真实世界 → 如何让 Agent 掌握工具 → 如何形成可复用资产**
@@ -333,6 +333,8 @@ Agent C → Integration C1/C2/C3...
 ---
 
 ## 5.2 MCP 想标准化的是“AI 应用怎样连接能力”
+
+截至 2026-09-30，MCP TypeScript SDK v2 为稳定发布线，实现 2026-07-28 版规范。这里不要求学员记规范版本，但需要知道 MCP 仍在持续演进，具体 Host 支持范围应以当前实现为准。
 
 MCP 官方当前将自己定义为：
 
