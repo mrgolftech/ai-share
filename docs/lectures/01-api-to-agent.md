@@ -1,15 +1,93 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.9  
+> 状态：Final Lecture Draft v2.0（叙事重构版）  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
 > 适用对象：部门技术人员及相关技术管理人员  
 > 主线：**从一个真实 Chat Request 出发，一层层拆开 Model、API、Context、Tool、Harness，最终解释 Agent 为什么能够“干活”。**
 
+## 讲授层级说明
+
+为了同时保留完整技术内容和现场叙事节奏，本讲从 v2.0 起统一使用三种层级：
+
+- **【主讲】**：现场必须讲清，是理解后续内容的因果主链；
+- **【扩展】**：完整讲义保留，现场根据时间、听众基础和提问情况展开；
+- **【备用】**：用于答疑、技术人员深入阅读或 Demo 失败时补充，不占用正常主线时间。
+
+> 原则：**不因为现场时间有限而删掉已经形成的技术资产；通过讲授层级控制“现场讲什么”，通过完整讲义保留“以后还能查什么”。**
+
+### 第一讲现场只讲一条故事线
+
+```text
+在 Cherry 输入一句话
+        ↓
+应用怎样找到并调用模型？
+        ↓
+API Request 到底长什么样？
+        ↓
+API 为什么不只是 Chat？
+        ↓
+第二轮为什么“记得”第一轮？
+        ↓
+Context 里到底有什么？
+        ↓
+文本怎样 Tokenize？
+        ↓
+Prefill / Decode 怎样发生？
+        ↓
+Thinking、长 Context、Tokens/s 为什么都有成本？
+        ↓
+图片、SSE 等产品体验怎样建立在协议和模型能力之上？
+        ↓
+模型怎样产生 Tool Call？
+        ↓
+谁真正执行工具？
+        ↓
+Harness 是什么？
+        ↓
+为什么复杂任务最终走向 Agent？
+```
+
+现场组织为七幕：
+
+| 幕 | 核心问题 | 现场层级 |
+|---|---|---|
+| 第一幕：拆开聊天框 | Cherry 背后到底怎样调用模型？ | 主讲 |
+| 第二幕：理解“记忆” | 第二轮为什么知道第一轮？ | 主讲 |
+| 第三幕：走进一次推理 | Text → Token → Prefill → Decode → Text | 主讲 |
+| 第四幕：应用怎样组织信息 | System Prompt、附件、Knowledge、Cherry/Open WebUI | 主讲 + 扩展 |
+| 第五幕：模型调用不是免费的 | Thinking、TTFT、Tokens/s、长 Context、共享服务 | 主讲 |
+| 第六幕：从回答走向行动 | Tool Calling → Tool Result → Harness | 主讲 |
+| 第七幕：为什么最终需要 Agent | Read / Act / Observe / Verify / Iterate | 主讲 |
+
 ---
 
-# 0. 本讲不是“API 编程课”
+### 讲师节奏原则
+
+如果现场时间不足，优先压缩：
+
+1. 三种协议的 Schema 逐字段比较；
+2. Prompt 社区框架；
+3. Open WebUI Knowledge 的深入细节；
+4. 自动测试全部 29 项的逐项说明；
+5. Vision 的编码机制细节。
+
+不要压缩：
+
+1. Cherry Network 看见真实 API；
+2. API 不等于 Chat；
+3. 多轮 Context；
+4. Tokenize → Prefill → Decode → Detokenize；
+5. 60k / 100 万 Token 直觉；
+6. TTFT / Tokens/s；
+7. Tool Call 不等于 Tool Execution；
+8. Harness；
+9. 最小 Agent 闭环。
+
+---
+
+# 0. 开场：本讲不是“API 编程课”【主讲】
 
 这一讲先解决一个最基础、也最容易被各种产品界面遮住的问题：
 
@@ -50,7 +128,7 @@
 
 ---
 
-# 1. 第一步：先从 Cherry Studio 配置模型——为什么同一个服务会出现三种 API？
+# 第一幕：拆开聊天框——从 Cherry Studio 看见真实 API【主讲】
 
 第一讲不先把三套 API 格式摆在 PPT 上让大家背。
 
@@ -62,7 +140,7 @@
 
 ---
 
-## 1.1 配置内网模型：先认识 Provider、Base URL、API Key、Model
+## 1.1 配置内网模型：先认识 Provider、Base URL、API Key、Model【主讲】
 
 在 Cherry Studio 中新增/编辑内网模型服务。
 
@@ -106,7 +184,7 @@ Model ID
 
 ---
 
-## 1.2 配置时为什么会看到 OpenAI Chat、OpenAI Responses、Anthropic Messages？
+## 1.2 配置时为什么会看到 OpenAI Chat、OpenAI Responses、Anthropic Messages？【主讲简述】
 
 这是非常适合现场停下来问大家的问题：
 
@@ -230,7 +308,7 @@ POST /v1/messages
 
 ---
 
-## 1.3 先不要讲 JSON：直接用 Cherry 同一个 Prompt 切三种协议
+## 1.3 先不要讲 JSON：直接用 Cherry 同一个 Prompt 切三种协议【主讲 / 演示】
 
 建议在 Cherry 中准备三个容易辨认的配置/模型项，例如：
 
@@ -276,7 +354,7 @@ Qwen - Anthropic Messages
 
 ---
 
-## 1.4 三种 POST Request 到底有什么不同？
+## 1.4 三种 POST Request 到底有什么不同？【扩展】
 
 ### OpenAI Chat Completions
 
@@ -386,7 +464,7 @@ POST /v1/messages
 
 ---
 
-## 1.4A System Prompt 到底是什么？三种 API 里放的位置还不一样
+## 1.4A System Prompt 到底是什么？三种 API 里放的位置还不一样【主讲】
 
 前面已经看到三种 API 的 POST Body 不一样。
 
@@ -518,7 +596,7 @@ Anthropic Messages 不是在 `messages[]` 中加入一个 `role=system`。
 
 ---
 
-## 1.4B System Prompt、User Prompt、Context 到底什么关系？
+## 1.4B System Prompt、User Prompt、Context 到底什么关系？【主讲】
 
 可以用一个很简单的分层理解：
 
@@ -562,7 +640,7 @@ Context 可能同时包含：
 
 ---
 
-## 1.4C 脱离 Cherry 再手工发一次 GET / POST：证明 UI 只是客户端
+## 1.4C 脱离 Cherry 再手工发一次 GET / POST：证明 UI 只是客户端【主讲】
 
 现在再使用 Postman 或 curl。
 
@@ -624,7 +702,7 @@ Agent
 【图示占位 API-POST-03｜不同客户端 → Protocol Adapter → 同一模型服务】
 
 
-## 1.4D API 不等于 Chat：一旦脱离聊天框，模型就是一种可编程能力
+## 1.4D API 不等于 Chat：一旦脱离聊天框，模型就是一种可编程能力【主讲】
 
 到这里学员很容易形成另一个误区：
 
@@ -887,7 +965,7 @@ demos/api-applications/
 `docs/references/chat-workbench-api-application-evidence-2026-09.md`
 
 
-## 1.5 为什么“我手工调通一次”还不够？
+## 1.5 为什么“我手工调通一次”还不够？【扩展】
 
 手工 GET / POST 非常适合学习和调试。
 
@@ -1014,7 +1092,7 @@ API Key 在落盘前自动脱敏。
 
 ---
 
-## 1.6 当前内网 Qwen 到底测出了什么？
+## 1.6 当前内网 Qwen 到底测出了什么？【扩展 / 证据】
 
 当前正式基线：
 
@@ -1145,7 +1223,7 @@ r4 改成：
 
 ---
 
-## 1.7 建议现场真正运行一次自动测试，但不要把 29 项全等完
+## 1.7 建议现场真正运行一次自动测试，但不要把 29 项全等完【备用 / 演示】
 
 【录屏占位 API-R10｜运行 qwen_api_training_test.py → PASS 输出 → 打开 summary / record】
 
@@ -1186,7 +1264,7 @@ r4 改成：
 
 ---
 
-## 1.8 从测试脚本得到一个很重要的方法论
+## 1.8 从测试脚本得到一个很重要的方法论【主讲简述】
 
 这套 Qwen 测试真正应该让大家学会的，不是 Python 语法。
 
@@ -1208,158 +1286,9 @@ r4 改成：
 
 ---
 
-## 1.9 从“接口能不能用”继续追问：共享服务到底好不好用？
+# 第二幕：为什么第二轮对话“记得”第一轮？【主讲】
 
-到这里我们已经回答：
-
-> 单个请求能不能正确调用？
-
-但部门实际使用模型，还需要回答另一类问题：
-
-- 现在有多少请求正在算？
-- 有没有人在排队？
-- 两个实例是不是都在工作？
-- KV Cache 使用率怎样？
-- 当前 Prompt / Generation TPS 怎样？
-- TTFT 是否变长？
-- 高并发时服务发生了什么？
-
-这些问题不是一条 Chat Response 能回答的。
-
-所以测试脚本还会读取原始：
-
-`GET /metrics`
-
-当前 r4 在测试前后都验证了 `/metrics`，关键指标读取通过。
-
-【截图占位 API-08｜原始 vLLM /metrics：running / waiting / KV / token counters】
-
-这里要明确区分两个视角：
-
-```text
-Request / Response
-= 这一条调用发生了什么
-
-/metrics
-= 整个模型服务正在发生什么
-```
-
----
-
-## 1.10 为什么我们又做了 model-metric？
-
-原始 Prometheus Metrics 对开发和运维有价值，但直接给大部分用户看，会遇到：
-
-- 指标很多；
-- Counter / Gauge / Histogram 不直观；
-- 多实例聚合容易理解错；
-- 单请求速度和服务聚合吞吐容易混淆；
-- 不容易连续观察。
-
-所以我们又做了自己的：
-
-`mrgolftech/model-metric`
-
-这不是为了再做一个“漂亮仪表盘”。
-
-它解决的是：
-
-> **把模型 API 从“单请求测试”提升到“共享服务持续观测”。**
-
-当前项目已经覆盖：
-
-- running / waiting；
-- Prompt / Generation TPS；
-- 每实例状态；
-- 实例覆盖率；
-- KV Cache max / avg；
-- TTFT；
-- E2E；
-- Queue；
-- Prefill；
-- Decode；
-- TPOT / ITL；
-- WebSocket 实时更新；
-- API Benchmark；
-- Context Window 验证；
-- Endpoint Compatibility。
-
-【截图占位 MM-01｜model-metric 总览】
-
-【截图占位 MM-02｜API Benchmark】
-
-【截图占位 MM-03｜Context Window / Endpoint Compatibility】
-
-这里必须讲清一个常见误解：
-
-> **单请求输出 tokens/s ≠ 整个模型服务的 aggregate output TPS。**
-
-一个是：
-
-> 某一个用户这次请求输出得多快。
-
-一个是：
-
-> 整个服务所有实例、所有请求合起来正在处理多少 Token。
-
----
-
-## 1.11 第一讲最值得做的一段录屏：一条请求怎样在 model-metric 上“留下痕迹”
-
-【录屏占位 MM-R01｜Postman POST → model-metric 实时指标变化】
-
-建议录法：
-
-1. 左边打开 Postman；
-2. 右边打开 model-metric；
-3. 先让页面稳定；
-4. 发出一个输出稍长的 POST；
-5. 观察 running；
-6. 观察 TPS / KV / latency；
-7. 请求结束；
-8. running 回落。
-
-第二段可以使用 Benchmark：
-
-【录屏占位 MM-R02｜提高并发 → waiting / TPS / KV 变化】
-
-这时第一讲就形成了一条非常完整的证据链：
-
-```text
-手工 GET
-↓
-手工 POST
-↓
-Cherry Studio Network
-↓
-Python 自动验收
-↓
-正式测试 Baseline
-↓
-原始 /metrics
-↓
-model-metric
-```
-
-它分别回答：
-
-```text
-协议长什么样？
-↓
-应用怎样调用？
-↓
-功能到底支不支持？
-↓
-结果能否重复验证？
-↓
-共享服务运行时发生了什么？
-```
-
-这应该成为第一讲的核心工程案例，而不是旁支。
-
----
-
-# 2. 第二步：为什么第二轮对话“记得”第一轮？
+> **叙事转折：** 第一幕已经证明“聊天框只是客户端、背后是 API”。现在继续追问：如果每次都是一次新的 HTTP 请求，第二轮为什么还能知道第一轮说过什么？
 
 接下来不要急着讲 Context Window。
 
@@ -1416,7 +1345,9 @@ model-metric
 
 ---
 
-# 3. Token 和 Context：模型真正“看到”和“生成”的到底是什么
+# 第三幕：走进一次推理——Token、Context、Prefill 与 Decode【主讲】
+
+> **叙事转折：** 第二幕已经看到应用会把历史重新放进 Context。接下来终于进入模型内部：这些文字怎样变成模型能计算的数据，又怎样重新变成人能读的文字？
 
 知道了 Context 是“模型当前桌面上的材料”，再讲 Token 就容易得多。
 
@@ -1688,7 +1619,11 @@ Prefill 完成以后，模型开始：
 
 ---
 
-# 3.4 文件作为附件时，到底怎样进入模型？
+# 第四幕：应用怎样替模型组织信息——Prompt、附件、Knowledge 与工作台【主讲】
+
+> **叙事转折：** 模型每次真正能处理的是有限 Context。于是应用层的关键职责就出现了：哪些规则长期放进去？文件怎么放？知识怎么选？谁替用户管理这些上下文？
+
+## 4.1 文件作为附件时，到底怎样进入模型？【主讲】
 
 这里要专门纠正一个很常见的说法：
 
@@ -1700,7 +1635,7 @@ Prefill 完成以后，模型开始：
 
 ---
 
-## 3.4.1 路径一：客户端先解析成文本，再放进 Prompt / Message
+### 4.1.1 路径一：客户端先解析成文本，再放进 Prompt / Message
 
 一些 Chat 客户端会先在本地或服务端做：
 
@@ -1739,7 +1674,7 @@ Model
 
 ---
 
-## 3.4.2 路径二：API 原生支持 File / Document Input
+### 4.1.2 路径二：API 原生支持 File / Document Input
 
 现在一些模型 API 已经可以直接表达：
 
@@ -1777,7 +1712,7 @@ Anthropic Messages 对 PDF 也支持：
 
 ---
 
-## 3.4.3 路径三：图片直接作为多模态输入
+### 4.1.3 路径三：图片直接作为多模态输入
 
 图片附件又不同。
 
@@ -1801,7 +1736,7 @@ OCR 可能是任务的一部分，但不是所有 Vision 输入的唯一机制�
 
 ---
 
-## 3.4.4 路径四：文件进入 Knowledge Base，再按需检索
+### 4.1.4 路径四：文件进入 Knowledge Base，再按需检索
 
 如果文件不是临时附件，而是反复使用的知识：
 
@@ -1851,7 +1786,7 @@ Model
 
 ---
 
-## 3.4.5 用 Cherry / Open WebUI 做一个附件路径实测
+### 4.1.5 用 Cherry / Open WebUI 做一个附件路径实测
 
 建议第一讲准备同一个很短的 Markdown 文件：
 
@@ -1891,7 +1826,9 @@ TRAINING_ATTACHMENT_CODE = BLUE-7319
 
 ---
 
-# 3.5 Prompt Engineering：提示词需要“框架”吗？
+## 4.2 Prompt Engineering：提示词需要“框架”吗？【扩展】
+
+> **现场处理：** 主讲只保留一个工程 Prompt 骨架：`Goal / Context / Constraints / Output / Examples / Verification`。RTF、CO-STAR、CRISPE 只作为“社区记忆法”快速带过或留作答疑，避免把第一讲重新讲成“提示词技巧课”。
 
 在大家理解 System Prompt、User Prompt、Context 以后，再简单介绍 Prompt Engineering。
 
@@ -1936,7 +1873,7 @@ Examples
 
 ---
 
-## 3.5.1 可以认识几个社区常见框架，但不要迷信
+### 4.2.1 可以认识几个社区常见框架，但不要迷信【备用】
 
 ### RTF
 
@@ -1993,7 +1930,7 @@ Response
 
 ---
 
-## 3.5.2 工程任务里，比“给模型一个专家角色”更重要的是什么？
+### 4.2.2 工程任务里，比“给模型一个专家角色”更重要的是什么？【主讲简述】
 
 例如：
 
@@ -2035,7 +1972,7 @@ pytest 必须全部通过。
 
 ---
 
-## 3.5.3 Prompt、System Prompt、Project Rules 不要混成一个东西
+### 4.2.3 Prompt、System Prompt、Project Rules 不要混成一个东西【扩展】
 
 最后做一张范围对比：
 
@@ -2055,7 +1992,7 @@ pytest 必须全部通过。
 
 ---
 
-# 3.6 Cherry Studio：一个 Chat 工作台到底替我们做了哪些事？
+## 4.3 Cherry Studio：一个 Chat 工作台到底替我们做了哪些事？【主讲】
 
 在第一讲前面，我们已经从 Network 里看到：
 
@@ -2094,7 +2031,7 @@ Request Parameters
 
 ---
 
-## 3.6.1 助手指令：为什么不需要每轮都重新说“你是谁”
+### 4.3.1 助手指令：为什么不需要每轮都重新说“你是谁”
 
 Cherry Studio 的“助手”可以保存：
 
@@ -2142,7 +2079,7 @@ Conversation
 
 ---
 
-## 3.6.2 模型配置：同一个问题为什么可以临时切模型？
+### 4.3.2 模型配置：同一个问题为什么可以临时切模型？
 
 Cherry 的助手可以指定默认模型，对话中也可以临时切换模型。
 
@@ -2163,7 +2100,7 @@ Cherry 的助手可以指定默认模型，对话中也可以临时切换模型�
 
 ---
 
-## 3.6.3 模型参数：UI 里的 Temperature、Top-P、Max Tokens 到底改了什么？
+### 4.3.3 模型参数：UI 里的 Temperature、Top-P、Max Tokens 到底改了什么？
 
 在 Cherry 的助手模型设置中，可以展示：
 
@@ -2201,7 +2138,7 @@ Cherry 的助手可以指定默认模型，对话中也可以临时切换模型�
 
 ---
 
-## 3.6.4 知识库：勾一下之后，模型真的“学会”这些资料了吗？
+### 4.3.4 知识库：勾一下之后，模型真的“学会”这些资料了吗？
 
 Cherry 对话输入区可以选择已经创建的知识库，助手也可以预先关联知识库。
 
@@ -2271,7 +2208,7 @@ Model Answer
 
 ---
 
-## 3.6.5 联网搜索：为什么这和知识库不是一回事？
+### 4.3.5 联网搜索：为什么这和知识库不是一回事？
 
 Cherry 对话输入区还可以打开网络搜索。
 
@@ -2311,7 +2248,7 @@ Cherry 当前支持配置搜索服务和 URL 获取服务，并且联网能力�
 
 ---
 
-## 3.6.6 MCP / 工具调用：勾选工具以后发生了什么？
+### 4.3.6 MCP / 工具调用：勾选工具以后发生了什么？
 
 Cherry 助手可以关联 MCP，模型支持工具调用时，对话中就可以获得外部工具。
 
@@ -2349,7 +2286,7 @@ Answer
 
 ---
 
-## 3.6.7 一个 Cherry 对话到底可能包含哪些东西？
+### 4.3.7 一个 Cherry 对话到底可能包含哪些东西？
 
 讲完所有选项以后，可以截一张最终界面。
 
@@ -2385,7 +2322,9 @@ Model API
 
 ---
 
-# 3.7 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同
+## 4.4 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同【主讲 + 扩展】
+
+> **现场处理：** 第一讲只主讲三件事：① Cherry Assistant 与 Open WebUI Workspace Model 都是在“Base Model + 长期指令 + Knowledge”上做应用封装；② 两者本地/服务端数据边界不同；③ Knowledge 最终仍是在帮助应用组织 Context。Full Context、Focused Retrieval、Embedding、Note→Knowledge 等细节完整保留，但主要留给第二讲复用。
 
 这一段值得先补一个“产品形态”的视角。
 
@@ -2451,7 +2390,7 @@ Browser
 
 ---
 
-## 3.7.0 用同一套 System Prompt 和同一份知识，分别创建两个“内网 API 培训助手”
+### 4.4.0 用同一套 System Prompt 和同一份知识，分别创建两个“内网 API 培训助手”【主讲】
 
 为了把这个对应关系讲透，建议第一讲做一个非常直观的双端对照 Demo。
 
@@ -2545,7 +2484,7 @@ Open WebUI Workspace Model
 
 ---
 
-## 3.7.0A 为什么这组对应关系对后面理解 Agent 很重要？
+### 4.4.0A 为什么这组对应关系对后面理解 Agent 很重要？【主讲】
 
 因为从这里开始，学员会看到一个连续演进：
 
@@ -2623,7 +2562,7 @@ Open WebUI 更适合展示另一类需求：
 
 ---
 
-## 3.7.1 个人笔记：知识不一定来自“上传 PDF”
+### 4.4.1 个人笔记：知识不一定来自“上传 PDF”【扩展 / 第二讲复用】
 
 当前内网 v0.11.0 已实际走通：
 
@@ -2654,7 +2593,7 @@ Open WebUI 更适合展示另一类需求：
 
 ---
 
-## 3.7.2 同一个 Markdown 文档为什么可以选“完整文档”和“聚焦检索”？
+### 4.4.2 同一个 Markdown 文档为什么可以选“完整文档”和“聚焦检索”？【扩展 / 第二讲复用】
 
 这是当前内网 Open WebUI v0.11.0 很适合现场演示的一点。
 
@@ -2729,7 +2668,7 @@ Model
 
 ---
 
-## 3.7.3 没有配置 Embedding，为什么仍然能用知识回答？
+### 4.4.3 没有配置 Embedding，为什么仍然能用知识回答？【扩展 / 第二讲复用】
 
 这是当前内网 v0.11.0 特别值得讲的真实现象。
 
@@ -2780,7 +2719,7 @@ Model
 
 ---
 
-## 3.7.4 Workspace：为什么它比“临时上传一个附件”更进一步？
+### 4.4.4 Workspace：为什么它比“临时上传一个附件”更进一步？【扩展 / 第二讲复用】
 
 一次聊天临时上传文件解决的是：
 
@@ -2822,7 +2761,7 @@ Open WebUI Workspace / Model
 
 ---
 
-## 3.7.5 Cherry Studio 与 Open WebUI：功能越来越像，但“数据边界”和“组织方式”不同
+### 4.4.5 Cherry Studio 与 Open WebUI：功能越来越像，但“数据边界”和“组织方式”不同【主讲】
 
 如果只看今天的功能，两者其实越来越像：
 
@@ -2975,7 +2914,7 @@ Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge �
 
 ---
 
-## 3.7.6 Open WebUI Workspace Model 和 Cherry Assistant：其实在解决同一个问题
+### 4.4.6 Open WebUI Workspace Model 和 Cherry Assistant：其实在解决同一个问题【主讲】
 
 现在把两边最容易混淆的功能放到一起。
 
@@ -3061,7 +3000,7 @@ Specialized Assistant / Workspace Model
 
 ---
 
-## 3.7.7 Open WebUI Notes：既可以“在笔记旁边问”，也可以成为后续知识
+### 4.4.7 Open WebUI Notes：既可以“在笔记旁边问”，也可以成为后续知识【扩展 / 第二讲复用】
 
 当前内网 v0.11.0 已经实际走通两个很有价值的使用方式。
 
@@ -3145,7 +3084,7 @@ Server Note / Knowledge
 
 ---
 
-## 3.7.8 从个人知识到部门知识：两者的演进路径不同
+### 4.4.8 从个人知识到部门知识：两者的演进路径不同【扩展 / 第二讲复用】
 
 Cherry 更自然的起点：
 
@@ -3179,7 +3118,7 @@ Open WebUI 更自然地可以继续向上走：
 
 ---
 
-## 3.7.9 第一讲和第二讲如何分工
+### 4.4.9 第一讲和第二讲如何分工【主讲】
 
 第一讲只让学员看到：
 
@@ -3212,7 +3151,11 @@ Model
 
 ---
 
-# 4. Thinking：为什么有些问题值得“多想一会儿”
+# 第五幕：模型调用不是免费的——Thinking、速度、长 Context 与共享服务【主讲】
+
+> **叙事转折：** 到这里我们已经知道输入会被 Tokenize、Context 要 Prefill、输出要逐 Token Decode。现在再看 Thinking、TTFT、Tokens/s、KV Cache 和共享服务指标，就不再是孤立参数。
+
+### 5.2.1 Thinking：为什么有些问题值得“多想一会儿”？【主讲】
 
 接下来用一个简单任务和一个复杂任务对比。
 
@@ -3251,7 +3194,7 @@ Thinking / Reasoning 可以先这样理解：
 
 ---
 
-# 5. 为什么同一个模型“快不快”不能只凭感觉——TTFT、Tokens/s 和总时延怎样影响应用
+## 5.2 为什么同一个模型“快不快”不能只凭感觉——TTFT、Tokens/s 和总时延怎样影响应用【主讲】
 
 很多人评价模型时会说：
 
@@ -3288,7 +3231,7 @@ Total Latency
 
 ---
 
-## 5.1 先用现有 Token 输出速率 Demo 建立“人的体感”
+### 5.2.1 先用现有 Token 输出速率 Demo 建立“人的体感”
 
 仓库里已经有一个离线可运行的 Token 输出速率体感 Demo，现在统一归入第一讲 API 应用体验套件：
 
@@ -3337,7 +3280,7 @@ demos/token-output-speed/index.html
 
 ---
 
-## 5.2 输出速率为什么对不同应用影响完全不同？
+### 5.2.2 输出速率为什么对不同应用影响完全不同？
 
 前面刚刚跑过四个 Python 小应用：
 
@@ -3400,7 +3343,7 @@ Decode Tokens/s 的差异就会直接进入总等待时间。
 
 ---
 
-## 5.3 Agent 为什么更容易把“小延迟”放大？
+### 5.2.3 Agent 为什么更容易把“小延迟”放大？
 
 普通 Chat：
 
@@ -3460,7 +3403,7 @@ Per-step TTFT
 
 ---
 
-## 5.4 再回到真实共享服务：速度不能只看一个人的输出
+### 5.2.4 再回到真实共享服务：速度不能只看一个人的输出
 
 模型服务是共享计算资源。
 
@@ -3526,7 +3469,160 @@ Aggregate Output TPS
 
 ---
 
-# 6. Vision：图片并不是“神奇地进入模型”
+## 5.3 从“单请求速度”继续追问：共享服务到底好不好用？【主讲】
+
+到这里我们已经回答：
+
+> 单个请求能不能正确调用？
+
+但部门实际使用模型，还需要回答另一类问题：
+
+- 现在有多少请求正在算？
+- 有没有人在排队？
+- 两个实例是不是都在工作？
+- KV Cache 使用率怎样？
+- 当前 Prompt / Generation TPS 怎样？
+- TTFT 是否变长？
+- 高并发时服务发生了什么？
+
+这些问题不是一条 Chat Response 能回答的。
+
+所以测试脚本还会读取原始：
+
+`GET /metrics`
+
+当前 r4 在测试前后都验证了 `/metrics`，关键指标读取通过。
+
+【截图占位 API-08｜原始 vLLM /metrics：running / waiting / KV / token counters】
+
+这里要明确区分两个视角：
+
+```text
+Request / Response
+= 这一条调用发生了什么
+
+/metrics
+= 整个模型服务正在发生什么
+```
+
+---
+
+## 5.4 为什么我们又做了 model-metric？【主讲】
+
+原始 Prometheus Metrics 对开发和运维有价值，但直接给大部分用户看，会遇到：
+
+- 指标很多；
+- Counter / Gauge / Histogram 不直观；
+- 多实例聚合容易理解错；
+- 单请求速度和服务聚合吞吐容易混淆；
+- 不容易连续观察。
+
+所以我们又做了自己的：
+
+`mrgolftech/model-metric`
+
+这不是为了再做一个“漂亮仪表盘”。
+
+它解决的是：
+
+> **把模型 API 从“单请求测试”提升到“共享服务持续观测”。**
+
+当前项目已经覆盖：
+
+- running / waiting；
+- Prompt / Generation TPS；
+- 每实例状态；
+- 实例覆盖率；
+- KV Cache max / avg；
+- TTFT；
+- E2E；
+- Queue；
+- Prefill；
+- Decode；
+- TPOT / ITL；
+- WebSocket 实时更新；
+- API Benchmark；
+- Context Window 验证；
+- Endpoint Compatibility。
+
+【截图占位 MM-01｜model-metric 总览】
+
+【截图占位 MM-02｜API Benchmark】
+
+【截图占位 MM-03｜Context Window / Endpoint Compatibility】
+
+这里必须讲清一个常见误解：
+
+> **单请求输出 tokens/s ≠ 整个模型服务的 aggregate output TPS。**
+
+一个是：
+
+> 某一个用户这次请求输出得多快。
+
+一个是：
+
+> 整个服务所有实例、所有请求合起来正在处理多少 Token。
+
+---
+
+## 5.5 一条请求怎样在 model-metric 上“留下痕迹”【扩展 / 演示】
+
+【录屏占位 MM-R01｜Postman POST → model-metric 实时指标变化】
+
+建议录法：
+
+1. 左边打开 Postman；
+2. 右边打开 model-metric；
+3. 先让页面稳定；
+4. 发出一个输出稍长的 POST；
+5. 观察 running；
+6. 观察 TPS / KV / latency；
+7. 请求结束；
+8. running 回落。
+
+第二段可以使用 Benchmark：
+
+【录屏占位 MM-R02｜提高并发 → waiting / TPS / KV 变化】
+
+这时第一讲就形成了一条非常完整的证据链：
+
+```text
+手工 GET
+↓
+手工 POST
+↓
+Cherry Studio Network
+↓
+Python 自动验收
+↓
+正式测试 Baseline
+↓
+原始 /metrics
+↓
+model-metric
+```
+
+它分别回答：
+
+```text
+协议长什么样？
+↓
+应用怎样调用？
+↓
+功能到底支不支持？
+↓
+结果能否重复验证？
+↓
+共享服务运行时发生了什么？
+```
+
+这应该成为第一讲的核心工程案例，而不是旁支。
+
+---
+
+---
+
+## 5.6 Vision：图片并不是“神奇地进入模型”【扩展】
 
 为了避免多模态继续被当成黑盒，现场给 Cherry 上传一张固定测试图片。
 
@@ -3557,7 +3653,7 @@ Aggregate Output TPS
 
 ---
 
-# 7. SSE：为什么 Chat 能一个字一个字地出现？
+## 5.7 SSE：为什么 Chat 能一个字一个字地出现？【主讲简述】
 
 再观察流式请求。
 
@@ -3591,7 +3687,11 @@ Aggregate Output TPS
 
 ---
 
-# 8. Tool Calling：模型第一次从“回答”走向“请求行动”
+# 第六幕：从回答走向行动——Tool Calling 与 Harness【主讲】
+
+> **叙事转折：** 前五幕都还主要是在解释“模型怎样接收信息并输出结果”。下一步是质变：模型能不能不只回答，而是提出一个需要真实世界执行的动作？
+
+## 6.1 Tool Calling：模型第一次从“回答”走向“请求行动”【主讲】
 
 现在进入本讲最关键的转折。
 
@@ -3649,7 +3749,7 @@ Harness 把结果重新送给模型
 
 ---
 
-# 9. 到底什么是 Harness？
+## 6.2 到底什么是 Harness？【主讲】
 
 这时再引入 Harness，而不是一上来就给抽象定义。
 
@@ -3696,7 +3796,11 @@ Harness 的详细结构留到第三讲。
 
 ---
 
-# 10. Chat 与 Agent：不是“旧时代”和“新时代”
+# 第七幕：为什么复杂任务最终走向 Agent【主讲】
+
+> **叙事转折：** 一旦 Harness 能管理 Context、提供 Tool、执行动作并把结果反馈给模型，复杂任务就不再是一次 Prompt → Answer，而开始形成 Read → Act → Observe → Verify → Iterate。
+
+## 7.1 Chat 与 Agent：不是“旧时代”和“新时代”【主讲】
 
 这里要避免一个错误叙事：
 
@@ -3741,7 +3845,7 @@ Harness 的详细结构留到第三讲。
 
 ---
 
-# 11. 一个最小 Agent 闭环：不要先看复杂产品
+## 7.2 一个最小 Agent 闭环：不要先看复杂产品【主讲】
 
 现场选择一个极小工程任务。
 
@@ -3786,7 +3890,7 @@ Model
 
 ---
 
-# 12. 同一个模型，换 Chat 和 Agent，会发生什么？
+## 7.3 同一个模型，换 Chat 和 Agent，会发生什么？【扩展 / 演示】
 
 如果条件允许，再使用同模型、同 Prompt 做一次受控对比。
 
@@ -3830,7 +3934,7 @@ Model
 
 ---
 
-# 13. 第一讲最后把所有东西重新拼起来
+## 7.4 第一讲最后把所有东西重新拼起来【主讲】
 
 现在再看最初的聊天框，就不再神秘。
 
@@ -3871,7 +3975,7 @@ Harness 执行和反馈
 
 ---
 
-# 14. 第一讲素材准备
+# 8. 第一讲素材准备【备用】
 
 本讲所有截图、录屏、现场 Demo 和备用素材统一维护在：
 
