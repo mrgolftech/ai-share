@@ -118,6 +118,8 @@ AGENT-R05-tool-loop.mp4
 | ZCODE-01~05 | 截图 | 鹈鹕：Workspace → File → Browser → Iterate → Review | ZCode 主案例 | ⬜ |
 | ZCODE-06~12 | 截图 | Sensor Guard：Rules → Test Fail → Search/Edit → Pass → Diff → Permission | ZCode 主案例 | ⬜ |
 | ZCODE-R01~02 | 录屏 | 鹈鹕 Browser 闭环 + Sensor Guard 工程闭环 | ZCode 主案例 | ⬜ |
+| ENV-01~04 | 图示/截图 | Harness vs Runtime、环境 Preflight、Local/WSL/Docker/SSH、内网依赖源 | Agent 环境 | ⬜ |
+| ENV-R01~02 | 录屏 | 缺工具→补环境→成功；公网源失败→内网源成功 | Agent 环境 | ⬜ |
 | CONNECT-01~04 | 图示 | API/Tool/MCP/Skill 分层与关系 | Agent 工具接入 | ⬜ |
 | CONNECT-06~09 | 图示/截图 | 端到端示例、Skill 目录、权限拆分、决策表 | Agent 工具接入 | ⬜ |
 | CONNECT-R01~03 | 录屏 | Raw API → MCP Tool → Skill+MCP | Agent 工具接入 | ⬜ |
@@ -366,6 +368,27 @@ AGENT-R05-tool-loop.mp4
 | ZCODE-R03 | P1 | Goal Mode 多轮长任务 | ⬜ |
 
 
+
+## 9.3 Agent 运行环境 / 内网工具链
+
+完整案例：
+
+`docs/cases/agent-runtime-environment-intranet.md`
+
+环境检查脚本：
+
+- `demos/zcode-real-world/check-agent-env.ps1`
+- `demos/zcode-real-world/check-agent-env.sh`
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| ENV-01 | P0 | Model → Harness → Tool → Runtime → Toolchain 分层图 | ⬜ |
+| ENV-02 | P0 | ZCode Terminal 环境检查结果 | ⬜ |
+| ENV-03 | P0 | Local / WSL / Docker / SSH 工具链位置对比 | ⬜ |
+| ENV-04 | P0 | 公网临时安装 vs 内网内部镜像/离线包 | ⬜ |
+| ENV-R01 | P0 | Preflight：工具缺失 → 补齐 → 同任务成功 | ⬜ |
+| ENV-R02 | P1 | npm/pip 公网源失败 → 内部源成功 | ⬜ |
+
 ---
 
 # 10. Agent 工具接入：API / MCP / Skill / Plugin / Command / Hook
@@ -453,12 +476,13 @@ AGENT-R05-tool-loop.mp4
 3. **API / Postman / model-metric 一次录完**：API-01、API-POST-01~02、API-TEST-01~02、API-03~09、MM-01~03、API-R06/07/09、MM-R01~02；
 4. **统一鹈鹕 Demo 一次录完**：API-10/11、CHAT-01/02/04、CHAT-R01~03、API-R08；
 5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
-6. **ZCode 主案例先录**：ZCODE-01~13、ZCODE-R01~03；优先完成 ZCODE-R01 鹈鹕 Browser 闭环和 ZCODE-R02 Sensor Guard 工程闭环；
-7. **工程 Agent Repo 补充录制**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
-8. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
-9. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
-10. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
-11. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+6. **先录 Agent Runtime 环境**：ENV-01~04、ENV-R01；先证明 Terminal ≠ Toolchain，并记录内网标准环境；
+7. **ZCode 主案例再录**：ZCODE-01~13、ZCODE-R01~03；优先完成 ZCODE-R01 鹈鹕 Browser 闭环和 ZCODE-R02 Sensor Guard 工程闭环；
+8. **工程 Agent Repo 补充录制**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
+9. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
+10. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
+11. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
+12. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
