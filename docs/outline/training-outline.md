@@ -2116,7 +2116,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 3. 打磨 Agent 工作区与工具链章节：`04-agent-common-mechanisms.md` 与 `05-agent-tools-real-world.md` 已有初稿，下一步补统一 Demo、实测证据和截图；
 4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成；第一套 MCP Host 固定为 ZCode，下一步实现并实测 Raw API → ZCode MCP Tool → ZCode Skill+MCP；
 5. “如何形成可复用资产”主讲稿与证据基线已形成，并增加 ZCode AGENTS.md / Project Memory / Command / Skill / Plugin 的连续实例，用于解释资产沉淀边界；
-6. **下一建设重点**：先完成 Agent Runtime 内网标准环境与 Preflight 实测，再完成 ZCode 两个贯穿案例（鹈鹕 Browser 闭环 + Sensor Guard 工程闭环），之后补 SSH/Docker、CI 与模块四 API→MCP→Skill 统一 Demo；
+6. **后续证据与演示补全阶段**：完成 Agent Runtime 内网标准环境与 Preflight 实测，再完成 ZCode 两个贯穿案例（鹈鹕 Browser 闭环 + Sensor Guard 工程闭环），之后补 SSH/Docker、CI 与模块四 API→MCP→Skill 统一 Demo；
 7. 为每个模块建立截图和 Demo 清单；
 
    - 当前已有讲义的统一素材清单已建立：`docs/outline/media-capture-checklist.md`；
@@ -2159,6 +2159,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块四统一 Demo 设计：`demos/agent-tool-integration/README.md`（规划完成；同一训练服务依次演示 Raw API → MCP Tool → Skill+MCP，避免把三层误解为三套不同能力）
 - 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（可用于培训；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则；案例与素材后补）
 - 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
+- 方法论收束主讲稿：`docs/chapters/08-agent-engineering-methodology.md`（可用于培训；覆盖任务路由、Problem→Release 工程链、Agent 执行闭环、模型/Thinking/Context 预算、人机分工、交付与资产沉淀；METHOD-01～07 图示后补）
 
 - API 官方参考资料（已有素材）
 
@@ -2167,8 +2168,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；知识库现采用“双稿制”：`docs/chapters/03-department-knowledge-base-teaching.md` 为培训主讲教学版，按“问题→例子→原理→结论”重构并预留 KB-01～KB-22 截图/图示占位；`docs/chapters/03-department-knowledge-base.md` 保留为完整技术稿和深入阅读材料；架构文档为 `docs/architecture/department-knowledge-architecture.md`；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，证据基线为 `docs/references/knowledge-base-rag-evidence-2026-09.md`，涵盖 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，以及 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget；教学版已完成 v0.2 第一轮“首次学习者降阶”重构：新增开卷考试统一类比、RAG“先查再给再答”、Embedding/Vector Index 非知识本体解释、Parse 与 Chunk 分拆、长上下文证据下沉、Top-K/Rerank/Evidence Budget 统一直觉、Agentic Retrieval“逐步取证”解释、问题类型→检索方式速查表和讲师节奏分层；当前待补 KB-01～KB-22 及扩展占位截图/图示，并在后续验证阶段补 BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 实测）
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；10 个 Agent（新增 WorkBuddy）横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo；WorkBuddy 的 Chat→Workspace→Skill→Runtime 截图已规划为 AGENT-WB-01～04）
 - 模块三：Agent 工具与真实世界（已有初稿；**第一套贯穿主案例已固定为 ZCode**，案例规范为 `demos/zcode-real-world/README.md`，已建立 Sensor Guard 训练项目和 `docs/cases/zcode-agent-real-world.md`；当前缺口为 ZCode 实际录屏/截图，以及 SSH/Docker、Commit→CI 等后续真实案例证据）
-- 模块四：API / MCP / Skill 等关系（已有初稿与官方证据基线；当前缺口为最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据）
-- 模块五：可复用资产与知识体系（已有初稿与证据基线；当前缺口为仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
+- 模块四：API / MCP / Skill 等关系（主讲稿已可用于培训，官方证据基线已形成；后续只补最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据与素材）
+- 模块五：可复用资产与知识体系（主讲稿已可用于培训，证据基线已形成；后续只补仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
 - **完整讲义串联检查（当前下一建设重点）**：先检查模块一～五 + 方法论收束的重复、缺口、术语和过渡；案例与模块三～五实测证据随后集中补充
 - 模块六：真实案例材料 + 模块三～五实测证据（后续证据与演示补全阶段）
 - 各模块架构图 / 流程图
