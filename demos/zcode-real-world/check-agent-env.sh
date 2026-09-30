@@ -53,7 +53,7 @@ fi
 check_cmd node required --version
 check_cmd npm required --version
 check_cmd curl required --version
-check_cmd ssh required -V
+check_cmd ssh optional -V
 check_cmd docker optional --version
 
 echo
