@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.6  
+> 状态：Final Lecture Draft v1.7  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -622,6 +622,255 @@ Agent
 ```
 
 【图示占位 API-POST-03｜不同客户端 → Protocol Adapter → 同一模型服务】
+
+
+## 1.4D API 不等于 Chat：一旦脱离聊天框，模型就是一种可编程能力
+
+到这里学员很容易形成另一个误区：
+
+> “既然模型是通过 API 调用，那 API 的主要用途是不是就是自己做一个聊天机器人？”
+
+不是。
+
+Chat 只是最容易被普通用户感知的一种应用形态。
+
+从程序视角看，一次模型调用更接近：
+
+```text
+Input
++ Instructions
++ Parameters / Output Contract
+→ Model API
+→ Output
+```
+
+只要改变输入、固定指令和输出约束，同一个模型服务就可以被嵌入很多完全没有“聊天窗口”的业务流程。
+
+【图示占位 API-APP-01｜同一个 Model API → Chat / Translation / Vision / JSON / Classification / Agent】
+
+### 例子一：文本翻译
+
+程序直接把一段英文送入模型：
+
+```text
+The device entered thermal protection mode after 30 seconds.
+```
+
+固定指令：
+
+```text
+翻译为简洁、准确的技术中文。只返回译文。
+```
+
+最终应用可能只有：
+
+```text
+原文输入框
+→ 翻译按钮
+→ 中文结果
+```
+
+用户甚至不需要知道背后是一个大模型。
+
+【截图占位 API-APP-02｜同一 qwen3.6：Translation Request / Response】
+
+---
+
+### 例子二：非结构化文本 → 结构化 JSON
+
+例如测试日志：
+
+```text
+SN=A102，温度 86.3°C，电压 3.28V，
+测试结果 FAIL，错误码 TEMP_HIGH。
+```
+
+可以要求模型整理为：
+
+```json
+{
+  "sn": "A102",
+  "temperature_c": 86.3,
+  "voltage_v": 3.28,
+  "result": "FAIL",
+  "error_code": "TEMP_HIGH"
+}
+```
+
+然后程序继续：
+
+```text
+Model Output
+→ JSON Parse
+→ Schema / Type Validation
+→ Database / Workflow
+```
+
+【截图占位 API-APP-03｜文本 → JSON → Parse / Validate】
+
+这里必须讲一个工程边界：
+
+> **“Prompt 里写只返回 JSON”不等于协议层 Structured Output。**
+
+OpenAI 当前 API 已经有 JSON Mode / Structured Outputs / JSON Schema 等机制，但部门内网 qwen3.6 当前 r4 正式验收还没有把 `response_format/json_schema` 纳入能力矩阵。
+
+因此第一讲的严谨说法是：
+
+> **当前可以演示 Prompt 约束 JSON + 程序端校验；协议级 Structured Outputs 是否兼容，需要后续单独实测后再下结论。**
+
+不能因为服务“OpenAI-compatible”就自动推断所有 OpenAI 参数都兼容。
+
+---
+
+### 例子三：图片文字识别 / 标签识别
+
+既然当前内网 qwen3.6 的 Vision 已经正式实测通过，那么程序可以直接把图片送进 Vision Request。
+
+例如准备一张我们自己生成的字符图片：
+
+```text
+BLUE-7319
+```
+
+让模型只返回：
+
+```text
+BLUE-7319
+```
+
+【截图占位 API-APP-04｜自制字符图片 → Vision Request → 识别文本】
+
+这就已经是一个最小 OCR / 标签识别应用，不需要任何聊天历史。
+
+如果想借“验证码”帮助大家理解，也只使用：
+
+> **自制的验证码样式测试图片。**
+
+不把培训演示做成第三方网站 CAPTCHA 绕过。
+
+---
+
+### 例子四：网页截图 / UI 视觉检查
+
+把我们自己的网页截图作为图片输入，让模型检查：
+
+- 按钮是否重叠；
+- 文本是否溢出；
+- 间距是否异常；
+- 移动端布局是否错位；
+- 哪个区域最值得人工复核。
+
+甚至可以要求返回：
+
+```json
+{
+  "issues": [
+    {
+      "type": "layout",
+      "region": "右上角",
+      "description": "按钮与标题发生重叠",
+      "suggestion": "检查响应式断点和容器高度"
+    }
+  ]
+}
+```
+
+【截图占位 API-APP-05｜网页截图 → Visual QA → 问题列表】
+
+这正好为后面 Agent + Browser + Playwright 埋伏笔：
+
+> **Vision 可以先“看出问题”；Agent 再进一步操作浏览器、修改代码并重新验证。**
+
+---
+
+### 例子五：分类、抽取和流程路由
+
+模型还可以作为业务流程里的一个节点。
+
+例如：
+
+```text
+一条测试记录
+↓
+Model API
+↓
+NORMAL / REVIEW / INVALID
+↓
+程序决定后续流程
+```
+
+【截图占位 API-APP-06｜测试记录 → 分类 / 路由结果】
+
+或者：
+
+- 邮件 → 分类；
+- 文档 → 字段提取；
+- 测试日志 → 异常摘要；
+- 用户反馈 → 标签；
+- 设备描述 → 标准字段；
+- 自然语言 → SQL/查询参数候选（仍需程序验证）。
+
+这时候模型不再是：
+
+> “一个等着人来聊天的页面。”
+
+而是：
+
+> **业务系统里的一个可调用智能能力。**
+
+---
+
+### 这一段现场只需要做一个 60～90 秒串联 Demo
+
+【录屏占位 API-APP-R01｜同一 qwen3.6 API 连续完成：翻译 → JSON → Vision OCR → 网页截图检查】
+
+重点固定：
+
+- 同一个 Base URL；
+- 同一个模型；
+- 同一套 API 调用方式；
+- 只改变 Input / Prompt / Output Contract。
+
+不要做成六个产品功能介绍。
+
+最后收束成：
+
+```text
+Model API
+   │
+   ├─ Chat
+   ├─ Translation
+   ├─ Extraction / JSON
+   ├─ Vision / OCR
+   ├─ Visual QA
+   ├─ Classification
+   ├─ Tool Calling
+   └─ Agent
+```
+
+真正的业务应用更常见的是：
+
+```text
+业务输入
+→ Preprocess
+→ Prompt / Instructions
+→ Model API
+→ Parse / Validate
+→ Business Logic
+→ UI / DB / Workflow
+```
+
+这也是第一讲必须建立的一个核心认知：
+
+> **大模型的价值不等于“会聊天”。API 的意义，是把模型能力嵌入程序、流程和系统。**
+
+对应 Demo 规范：
+
+`demos/api-applications/README.md`
+
+证据边界：
+
+`docs/references/chat-workbench-api-application-evidence-2026-09.md`
 
 
 ## 1.5 为什么“我手工调通一次”还不够？
@@ -1906,6 +2155,45 @@ Model API
 ---
 
 # 3.7 Open WebUI v0.11.0：先和 Cherry 建立一一对应，再看服务端工作台有什么不同
+
+这一段值得先补一个“产品形态”的视角。
+
+很多工程师最先接触的大模型开源工具，是运行在自己电脑上的桌面客户端 / Local-first 工作台。Cherry Studio 就很典型：
+
+```text
+Desktop Client
+→ Local Conversation / Knowledge / Config
+→ Model API
+```
+
+Open WebUI 则代表另一种非常重要的形态：
+
+```text
+Browser
+→ Self-hosted Open WebUI Server
+→ Server-side Chat / File / Note / Knowledge / Workspace
+→ Model API
+```
+
+【图示占位 WB-COMP-00｜Local Desktop Client vs Self-hosted Server Workbench】
+
+培训里不把：
+
+> “Open WebUI 是最早 / 第一个 / 当时仅有的服务端开源项目”
+
+写成硬事实，因为这需要完整的历史项目统计。
+
+更稳妥、也更有教学价值的表述是：
+
+> **在大量面向个人的桌面 / 本地客户端之外，Open WebUI 是一个非常典型的自托管、集中式 Server-side AI 工作台代表。**
+
+为什么这个区别重要？
+
+因为两边今天的功能越来越像，但：
+
+> **数据主要落在哪里、谁来管理、多设备能否共享、能不能做用户/组/ACL，差别很大。**
+
+这也是部门选型时比“哪个按钮更多”更应该先看的问题。
 
 在进入 Open WebUI 之前，先不要把它当成另一个完全不同的产品世界。
 
