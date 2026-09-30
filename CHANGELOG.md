@@ -41,3 +41,12 @@
 - 第一章新增 Postman → Cherry Network → Python Test → `/metrics` → model-metric 教学链。
 - 新增 `docs/cases/model-metric-api-observability.md`。
 - 截图/录屏清单新增 Postman、自动测试与 model-metric 素材。
+
+- 新增模块三主讲稿 `docs/chapters/05-agent-tools-real-world.md`，将 File/Search、Shell、Git、Browser/Playwright/Computer Use、SSH、Docker、API、CI/CD 收束为“Read → Act → Observe → Verify → Iterate → Deliver”工程闭环。
+- 新增模块三官方证据基线 `docs/references/agent-tools-real-world-evidence-2026-09.md`，区分稳定机制、官方当前实现与待实测内容。
+- 模块三新增 TOOL-01～11、TOOL-R01～05 截图/录屏占位并同步总素材清单。
+- 新增模块四主讲稿 `docs/chapters/06-api-mcp-skill-plugin-command-hook.md`，明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系。
+- 明确关键教学结论：MCP 不替代 API；Skill 不等于 API 封装；Plugin 定义需按具体产品理解；Command 偏主动触发，Hook 偏事件触发。
+- 新增 `docs/references/api-mcp-skill-evidence-2026-09.md`，基于 MCP 与 OpenAI 当前 Skills/Plugins/Tool Design/Hooks 官方资料建立证据基线。
+- 新增 `demos/agent-tool-integration/README.md`，规划同一 Training Service 的 Raw API → MCP Tool → Skill+MCP 统一教学 Demo。
+- 模块四新增 CONNECT-01～09、CONNECT-R01～05 素材占位；下一讲义建设重点转向模块五“可复用资产与知识体系”。
