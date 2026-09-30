@@ -1,7 +1,7 @@
 # 培训截图与录屏总清单
 
 > 日期：2026-09-30  
-> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`。  
+> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`。  
 > 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。
 
 ---
@@ -112,6 +112,9 @@ AGENT-R05-tool-loop.mp4
 | AGENT-R02 | 录屏 | WorkBuddy Chat → Workspace → Artifact | Agent 共性 | ⬜ |
 | AGENT-R04~05 | 录屏 | 读取项目规则 + Tool Loop | Agent 共性 | ⬜ |
 | AGENT-R07 | 录屏 | Skill 前后流程对比 | Agent 共性 | ⬜ |
+| TOOL-01~06 | 图示/截图 | Tool Loop、Workspace、Shell/Git、验证层次、Browser 分类 | Agent 真实世界 | ⬜ |
+| TOOL-07~11 | 截图/图示 | Visual QA、SSH/Docker、API、CI、完整工程闭环 | Agent 真实世界 | ⬜ |
+| TOOL-R01~04 | 录屏 | Read/Edit/Test/Diff、Visual QA、SSH 部署、CI | Agent 真实世界 | ⬜ |
 
 ---
 
@@ -297,7 +300,42 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 9. 推荐的实际采集顺序
+# 9. Agent 如何操作真实世界
+
+完整占位：
+
+`docs/chapters/05-agent-tools-real-world.md`
+
+## 9.1 静态
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| TOOL-01 | P0 | Model → Tool Request → Harness → Execute → Tool Result 总图 | ⬜ |
+| TOOL-02 | P0 | Workspace：目录 + Search + Read | ⬜ |
+| TOOL-03 | P0 | Terminal Tool Call + Approval / Sandbox | ⬜ |
+| TOOL-04 | P0 | git status + git diff + test | ⬜ |
+| TOOL-05 | P0 | 静态检查/自动测试/运行态/UI 四层验证图 | ⬜ |
+| TOOL-06 | P0 | Browser Use / Playwright / Computer Use / Crawler 对比图 | ⬜ |
+| TOOL-07 | P0 | Browser + Console + Screenshot + 修复对照 | ⬜ |
+| TOOL-08 | P0 | SSH + Docker + logs + health request | ⬜ |
+| TOOL-09 | P1 | UI 自动操作 vs Structured API Tool | ⬜ |
+| TOOL-10 | P0 | Commit → GitHub Actions → Pass/Fail | ⬜ |
+| TOOL-11 | P0 | 12 步工程 Agent 闭环图 | ⬜ |
+
+## 9.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| TOOL-R01 | P0 | Read → Edit → Test → Diff 最小闭环 | ⬜ |
+| TOOL-R02 | P0 | Test Pass → Browser Visual QA → Fix | ⬜ |
+| TOOL-R03 | P0 | SSH → Docker → Logs → Health Check | ⬜ |
+| TOOL-R04 | P0 | Commit → Push → CI | ⬜ |
+| TOOL-R05 | P1 | API Tool 与 GUI 操作完成同一任务对比 | ⬜ |
+
+
+---
+
+# 10. 推荐的实际采集顺序
 
 不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
 
@@ -306,14 +344,15 @@ AGENT-R05-tool-loop.mp4
 3. **API / Postman / model-metric 一次录完**：API-01、API-POST-01~02、API-TEST-01~02、API-03~09、MM-01~03、API-R06/07/09、MM-R01~02；
 4. **统一鹈鹕 Demo 一次录完**：API-10/11、CHAT-01/02/04、CHAT-R01~03、API-R08；
 5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
-6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10；
-7. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
+7. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
+8. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
 ---
 
-# 10. 后续落盘约定
+# 11. 后续落盘约定
 
 实际素材建议逐步落到：
 
