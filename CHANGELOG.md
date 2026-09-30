@@ -50,3 +50,8 @@
 - 新增 `docs/references/api-mcp-skill-evidence-2026-09.md`，基于 MCP 与 OpenAI 当前 Skills/Plugins/Tool Design/Hooks 官方资料建立证据基线。
 - 新增 `demos/agent-tool-integration/README.md`，规划同一 Training Service 的 Raw API → MCP Tool → Skill+MCP 统一教学 Demo。
 - 模块四新增 CONNECT-01～09、CONNECT-R01～05 素材占位；下一讲义建设重点转向模块五“可复用资产与知识体系”。
+
+- 新增模块五主讲稿 `docs/chapters/07-reusable-agent-assets.md`，从“资产路由”而非工具名词出发，统一 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git 的沉淀边界。
+- 新增反过度沉淀原则：AGENTS.md 不作为项目百科全书；专项流程按需加载为 Skill；确定性步骤逐步下沉为 Script/Test/CI；关键项目事实不只依赖产品 Memory。
+- 新增 `docs/references/reusable-agent-assets-evidence-2026-09.md`，核验 AGENTS.md 开放格式、Codex 当前 Context/AGENTS 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等资料。
+- 模块五新增 ASSET-01～09、ASSET-R01～04 素材占位；培训讲义下一阶段转入真实案例、统一 Demo 实现和实测证据补齐。
