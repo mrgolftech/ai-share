@@ -520,6 +520,52 @@ AGENT-R05-tool-loop.mp4
 | SERVER-R01 | P0 | BMQuiz Docker 部署/更新/验证 | ⬜ |
 | SERVER-R02 | P0 | model-metric systemd 更新/日志/语义验证 | ⬜ |
 
+
+## 12.3 FileCheck 静态素材
+
+完整案例：
+
+`docs/cases/filecheck-end-to-end-agent-development.md`
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| FC-01 | P0 | FileCheck GUI 首页 + CLI 主入口 | ⬜ |
+| FC-02 | P0 | Requirements：Goals / Non-goals | ⬜ |
+| FC-03 | P0 | Windows / Offline / Win7 / Safety → Technical Decisions | ⬜ |
+| FC-04 | P0 | Core → CLI / GUI 架构图 | ⬜ |
+| FC-05 | P0 | CLI selftest / 受控测试目录 | ⬜ |
+| FC-06 | P0 | Backup / Remove / Restore Safety Flow | ⬜ |
+| FC-07 | P0 | Scan / Results / Backup / Remove / Restore 主要 GUI 页面 | ⬜ |
+| FC-08 | P0 | Danger Confirm + 影响文件数量 | ⬜ |
+| FC-09 | P0 | GitHub Actions CI Matrix + Python 3.8 compatibility | ⬜ |
+| FC-10 | P0 | v0.2.3 GitHub Release 三个正式包 | ⬜ |
+| FC-11 | P0 | 解压后便携包目录 + SHA256SUMS | ⬜ |
+| FC-12 | P0 | Test → PyInstaller → Artifact → Release Pipeline | ⬜ |
+
+## 12.4 FileCheck 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| FC-R01 | P0 | 小需求：Rules/Plan → Implement → pytest → GUI Smoke → Diff | ⬜ |
+| FC-R02 | P0 | GitHub Actions → Build Artifact → Release Assets | ⬜ |
+| FC-R03 | P0 | 受控测试数据 Backup → Verify → Restore | ⬜ |
+
+## 12.5 第四讲短案例素材
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| MM-CASE-01 | P0 | model-metric overview + /api/overview + /api/instances 语义核验 | ⬜ |
+| MM-CASE-R01 | P1 | systemd/logs → API → metrics semantic verification | ⬜ |
+| IPSEC-01 | P1 | 脱敏原始测试数据 / 异常曲线 | ⬜ |
+| IPSEC-02 | P1 | Agent 提出的候选假设与多维分析 | ⬜ |
+| IPSEC-03 | P1 | 10 Mbps 链路线索对应的工程验证证据 | ⬜ |
+| IPSEC-R01 | P1 | 数据 → 假设 → 反证/补充 → 工程验证 | ⬜ |
+| HF-01 | P1 | HyperFrames Storyboard / Design Spec | ⬜ |
+| HF-02 | P1 | HTML/SVG/GSAP 场景源码 + Preview | ⬜ |
+| HF-03 | P1 | GitHub Actions Render + Video Artifact | ⬜ |
+| HF-R01 | P1 | 修改场景 → Preview → Commit → Action → Render | ⬜ |
+| SEC-01 | P2 | 授权环境：Scope → Evidence → Fix → Regression 流程图 | ⬜ |
+
 ---
 
 # 13. 最终方法论收束
@@ -557,7 +603,10 @@ AGENT-R05-tool-loop.mp4
 9. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
 10. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
 11. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
-12. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+12. **Knowledge Agent 多源任务**：KB-18/19/22、KB-R05/06；
+13. **BMQuiz 第四讲素材**：BM-01~12、BM-R01~03、SERVER-R01；
+14. **FileCheck 一次录完**：FC-01~12、FC-R01~03；
+15. **第四讲短案例**：MM-CASE、IPSEC、HF；其中 IPsec 数据必须脱敏，HyperFrames 优先复用已有 Kids / Metric / Wafer 工程。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
