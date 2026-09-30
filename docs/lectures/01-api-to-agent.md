@@ -2238,23 +2238,6 @@ Harness 执行和反馈
 - OW-12：选择 Workspace 后依据知识问答；
 - OW-13：Note/Document → Knowledge → Workspace → Chat 图。
 
-### OW-R03：个人知识到 Workspace 问答
-
-完整录屏：
-
-```text
-创建 Note / Knowledge
-→ 上传 Markdown / 文档
-→ 查看 Full Context / Focused Retrieval
-→ 展示未向量化提示
-→ Workspace 引用 Knowledge
-→ 选择 Workspace
-→ 固定问题
-→ 回答依据资料
-```
-
-建议同时保留一次 Full Context 模式，以明确证明“不依赖 Embedding 也能使用全文上下文”。
-
 ### CH-TOOL-01～02：MCP / Tool
 
 拍：
@@ -2422,6 +2405,21 @@ api/qwen/results/20260930_095033/
 2. 开启联网；
 3. 展示 Search Tool / Result / Citation。
 
+## OW-R03：Open WebUI 个人知识到 Workspace
+
+步骤：
+
+1. 新建个人 Note / Knowledge；
+2. 上传固定 Markdown / 文档；
+3. 展示 Full Context / Focused Retrieval；
+4. 展示当前未配置 Embedding / 未向量化提示；
+5. 在 Workspace / Model 中引用 Knowledge；
+6. 选择对应 Workspace；
+7. 问固定问题；
+8. 展示依据资料回答。
+
+建议同一份资料至少保留一次 Full Context 演示，以明确说明全文注入不依赖 Embedding。
+
 ## API-R10：自动测试脚本
 
 建议使用预录 + 现场打开正式结果。
@@ -2464,13 +2462,14 @@ Agent：
 
 # 16. 第一讲现场 Demo 与备用策略
 
-现场建议真正实时做的只有三项：
+现场建议真正实时做四项：
 
-1. Cherry 普通 Chat + Network；
-2. 多轮 Context；
-3. 最小 Agent Read/Edit/Test Loop。
+1. Cherry 配置内网模型，并用同一 Prompt 切 OpenAI Chat / Responses / Anthropic 三种协议，看 Network Endpoint；
+2. Open WebUI v0.11.0：个人 Note / 文档 → Knowledge → Workspace → 基于资料问答；
+3. Cherry 多轮 Context；
+4. 最小 Agent Read/Edit/Test Loop。
 
-Thinking、Vision、并发、Tool Loop 如果现场稳定，可以实时演示；否则使用预录。
+Postman、自动测试、model-metric、Thinking、Vision、Tool Loop 根据现场时长选择实时或预录；其中完整 r4 测试、并发压测和长 Thinking 优先使用预录。
 
 原则：
 
