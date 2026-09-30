@@ -9,6 +9,9 @@
 
 # 一、先给出结论：不要先记工具名，先认清 Agent 的共同骨架
 
+【图示占位 AGENT-01｜P0】Agent Harness 总体结构正式图：User → Harness → Model/Loop → Workspace Tools / External Tools / UI Control → Observe/Verify → Iterate。后续 PPT 可直接复用。
+
+
 不同 Agent 的界面、配置文件和命令不同，但底层都在解决相似的问题：
 
 1. 模型是谁；
@@ -107,6 +110,9 @@ Different Result
 ---
 
 # 三、先看一个受控实验：模型不变，只换 Harness
+
+【截图占位 AGENT-02｜P0】FrontierHarness 冻结评测原始页面/报告截图，标出 Same Model / Same Tasks / Different Harness。只截支持“Harness 会影响结果”的证据，不制作“谁最好”的排名页。
+
 
 在拆解 Harness 之前，先回答一个问题：
 
@@ -250,6 +256,19 @@ WorkBuddy 当前官方文档同时展示了：
 这使它成为“Chat Surface → Executable Workspace”非常直观的教学案例。
 
 ## 4.2 WorkBuddy：为什么一个“聊天界面”后面会逐渐长出一台可执行计算机
+
+【截图占位 AGENT-WB-01｜P0】WorkBuddy 普通 Chat / Task Surface。
+
+【截图占位 AGENT-WB-02｜P0】右侧 Workspace：文件、变更、Browser/Preview、Artifact，尽量与 AGENT-WB-01 同一任务。
+
+【截图占位 AGENT-WB-03｜P0】Skill Marketplace / 社区 Skill 列表，能看清“可安装能力包”的形态。
+
+【截图占位 AGENT-WB-04｜P1】企业云端 Runtime / Sandbox / Session / Checkpoint 界面；若当前账号不可见，保留官方文档截图并明确标注“官方文档”，不伪装成本地实测。
+
+【录屏占位 AGENT-R02｜P0｜60–120 秒】WorkBuddy：从一个看起来普通的 Chat 任务开始 → Workspace 出现文件 → Terminal/Browser 执行 → 形成产物。目的：证明“Surface 像 Chat ≠ 后端只有 Prompt→Answer”。
+
+【录屏占位 AGENT-R03｜P1｜45–90 秒】在 Skill Marketplace 安装一个社区 Skill → 查看其说明/目录 → 在真实任务触发。优先选择与文档、网页或工程任务有关的 Skill，不录 Hello World。
+
 
 WorkBuddy 值得加入这一章，不是为了再多介绍一款工具，而是因为它能把三个抽象概念同时变得很直观。
 
@@ -419,6 +438,11 @@ Hermes 是一个非常清晰的例子：
 
 # 六、第二层：Project Instructions——“在这个项目里应该怎么工作”
 
+【截图占位 AGENT-03｜P0】本仓库根目录 `AGENTS.md` + Agent 读取/引用项目规则的对话或日志，同屏展示“规则文件”和“实际遵守行为”。
+
+【录屏占位 AGENT-R04｜P0｜45–90 秒】给 Agent 一个会触发项目规则的任务，录到它主动读取 `AGENTS.md` → 按规则执行 → 最后说明遵守了哪些约束。
+
+
 这是 Coding Agent 最值得沉淀的机制之一。
 
 Codex 原生使用：
@@ -469,6 +493,9 @@ AGENTS.md / CLAUDE.md / Rules
 ---
 
 # 七、第三层：Workspace——“Agent 在哪里工作”
+
+【截图占位 AGENT-04｜P0】同一任务的 Workspace 文件树 + 当前修改文件 + Git 状态。优先真实小 Repo，不用概念示意图代替。
+
 
 Workspace 是 Chat 与工程 Agent 的关键分界之一。
 
@@ -573,6 +600,9 @@ System Instructions
 
 # 九、第五层：Plan / Task State——“下一步做什么”
 
+【截图占位 AGENT-05｜P1】Plan / Todo / Task State 的真实界面或文本，能看出“未开始 / 进行中 / 已完成”的状态变化。
+
+
 复杂 Agent 通常不会只做一次：
 
 ~~~text
@@ -611,6 +641,9 @@ Goal
 ---
 
 # 十、第六层：Memory——“哪些东西需要跨会话留下”
+
+【截图占位 AGENT-06｜P1】Hermes 的 MEMORY/USER/SOUL 等文件或其他 Agent 的长期 Memory UI。旁边必须标注：文件名只是具体实现，不是行业统一标准。
+
 
 这里要把三个概念分开：
 
@@ -655,6 +688,11 @@ Hermes 的 MEMORY.md / USER.md 很适合作为教学案例，但它代表的是�
 ---
 
 # 十一、第七层：Tools——“Agent 能做什么”
+
+【截图占位 AGENT-07｜P0】一次真实 Tool Trace：read/search/edit/bash/test 中至少 3 类工具连续出现，能看到 Tool Input 与 Result。
+
+【录屏占位 AGENT-R05｜P0｜60–120 秒】最小工程闭环：Search/Read → Edit → Shell/Test → Observe → 再 Edit → Test PASS。重点录 Harness 如何把 Tool Result 送回模型继续判断。
+
 
 模型自己不能直接：
 
@@ -701,6 +739,11 @@ Model
 ---
 
 # 十二、第八层：API / MCP——“外部能力如何接进 Agent”
+
+【截图占位 AGENT-08｜P0】一个真实 MCP Server 在 Agent 中暴露的 Tools / Resources 列表；最好使用 GitHub 或其他培训中确实会用的系统。
+
+【录屏占位 AGENT-R06｜P1｜45–90 秒】Agent 发现 MCP Tool → 调用 → 返回结构化结果 → 基于结果继续任务。目的：展示 MCP 不是“另一种模型”，而是工具接入层。
+
 
 API 和 MCP 都可以把外部系统接给 Agent，但层次不同。
 
@@ -757,6 +800,11 @@ MCP 不会消灭 API。
 
 # 十三、第九层：Skill——“把会做一次变成会重复做”
 
+【截图占位 AGENT-09｜P0】一个真实 Skill 目录：`SKILL.md` + scripts/references/templates（按实际存在内容），并截取其中“步骤/约束/验证”片段。
+
+【录屏占位 AGENT-R07｜P0｜60–120 秒】同一 Agent 在没有 Skill 与加载 Skill 后执行同类任务的过程对比，重点观察流程是否更固定、是否主动验证。
+
+
 Skill 不等于 Tool。
 
 Tool 更接近：
@@ -812,6 +860,11 @@ Skill 可能进一步包含：
 
 # 十四、第十层：Browser Use——“专门操作 Web 世界”
 
+【截图占位 AGENT-10｜P1】Agent Browser/Playwright 页面 + Tool Trace / Console / Screenshot 结果。
+
+【录屏占位 AGENT-R08｜P1｜45–90 秒】Agent 打开网页 → 点击/输入 → 读取结果 → 根据页面状态继续动作。后续模块三可复用。
+
+
 这里建议培训把几个容易混淆的概念彻底拆开。
 
 ## 14.1 HTTP / Web Search
@@ -853,6 +906,9 @@ Browser Use 这一类工具的价值是：
 ---
 
 # 十五、第十一层：Computer Use——“不只操作浏览器，而是操作 GUI”
+
+【截图占位 AGENT-11｜P2】Computer Use 操作桌面 GUI 的截图，必须能看出截图/视觉观察与鼠标键盘动作；如果没有稳定可复现实测，使用官方材料并标注来源。
+
 
 Computer Use 的作用范围更宽：
 
@@ -912,6 +968,11 @@ Computer Use
 
 # 十六、第十二层：Permission / Sandbox——“Agent 可以做到，不代表应该直接做”
 
+【截图占位 AGENT-12｜P0】一次命令/网络/文件操作触发 Approval 或 Sandbox 限制的界面。
+
+【录屏占位 AGENT-R09｜P1｜30–60 秒】先触发受限动作 → 用户批准/拒绝 → Agent 根据结果继续。用于讲“能力边界”和“人仍在闭环中”。
+
+
 Agent 能执行真实动作之后，权限边界非常重要。
 
 常见机制：
@@ -937,6 +998,9 @@ Agent 能执行真实动作之后，权限边界非常重要。
 
 # 十七、第十三层：Verification——“做完不等于做对”
 
+【截图占位 AGENT-13｜P0】同一个任务的 Git Diff + 单元测试 PASS + Browser/Visual QA 三种证据，尽量同屏或做三联图。
+
+
 真正成熟的 Agent 工作流必须加入验证：
 
 ~~~text
@@ -958,6 +1022,9 @@ Edit Code
 ---
 
 # 十八、第十四层：Sub-agent——“一个 Harness 里可以有多个执行角色”
+
+【截图占位 AGENT-14｜P1】主 Agent 派发 2 个独立子任务、Sub-agent 返回结果、主 Agent 汇总的真实轨迹。不要只截“创建了几个 Agent”的配置页。
+
 
 复杂任务可以拆分：
 
@@ -986,6 +1053,9 @@ Sub-agent 的价值不只是“并行”。
 ---
 
 # 十九、第十五层：CLI、GUI、IDE、Web——只是不同的人机入口
+
+【截图占位 AGENT-15｜P1】同一类任务在 CLI / IDE / Desktop-Web 三种 Surface 的三联图。重点标注“Surface 不等于 Runtime”。
+
 
 培训中尤其需要避免：
 
@@ -1131,6 +1201,11 @@ Harness 需要管理：
 
 ## 20.4 Runtime / Execution Backend
 
+【截图占位 AGENT-16｜P0】Local / Docker / SSH / Cloud Sandbox 中至少两种 Runtime 的真实配置或状态界面，说明“Agent 在哪里显示”和“命令在哪里执行”是两回事。
+
+【录屏占位 AGENT-R10｜P1｜45–90 秒】如果条件允许，同一个 Agent 从本地切换到 SSH/Docker/Cloud Sandbox 执行一个简单命令，并展示文件/环境差异。
+
+
 Workspace 在哪里执行同样重要。
 
 典型 Runtime：
@@ -1207,6 +1282,9 @@ Agent 除了“用户问一次、执行一次”，还可能被事件触发：
 这是企业内网落地不能省略的一层。
 
 ## 20.7 Observability / Trace / Audit
+
+【截图占位 AGENT-17｜P1】一次任务的 Model Call / Tool Call / Runtime / Error / Retry / Diff / Token 或耗时 Trace，优先选已有真实 Agent 日志。
+
 
 Agent 做了什么必须可追踪。
 
@@ -1286,6 +1364,9 @@ Persistent Memory
 ---
 
 # 二十二、培训中建议做的统一演示
+
+【录屏占位 AGENT-R01｜P0｜2–4 分钟】固定内网 qwen3.6 + 同一 Repo + 同一 Task，在 2～3 个 Harness 中执行。只用于观察 Harness 差异，不做综合排名。录屏必须保留：是否读规则、Tool 使用、是否测试、失败恢复、最终 Diff。
+
 
 不要拿 10 个 Agent 逐个点菜单。
 
@@ -1387,3 +1468,39 @@ demo-project/
   - https://developers.openai.com/api/docs/guides/tools-computer-use
 - Browser Use：
   - https://github.com/browser-use/browser-use
+
+
+---
+
+# 二十五、本章截图与录屏准备清单
+
+| 编号 | 类型 | 优先级 | 内容 | 状态 |
+|---|---|---:|---|---|
+| AGENT-01 | 图示 | P0 | Harness 总体结构 | ⬜ |
+| AGENT-02 | 截图 | P0 | 固定模型 Harness 受控实验原始证据 | ⬜ |
+| AGENT-WB-01~03 | 截图 | P0 | WorkBuddy Chat / Workspace / Skill | ⬜ |
+| AGENT-WB-04 | 截图 | P1 | WorkBuddy Cloud Runtime / Sandbox | ⬜ |
+| AGENT-03 | 截图 | P0 | AGENTS.md + 实际遵守 | ⬜ |
+| AGENT-04 | 截图 | P0 | Workspace / Git 状态 | ⬜ |
+| AGENT-05~06 | 截图 | P1 | Plan / Memory | ⬜ |
+| AGENT-07 | 截图 | P0 | Tool Trace | ⬜ |
+| AGENT-08 | 截图 | P0 | MCP Tools / Resources | ⬜ |
+| AGENT-09 | 截图 | P0 | Skill 目录与 SKILL.md | ⬜ |
+| AGENT-10~11 | 截图 | P1/P2 | Browser / Computer Use | ⬜ |
+| AGENT-12 | 截图 | P0 | Approval / Sandbox | ⬜ |
+| AGENT-13 | 截图 | P0 | Diff + Test + Visual QA | ⬜ |
+| AGENT-14~15 | 截图 | P1 | Sub-agent / 多 Surface | ⬜ |
+| AGENT-16 | 截图 | P0 | Runtime Backend | ⬜ |
+| AGENT-17 | 截图 | P1 | Trace / Audit / Observability | ⬜ |
+| AGENT-R01 | 录屏 | P0 | 同模型跨 Harness 固定任务 | ⬜ |
+| AGENT-R02 | 录屏 | P0 | WorkBuddy Chat → Workspace → Artifact | ⬜ |
+| AGENT-R03 | 录屏 | P1 | WorkBuddy 社区 Skill 安装与调用 | ⬜ |
+| AGENT-R04 | 录屏 | P0 | Agent 读取并遵守 AGENTS.md | ⬜ |
+| AGENT-R05 | 录屏 | P0 | Read/Edit/Test/Verify Tool Loop | ⬜ |
+| AGENT-R06 | 录屏 | P1 | MCP Tool 调用闭环 | ⬜ |
+| AGENT-R07 | 录屏 | P0 | Skill 前后流程对比 | ⬜ |
+| AGENT-R08 | 录屏 | P1 | Browser 自动交互 | ⬜ |
+| AGENT-R09 | 录屏 | P1 | Approval / Sandbox 人机确认 | ⬜ |
+| AGENT-R10 | 录屏 | P1 | Runtime Backend 切换/远程执行 | ⬜ |
+
+> 如果时间有限，先完成：`AGENT-01`、`AGENT-WB-01~03`、`AGENT-03`、`AGENT-07~09`、`AGENT-12~13`、`AGENT-16`，以及 `AGENT-R02`、`AGENT-R04`、`AGENT-R05`、`AGENT-R07`。
