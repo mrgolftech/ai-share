@@ -36,6 +36,51 @@
 
 > **一个外部能力，怎样从“系统本身能做”一步步变成“Agent 能稳定使用，并能被团队复用”？**
 
+
+
+## 0.1 第一套连续案例仍然使用 ZCode
+
+模块三已经用 ZCode 建立了：
+
+```text
+Workspace → File → Terminal → Browser → Test → Review
+```
+
+本章不立即更换 Agent，而是继续用同一个 ZCode Workspace 回答：
+
+> **这些外部能力怎样从“系统接口”一步步变成“Agent 可调用、可复用、可分发的能力”？**
+
+统一演示链：
+
+```text
+Training Service
+→ curl / Raw API
+→ ZCode MCP Tool
+→ ZCode Skill + MCP
+→ ZCode Command
+→ ZCode Plugin（扩展）
+→ Hook（扩展）
+```
+
+这样课堂控制变量更清楚：
+
+> **后端能力不变，只改变 Agent 的接入层和复用层。**
+
+详细实施方案：
+
+`demos/agent-tool-integration/zcode-implementation-plan.md`
+
+当前 ZCode 官方已经支持：
+
+- User / Workspace MCP；
+- stdio / HTTP / SSE MCP；
+- `SKILL.md` Skills；
+- `/` Commands；
+- Plugin 打包 Skills / Commands / Subagents / MCP / Hooks。
+
+这些是当前 ZCode 产品事实；本章要抽象的仍然是 API / Tool / MCP / Skill / Plugin / Trigger 的通用关系。
+
+
 ---
 
 # 1. 先用一张分层图建立直觉
@@ -1090,7 +1135,11 @@ Read AGENTS.md
 
 # 21. MCP Demo 应该怎么设计
 
-为了让学员真正看懂“API 与 MCP 的关系”，建议不要只展示一个现成 MCP 列表。
+第一套正式实现固定使用 **ZCode 作为 MCP Host**，具体步骤见：
+
+`demos/agent-tool-integration/zcode-implementation-plan.md`
+
+为了让学员真正看懂“API 与 MCP 的关系”，不要只展示一个现成 MCP 列表。
 
 统一 Demo：
 
