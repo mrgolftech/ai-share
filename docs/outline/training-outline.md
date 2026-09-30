@@ -2038,8 +2038,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 2. 编写“为什么 Chat 不够”章节；
 3. 打磨 Agent 工作区与工具链章节：`04-agent-common-mechanisms.md` 与 `05-agent-tools-real-world.md` 已有初稿，下一步补统一 Demo、实测证据和截图；
 4. API / MCP / Skill / Plugin / Command / Hook：主讲稿、证据基线与统一 Demo 设计已形成，下一步实现并实测 Raw API → MCP Tool → Skill+MCP；
-5. **下一建设重点**：编写“如何形成可复用资产”主讲章，重点统一 Prompt / Project Rules / Skill / Script / Test / CI / Template / Memory / Knowledge Base 的沉淀边界；
-6. 按真实项目逐一整理案例；
+5. “如何形成可复用资产”主讲稿与证据基线已形成，已统一 Prompt / Project Rules / Skill / Script / Test / CI / Template / Memory / Knowledge Base 的沉淀边界；
+6. **下一建设重点**：停止继续堆抽象概念，按真实项目逐一整理案例并补齐模块三～五的实测 Demo、截图和录屏；
 7. 为每个模块建立截图和 Demo 清单；
 
    - 当前已有讲义的统一素材清单已建立：`docs/outline/media-capture-checklist.md`；
@@ -2077,6 +2077,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（已有初稿；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界）
 - 模块四证据基线：`docs/references/api-mcp-skill-evidence-2026-09.md`（已有素材；基于 MCP、OpenAI Skills/Plugins/Tool Design/Hooks 当前官方资料核验）
 - 模块四统一 Demo 设计：`demos/agent-tool-integration/README.md`（规划完成；同一训练服务依次演示 Raw API → MCP Tool → Skill+MCP，避免把三层误解为三套不同能力）
+- 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（已有初稿；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则）
+- 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
 
 - API 官方参考资料（已有素材）
 
@@ -2086,8 +2088,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；10 个 Agent（新增 WorkBuddy）横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo；WorkBuddy 的 Chat→Workspace→Skill→Runtime 截图已规划为 AGENT-WB-01～04）
 - 模块三：Agent 工具与真实世界（已有初稿，当前缺口为真实 Read/Edit/Test/Diff、Browser Visual QA、SSH/Docker、Commit→CI 录屏与截图，以及内网 qwen3.6 在具体 Harness 中的稳定性实测）
 - 模块四：API / MCP / Skill 等关系（已有初稿与官方证据基线；当前缺口为最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据）
-- **模块五：可复用资产与知识体系（下一建设重点）**
-- 模块六：真实案例材料
+- 模块五：可复用资产与知识体系（已有初稿与证据基线；当前缺口为仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
+- **模块六：真实案例材料 + 模块三～五实测证据（下一建设重点）**
 - 各模块架构图 / 流程图
 - Demo 脚本
 - 截图资产
