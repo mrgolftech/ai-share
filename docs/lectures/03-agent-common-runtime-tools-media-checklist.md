@@ -18,6 +18,25 @@
 
 ---
 
+## 1. 本讲素材总控表
+
+| 素材组 | 优先级 | 主要内容 | 状态 |
+|---|---:|---|---|
+| AGENT-01~06 | P0 | Harness、Project Rules、Workspace、Plan、Memory | ⬜ |
+| AGENT-WB-* | P0 | WorkBuddy Chat / Workspace / Skill / Runtime | ⬜ |
+| ENV-* | P0 | Harness vs Runtime、Preflight、Local/WSL/Container/Cloud | ⬜ |
+| TOOL-02~05 | P0 | File/Search/Read、Shell、Git、Verification | ⬜ |
+| TOOL-06A~D | P0 | Browser / Playwright / CDP / Computer Use | ⬜ |
+| TOOL-07~08 | P0/P1 | Browser Visual QA、SSH / Server | ⬜ |
+| CONNECT-* | P0 | API → Tool → MCP → Skill | ⬜ |
+| AGENT-08~13 | P0 | MCP、Skill、Approval、Verification | ⬜ |
+| ASSET-* | P1 | Prompt / Rules / Skill / Script / Test / CI 路由 | ⬜ |
+| AGENT-R* / TOOL-R* / CONNECT-R* | P0 | 第三讲核心动态闭环 | ⬜ |
+
+> 第三讲实时演示面尽量控制为一个主 Agent；其他 Agent 用截图/短录屏证明“机制相同、界面不同”。
+
+---
+
 # 31. 第三讲截图执行清单
 
 ## 31.1 多 Agent 共性
