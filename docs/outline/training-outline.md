@@ -2095,6 +2095,20 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 
 # 12. 后续内容建设顺序
 
+## 12.1 当前编制策略（2026-09-30）
+
+当前先完成**不依赖现场案例的完整讲义主体**，真实案例、截图、录屏和统一 Demo 在完整讲义形成后再集中补充。
+
+因此当前顺序调整为：
+
+1. 模块一～五主讲稿达到“可用于培训”；
+2. 完成最终方法论收束章 `docs/chapters/08-agent-engineering-methodology.md`；
+3. 进行一次全讲义串联检查：重复内容、术语一致性、章节过渡、事实边界；
+4. 再集中补真实案例、截图、录屏与 Demo 实测证据；
+5. 最后从完整讲义抽象 PPT 故事线。
+
+> 原有案例建设顺序继续保留，作为后续“证据与演示补全阶段”的执行清单。
+
 本大纲作为后续培训材料建设基线，建议按以下顺序推进：
 
 1. 完成模块一现有 Qwen API 讲义、证据、图表和演示脚本；
@@ -2140,10 +2154,10 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - ZCode 模块三贯穿案例：`demos/zcode-real-world/README.md` + `docs/cases/zcode-agent-real-world.md`（已有案例设计；并已补 `instructor-runbook.md`、`result-template.md`；官方证据基线为 `docs/references/zcode-agent-evidence-2026-09.md`，确认 Workspace/Terminal/Built-in Browser/Review/Execution Modes/AGENTS.md/Project Memory/Goal Mode 等当前实现）
 - ZCode Sensor Guard 训练项目：`demos/zcode-real-world/project/`（已有初始项目；5 条测试中设计 1 条 85°C 边界失败，待 ZCode 现场实测修复）
 - Agent Runtime / 内网工具链案例：`docs/cases/agent-runtime-environment-intranet.md`（已有初稿；明确 Harness vs Runtime、Git/Python/Node/npm、Local/WSL/Docker/SSH、内网软件供应链边界）；并新增 Windows/Linux Preflight 脚本
-- 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（已有初稿；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界）
+- 模块四主讲稿：`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`（可用于培训；明确 API、Tool、Function Calling、MCP、Skill、Plugin、Command、Hook 的分层关系与事实边界；统一 Demo 与实测后补）
 - 模块四证据基线：`docs/references/api-mcp-skill-evidence-2026-09.md`（已有素材；基于 MCP、OpenAI Skills/Plugins/Tool Design/Hooks 当前官方资料核验）
 - 模块四统一 Demo 设计：`demos/agent-tool-integration/README.md`（规划完成；同一训练服务依次演示 Raw API → MCP Tool → Skill+MCP，避免把三层误解为三套不同能力）
-- 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（已有初稿；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则）
+- 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（可用于培训；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则；案例与素材后补）
 - 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
 
 - API 官方参考资料（已有素材）
@@ -2155,7 +2169,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块三：Agent 工具与真实世界（已有初稿；**第一套贯穿主案例已固定为 ZCode**，案例规范为 `demos/zcode-real-world/README.md`，已建立 Sensor Guard 训练项目和 `docs/cases/zcode-agent-real-world.md`；当前缺口为 ZCode 实际录屏/截图，以及 SSH/Docker、Commit→CI 等后续真实案例证据）
 - 模块四：API / MCP / Skill 等关系（已有初稿与官方证据基线；当前缺口为最小 MCP Server、内网 qwen3.6 + Harness Tool Calling、Skill 实际调用、Command/Hook 对比等实测证据）
 - 模块五：可复用资产与知识体系（已有初稿与证据基线；当前缺口为仓库资产地图、长 Prompt→Skill、Skill→Script/Test/CI 等演示素材）
-- **模块六：真实案例材料 + 模块三～五实测证据（下一建设重点）**
+- **完整讲义串联检查（当前下一建设重点）**：先检查模块一～五 + 方法论收束的重复、缺口、术语和过渡；案例与模块三～五实测证据随后集中补充
+- 模块六：真实案例材料 + 模块三～五实测证据（后续证据与演示补全阶段）
 - 各模块架构图 / 流程图
 - Demo 脚本
 - 截图资产
