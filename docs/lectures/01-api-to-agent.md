@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.3  
+> 状态：Final Lecture Draft v1.4  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -1598,32 +1598,364 @@ Open WebUI Workspace / Model
 
 ---
 
-## 3.5.5 Cherry 和 Open WebUI 放在第一讲里，不是为了比较“谁更好”
+## 3.5.5 Cherry Studio 与 Open WebUI：功能越来越像，但“数据边界”和“组织方式”不同
 
-第一讲只比较它们帮助我们看清的机制。
+如果只看今天的功能，两者其实越来越像：
 
-| 问题 | Cherry Studio 更适合演示 | Open WebUI 更适合演示 |
-|---|---|---|
-| Provider / API | 强 | 可展示 |
-| Network Request | 强 | 可展示 |
-| 三协议切换 | 强 | 非本讲重点 |
-| 个人 Assistant | 强 | Workspace/Model |
-| 参数 | 强 | 支持 |
-| 个人知识 | 支持 | Notes + Knowledge 很直观 |
-| 共享知识入口 | 可用 | 更适合部门场景 |
-| Workspace | 桌面工作台 | 多用户/知识/模型组合 |
+- 都能选择模型；
+- 都能设置 System Prompt / Instructions；
+- 都能管理知识；
+- 都能上传文件；
+- 都能配置参数；
+- 都可以把知识、Prompt 和工具组合成一个可复用入口。
 
-这一页不要得出：
+所以培训不应该简单说：
 
-> Cherry 更好 / Open WebUI 更好。
+> “Cherry 是聊天软件，Open WebUI 是知识库软件。”
 
-而是让大家学会：
+更准确的区别首先来自：
 
-> **先看需求，再选工作台。**
+> **它们运行在哪里，数据主要落在哪里，谁负责管理，以及面向个人还是面向集中共享。**
+
+### Cherry Studio：桌面客户端，本机持久化为主
+
+Cherry Studio 是桌面应用。
+
+当前官方知识库说明明确：
+
+> 加入 Cherry Knowledge Base 的数据保存在本地，文档副本进入 Cherry Studio 本地数据目录。
+
+因此可以把它理解为：
+
+```text
+我的电脑
+├─ Cherry Desktop
+├─ Conversation / Settings
+├─ Knowledge / Local Index
+└─ Provider Config
+          │
+          ↓ API
+   内网模型 / 云模型
+```
+
+【图示占位 WB-COMP-01｜Cherry：Local Desktop → Model API】
+
+这类形态的优势：
+
+- 个人配置灵活；
+- 本地资料容易管理；
+- 每个人可以有自己的 Assistant / Knowledge；
+- 适合工程师个人桌面工作流；
+- 不需要依赖一个统一 Web 门户才能管理自己的资料。
+
+但这里要讲清一个非常重要的隐私边界：
+
+> **“知识库文件存在本机”不等于“内容永远不离开本机”。**
+
+如果实际调用的是远程模型 API：
+
+```text
+本地知识
+↓
+Retriever 选出相关内容
+↓
+进入 Prompt / Context
+↓
+通过 API 发给模型服务
+```
+
+所以真正的数据边界取决于：
+
+- Knowledge 存在哪里；
+- Embedding 在哪里算；
+- Model API 在哪里；
+- 哪些内容最终进入 Request。
 
 ---
 
-## 3.5.6 第一讲和第二讲如何分工
+### Open WebUI：服务端部署，浏览器只是入口
+
+部门当前内网部署的是：
+
+> **Open WebUI v0.11.0**
+
+它更典型的形态是：
+
+```text
+浏览器 A ─┐
+浏览器 B ─┼→ Open WebUI Server
+浏览器 C ─┘      ├─ Accounts
+                  ├─ Chats
+                  ├─ Notes
+                  ├─ Knowledge
+                  ├─ Uploaded Files
+                  ├─ Workspace Models
+                  └─ Permissions
+                           │
+                           ↓
+                     Model API
+```
+
+【图示占位 WB-COMP-02｜Open WebUI：Browser → Central Server → Model API】
+
+Open WebUI 官方部署文档也把聊天、配置、上传文件、Knowledge 记录等作为服务端持久化数据管理；单机部署通常落在服务端 Data Directory / Database，规模化时还可以使用 PostgreSQL、共享文件系统或对象存储。
+
+这里建议课堂上用：
+
+> **“集中式服务端部署”**
+
+而不是简单说：
+
+> “一定上公网云。”
+
+因为我们的场景是部门内网服务器，同样属于集中式 Server-side 模式。
+
+这种形态的价值：
+
+- 用户从浏览器即可访问；
+- 多终端共享同一个账号和工作空间；
+- 用户/Group/ACL 可以集中管理；
+- Knowledge / Workspace 可以共享；
+- 部门可以统一配置模型和能力。
+
+相应地：
+
+> **个人上传的文档、Note、Chat 等主要由这台 Open WebUI 服务器持久化管理，而不是只留在当前浏览器所在电脑。**
+
+---
+
+### 两个产品的数据边界，一张表讲清
+
+| 维度 | Cherry Studio | 内网 Open WebUI v0.11.0 |
+|---|---|---|
+| 产品形态 | Desktop Client | Web / Server |
+| 主要访问方式 | 本机桌面应用 | 浏览器访问集中服务器 |
+| 配置/知识主要管理位置 | 本机 | Open WebUI 服务端 |
+| 多终端一致性 | 取决于同步/迁移方式 | 同一账号访问服务器即可 |
+| 多用户 / Group | 不是主要定位 | 原生更适合 |
+| 个人知识 | 很适合 | Note / Personal Knowledge 已实测 |
+| 部门共享知识 | 可做，但更偏个人端 | 更自然 |
+| 数据治理 | 个人侧为主 | 服务端集中治理 |
+| 模型调用 | Local/Remote Provider | Server → Model Provider |
+| 典型定位 | 个人 AI 桌面工作台 | 部门 AI Portal / Workspace |
+
+【截图/图示占位 WB-COMP-03｜Cherry vs Open WebUI 数据与应用边界对照】
+
+结论不是：
+
+> 谁替代谁。
+
+而是：
+
+> **Cherry 更接近“我的 AI 工作台”，Open WebUI 更接近“我们共同使用的 AI 门户”。**
+
+---
+
+## 3.5.6 Open WebUI Workspace Model 和 Cherry Assistant：其实在解决同一个问题
+
+现在把两边最容易混淆的功能放到一起。
+
+### Cherry Assistant
+
+可以预先保存：
+
+- Model；
+- System Prompt / Instructions；
+- Parameters；
+- Knowledge；
+- MCP / Tools。
+
+### Open WebUI Workspace / Model
+
+当前 Open WebUI 官方定义也允许把：
+
+- Base Model；
+- System Prompt；
+- Parameters；
+- Knowledge；
+- Tools / Skills；
+
+组合成一个可重复选择的 Model Preset。
+
+所以可以把两者都理解为：
+
+> **在基础模型上加一层可复用的“应用配置”。**
+
+```text
+Base Model
+   +
+System Prompt
+   +
+Knowledge
+   +
+Parameters
+   +
+Tools
+   ↓
+Specialized Assistant / Workspace Model
+```
+
+【图示占位 WB-COMP-04｜Cherry Assistant vs Open WebUI Workspace Model】
+
+例如都可以做一个：
+
+> “内网 API 培训助手”
+
+然后写 System Prompt：
+
+```text
+你负责回答部门内网模型 API 相关问题。
+优先使用已绑定测试资料。
+没有实测证据时明确说明。
+```
+
+两边最终本质上都是：
+
+> **把 System Prompt 注入到后续模型调用中，并把知识、参数、工具等配置一起复用。**
+
+因此这里要纠正一个容易产生的错觉：
+
+> **创建 Assistant / Workspace Model 并没有重新训练模型。**
+
+也不应因为 UI 上叫“Agent / Assistant”就自动理解成第三讲那种：
+
+`Goal → Plan → Tool → Observe → Verify`
+
+的完整 Autonomous Agent。
+
+它首先是：
+
+> **Model Preset / Application Wrapper。**
+
+是否具备真正 Agent 行为，还取决于：
+
+- Tool；
+- Function Calling；
+- Runtime；
+- Loop；
+- Verification。
+
+---
+
+## 3.5.7 Open WebUI Notes：既可以“在笔记旁边问”，也可以成为后续知识
+
+当前内网 v0.11.0 已经实际走通两个很有价值的使用方式。
+
+### 方式一：直接围绕 Note 对话
+
+用户创建一份 Markdown Note 后，可以直接在笔记场景中和模型对话。
+
+从用户体验看，它非常像：
+
+> **“把这份笔记作为当前知识背景，直接围绕它问答和修改。”**
+
+【截图占位 OW-14｜Note Editor + Note Chat】
+
+【录屏占位 OW-R04｜创建 Note → 围绕 Note 问答】
+
+这里培训中建议使用“Note-centered Chat / 围绕笔记问答”，不要直接等同于传统 Vector RAG。
+
+因为：
+
+> Note 的目标首先是持久内容和完整上下文协作，而不是一定经过 Embedding → Vector Retrieval。
+
+---
+
+### 方式二：已有 Note 进入 Workspace Knowledge
+
+当前内网也已经实际走通：
+
+```text
+Create Note
+↓
+持续补充内容
+↓
+创建 Workspace / Model
+↓
+Knowledge 中选择已有 Note / Knowledge
+↓
+设置 System Prompt
+↓
+选择这个 Workspace
+↓
+后续持续问答
+```
+
+【截图占位 OW-15｜创建 Workspace 时选择已有 Note / Knowledge】
+
+【录屏占位 OW-R05｜Note → Workspace Knowledge → 专用问答助手】
+
+这和 Cherry 的：
+
+```text
+Knowledge
+↓
+Bind Assistant
+↓
+Assistant Prompt
+↓
+Chat
+```
+
+是很好的对照。
+
+最终可以形成：
+
+```text
+Cherry
+Local Knowledge
+→ Assistant
+→ System Prompt
+→ Chat
+
+Open WebUI
+Server Note / Knowledge
+→ Workspace Model
+→ System Prompt
+→ Chat
+```
+
+两者都在解决：
+
+> **“不要每次打开新聊天再重新上传资料、重新粘贴角色提示词。”**
+
+---
+
+## 3.5.8 从个人知识到部门知识：两者的演进路径不同
+
+Cherry 更自然的起点：
+
+```text
+个人文件
+→ Local Knowledge
+→ Personal Assistant
+```
+
+Open WebUI 更自然地可以继续向上走：
+
+```text
+个人 Note / Knowledge
+→ Personal Workspace
+→ Shared Knowledge
+→ Group / ACL
+→ Department Workspace
+```
+
+【图示占位 WB-COMP-05｜个人知识 → 团队知识的两条路径】
+
+这也是为什么部门知识库建设中：
+
+> Open WebUI 很适合作为近期直接可用的“知识消费和共享入口”。
+
+但长期的 Source of Truth 仍然不应该锁死在 Open WebUI 里面。
+
+第二讲会继续解释：
+
+> Git / DMS / Wiki / DB / API 才是长期知识源，Open WebUI 和 Cherry 都是消费入口。
+
+---
+
+## 3.5.9 第一讲和第二讲如何分工
 
 第一讲只让学员看到：
 
@@ -1631,6 +1963,8 @@ Open WebUI Workspace / Model
 Document / Note
 ↓
 Full Context or Retrieval
+↓
+Assistant / Workspace
 ↓
 Context
 ↓
@@ -1645,11 +1979,12 @@ Model
 - BM25 / Vector / Hybrid 的区别；
 - Focused Retrieval 怎样验收；
 - Full Context 什么时候更好；
-- Knowledge、Workspace 和部门 Source of Truth 怎样分层。
+- Personal Note 怎样升级成部门 Source of Truth；
+- Knowledge、Workspace 和部门长期知识架构怎样分层。
 
-所以 Open WebUI 这个案例会在两场复用：
+所以 Cherry / Open WebUI 会在两场复用：
 
-> **第一讲看“产品是怎么用的”；第二讲看“知识为什么这样设计”。**
+> **第一讲看“AI 工作台如何组织模型、Prompt、知识和工具”；第二讲看“知识为什么应该这样设计和治理”。**
 
 ---
 
@@ -2226,6 +2561,16 @@ Harness 执行和反馈
 - 当前搜索服务配置；
 - 一次带 Search Result / Citation 的回答。
 
+### WB-COMP-01～05：Cherry vs Open WebUI 对比
+
+准备：
+
+- WB-COMP-01：Cherry Desktop / Local Data → Model API；
+- WB-COMP-02：Browser → Open WebUI Server / Data → Model API；
+- WB-COMP-03：两者数据边界/使用场景对照表；
+- WB-COMP-04：Cherry Assistant vs Open WebUI Workspace Model；
+- WB-COMP-05：个人知识 → 团队知识演进图。
+
 ### OW-07～13：Open WebUI v0.11.0 个人知识 / Workspace
 
 按当前内网已经走通的实际流程拍：
@@ -2237,6 +2582,13 @@ Harness 执行和反馈
 - OW-11：Workspace 绑定 Knowledge；
 - OW-12：选择 Workspace 后依据知识问答；
 - OW-13：Note/Document → Knowledge → Workspace → Chat 图。
+
+### OW-14～15：Note 对话与 Workspace 复用
+
+拍：
+
+- OW-14：Note Editor + 围绕 Note 的 Chat；
+- OW-15：创建 Workspace / Model 时附加已有 Note / Knowledge。
 
 ### CH-TOOL-01～02：MCP / Tool
 
@@ -2419,6 +2771,27 @@ api/qwen/results/20260930_095033/
 8. 展示依据资料回答。
 
 建议同一份资料至少保留一次 Full Context 演示，以明确说明全文注入不依赖 Embedding。
+
+## OW-R04～05：Note 对话与复用
+
+### OW-R04：围绕 Note 直接问答
+
+1. 新建一条固定 Markdown Note；
+2. 写入一段 Qwen 实测结论；
+3. 打开 Note Chat；
+4. 问一个答案明确存在于 Note 的问题；
+5. 展示回答或对 Note 的修改。
+
+### OW-R05：Note → Workspace Model
+
+1. 使用已有 Note / Knowledge；
+2. 创建 Workspace / Model；
+3. 设置 System Prompt；
+4. 附加已有知识；
+5. 选择该 Workspace；
+6. 新建 Chat；
+7. 固定问题；
+8. 观察系统提示词和知识共同影响回答。
 
 ## API-R10：自动测试脚本
 
