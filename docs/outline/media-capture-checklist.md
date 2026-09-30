@@ -98,6 +98,8 @@ AGENT-R05-tool-loop.mp4
 | CH-KB-01~04 | 截图 | Cherry 创建知识库、资料处理、召回测试、对话勾选 | 第一讲预览 / 第二讲复用 | ⬜ |
 | CH-WEB-01 | 截图 | Cherry 联网搜索开关 + 搜索引用 | 第一讲 Chat Workbench | ⬜ |
 | CH-TOOL-01~02 | 截图 | Cherry MCP/Tool 配置 + Tool Call/Result | 第一讲 / 第三讲复用 | ⬜ |
+| WB-COMP-01~05 | 图示/截图 | Cherry Local Desktop vs Open WebUI Server、Assistant vs Workspace Model、个人→团队知识 | 第一讲 | ⬜ |
+| OW-14~15 | 截图 | Open WebUI Note Chat + Workspace 附加已有 Note/Knowledge | 第一讲/第二讲 | ⬜ |
 | API-TEST-00~04 | 截图/图示 | r4 自动测试脚本、28 PASS/1 SKIP、record、结果目录、能力矩阵 | 第一讲 API | ⬜ |
 | MM-01~03 | 截图 | model-metric 总览 / Benchmark / Context&Endpoint | 第一章 API / 案例 | ⬜ |
 | API-03 | 截图 | Thinking OFF/ON 实测 | 第一章 API | ⬜ |
