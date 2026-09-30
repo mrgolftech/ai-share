@@ -1,7 +1,7 @@
 # 培训截图与录屏总清单
 
 > 日期：2026-09-30  
-> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`。  
+> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`、`06-api-mcp-skill-plugin-command-hook.md`。  
 > 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。
 
 ---
@@ -115,6 +115,9 @@ AGENT-R05-tool-loop.mp4
 | TOOL-01~06 | 图示/截图 | Tool Loop、Workspace、Shell/Git、验证层次、Browser 分类 | Agent 真实世界 | ⬜ |
 | TOOL-07~11 | 截图/图示 | Visual QA、SSH/Docker、API、CI、完整工程闭环 | Agent 真实世界 | ⬜ |
 | TOOL-R01~04 | 录屏 | Read/Edit/Test/Diff、Visual QA、SSH 部署、CI | Agent 真实世界 | ⬜ |
+| CONNECT-01~04 | 图示 | API/Tool/MCP/Skill 分层与关系 | Agent 工具接入 | ⬜ |
+| CONNECT-06~09 | 图示/截图 | 端到端示例、Skill 目录、权限拆分、决策表 | Agent 工具接入 | ⬜ |
+| CONNECT-R01~03 | 录屏 | Raw API → MCP Tool → Skill+MCP | Agent 工具接入 | ⬜ |
 
 ---
 
@@ -335,7 +338,44 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 10. 推荐的实际采集顺序
+# 10. Agent 工具接入：API / MCP / Skill / Plugin / Command / Hook
+
+完整占位：
+
+`docs/chapters/06-api-mcp-skill-plugin-command-hook.md`
+
+统一 Demo 设计：
+
+`demos/agent-tool-integration/README.md`
+
+## 10.1 静态
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| CONNECT-01 | P0 | API / Tool / MCP / Skill / Plugin / Command / Hook 分层总图 | ⬜ |
+| CONNECT-02 | P0 | REST API → Agent Tool 映射 | ⬜ |
+| CONNECT-03 | P0 | Existing API → MCP Server → Agent | ⬜ |
+| CONNECT-04 | P0 | MCP Tools vs Skill Workflow | ⬜ |
+| CONNECT-05 | P1 | OpenAI 当前 Plugin Package 结构（注明产品特定） | ⬜ |
+| CONNECT-06 | P0 | 设备管理端到端七概念示例 | ⬜ |
+| CONNECT-07 | P0 | project-acceptance / service-acceptance Skill 目录 | ⬜ |
+| CONNECT-08 | P1 | Read / Write / Dangerous Tool 权限拆分 | ⬜ |
+| CONNECT-09 | P0 | API / MCP / Skill / Script 决策表 | ⬜ |
+
+## 10.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| CONNECT-R01 | P0 | 同一训练服务的 curl / Raw API 调用 | ⬜ |
+| CONNECT-R02 | P0 | 同一能力通过 MCP Tool 调用 | ⬜ |
+| CONNECT-R03 | P0 | Skill 组合 MCP Tools 完成多步验收 | ⬜ |
+| CONNECT-R04 | P1 | 安装/查看现有 Skill，打开 SKILL.md | ⬜ |
+| CONNECT-R05 | P1 | Command 主动触发 vs Hook 事件触发 | ⬜ |
+
+
+---
+
+# 11. 推荐的实际采集顺序
 
 不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
 
@@ -346,13 +386,14 @@ AGENT-R05-tool-loop.mp4
 5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
 6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
 7. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
-8. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+8. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
+9. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
 ---
 
-# 11. 后续落盘约定
+# 12. 后续落盘约定
 
 实际素材建议逐步落到：
 
