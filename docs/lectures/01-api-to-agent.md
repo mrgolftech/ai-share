@@ -864,7 +864,21 @@ Model API
 
 > **大模型的价值不等于“会聊天”。API 的意义，是把模型能力嵌入程序、流程和系统。**
 
-对应 Demo 规范：
+对应可运行代码：
+
+```text
+demos/api-applications/
+├─ translate.py
+├─ json_extract.py
+├─ vision_ocr.py
+├─ visual_qa.py
+├─ run_all.py
+└─ token-output-speed/
+```
+
+其中 `run_all.py` 会显示同一个 Base URL 和 Model，并连续运行四个真实 API 应用；Token Speed 页面负责离线体感演示。
+
+对应 Demo 总入口：
 
 `demos/api-applications/README.md`
 
