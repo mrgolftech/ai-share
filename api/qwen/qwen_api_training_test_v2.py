@@ -52,6 +52,13 @@ from PIL import Image, ImageDraw, ImageFont
 DEFAULT_MODEL = "qwen3.6"
 DEFAULT_CONTEXT = 131072
 DEFAULT_TIMEOUT = 240
+SCRIPT_VERSION = "2026-09-30-r3"
+
+def script_sha256():
+    try:
+        return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    except Exception:
+        return "unknown"
 
 def now_iso():
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
@@ -513,12 +520,31 @@ class Suite:
             "messages":[{"role":"user","content":"查询北京天气，必须使用 get_weather。"}],
             "tools":[tool],"tool_choice":{"type":"any"}}
         def tck(d,_):
-            calls=[x for x in (d.get("content") or []) if x.get("type")=="tool_use"]
-            if not calls: return False,f"未返回 tool_use；stop_reason={d.get('stop_reason')}",{"usage":d.get("usage")}
+            blocks=(d.get("content") or []) if isinstance(d,dict) else []
+            calls=[x for x in blocks if isinstance(x,dict) and x.get("type")=="tool_use"]
+            thinking_count=sum(1 for x in blocks if isinstance(x,dict) and x.get("type")=="thinking")
+            stop_reason=d.get("stop_reason") if isinstance(d,dict) else None
+            if not calls:
+                if stop_reason=="tool_use":
+                    note="协议结构不一致：stop_reason=tool_use，但 content[] 中没有标准 tool_use block"
+                else:
+                    note=f"未返回 tool_use；stop_reason={stop_reason}"
+                return False,note,{
+                    "usage":d.get("usage") if isinstance(d,dict) else None,
+                    "stop_reason":stop_reason,
+                    "thinking_block_count":thinking_count,
+                    "protocol_inconsistency":stop_reason=="tool_use"
+                }
             c=calls[0]; inp=c.get("input") or {}
             ok=c.get("name")=="get_weather" and inp.get("city") in {"北京","北京市","Beijing"}
             if ok: self.anth_call=c
-            return ok,"Anthropic tool_use 正确",{"input":inp,"tool_use_id":c.get("id")}
+            return ok,"Anthropic tool_use 正确",{
+                "input":inp,
+                "tool_use_id":c.get("id"),
+                "stop_reason":stop_reason,
+                "thinking_block_count":thinking_count,
+                "protocol_inconsistency":False
+            }
         self.request("anthropic_tool_use","Claude / Anthropic","POST","/v1/messages",tb,self.ah(),tck)
 
         if self.anth_call:
@@ -704,6 +730,7 @@ class Suite:
     def finish(self):
         env={"generated_at":now_iso(),"python":sys.version,"platform":platform.platform(),
              "requests_version":requests.__version__,"pillow_version":getattr(Image,"__version__",None),
+             "script_version":SCRIPT_VERSION,"script_sha256":script_sha256(),
              "base_url":self.base,"model":self.model,"declared_context_length":self.context_len,
              "remote_url_test":bool(self.remote_url),"long_context_targets":self.long_targets,
              "assets":{k:{x:v[x] for x in ["filename","bytes","sha256","truth"]}
@@ -714,6 +741,7 @@ class Suite:
         (self.out/"manifest.json").write_text(js(manifest),encoding="utf-8")
 
         lines=["# Qwen3.6 / vLLM 全面 API、Agent 与 Vision 测试","",
+               f"- 脚本版本：\`{SCRIPT_VERSION}\`，SHA256：\`{script_sha256()}\`",
                f"- 时间：`{now_iso()}`",f"- API：`{self.base}`",f"- 模型：`{self.model}`",
                f"- 声明 Context：`{self.context_len}`","",
                "## 能力矩阵","","| 能力 | 结果 | 判定依据 |","|---|---|---|"]
@@ -731,6 +759,12 @@ class Suite:
                   "",
                   "Vision PASS 要求模型输出与 Ground Truth 匹配，不是只检查 HTTP 200。",
                   "",
+                  "## 状态说明","",
+                  "- PASS：请求与断言均通过。",
+                  "- FAIL：请求返回但协议/行为/断言不满足预期；必须继续看 notes 和原始 Response。",
+                  "- ERROR：网络、超时或客户端异常导致请求未正常完成。",
+                  "- SKIP：脚本按设计没有执行该项，不属于失败。例如未提供公网图片 URL，或前置 Tool Call 未形成，后续 Tool Result Loop 无法执行。",
+                  "",
                   "## 失败解释原则","",
                   "- Base64 Vision 失败：优先检查模型部署是否加载视觉模块、Chat Template 和多模态协议。",
                   "- Base64 成功但公网 URL 失败：更可能是出网/DNS/代理/远程媒体策略问题。",
@@ -740,7 +774,8 @@ class Suite:
 
     def run(self):
         print("="*96); print("Qwen3.6 全面 API + Agent + Vision 测试")
-        print("Base URL:",self.base); print("Model:",self.model); print("Output:",self.out); print("="*96)
+        print("Script   :", SCRIPT_VERSION, "sha256="+script_sha256()[:12])
+        print("Base URL :",self.base); print("Model    :",self.model); print("Output   :",self.out); print("="*96)
         self.basic()
         self.chat()
         self.responses()

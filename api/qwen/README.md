@@ -54,3 +54,23 @@
 模块一已达到：**可用于培训**。
 
 后续主要补 Responses Vision 正确请求、长上下文与性能专项基准、Codex CLI / Claude Code 实机和 PPT 视觉化。
+
+
+## 测试脚本版本识别
+
+全面测试脚本自 `2026-09-30-r3` 起，会在启动时打印：
+
+```text
+Script   : 2026-09-30-r3 sha256=...
+```
+
+同时将脚本版本和 SHA256 写入 `environment.json`，用于避免本地旧脚本与仓库最新版混淆。
+
+本次还增强了 Anthropic Tool Use 诊断：
+
+- 若 `stop_reason=tool_use`；
+- 但 `content[]` 中没有标准 `type=tool_use` block；
+
+仍判 FAIL，并明确记录为“协议结构不一致”，不会因为 `stop_reason` 看起来正确就误判 PASS。
+
+注意：`SKIP` 表示按设计未执行，不等于 FAIL。
