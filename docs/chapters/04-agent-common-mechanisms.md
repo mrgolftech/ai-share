@@ -3,7 +3,7 @@
 > 状态：已有初稿
 > 日期：2026-09-30
 > 定位：连接“为什么 Chat 不够”与“Agent 如何操作真实世界”的桥梁章节。
-> 核心目标：不把 Codex、Hermes、OpenCode、Claude Code、Cline、Pi 等当成彼此孤立的软件，而是建立一套可以迁移到不同 Agent 的统一认知模型。
+> 核心目标：不把 Codex、Hermes、OpenCode、Claude Code、Cline、Pi、WorkBuddy 等当成彼此孤立的软件，而是建立一套可以迁移到不同 Agent 的统一认知模型。
 
 ---
 
@@ -169,7 +169,7 @@ Agent Effectiveness
 
 ---
 
-# 四、九个代表性 Agent：不要按产品背功能，要按设计路线观察
+# 四、十个代表性 Agent：不要按产品背功能，要按设计路线观察
 
 培训中涉及：
 
@@ -181,7 +181,8 @@ Agent Effectiveness
 - Pi；
 - Cline；
 - Kilo Code；
-- Hermes Agent。
+- Hermes Agent；
+- WorkBuddy。
 
 | Agent | 主要定位 | 开源状态 | 自有 / 内网 API 接入 | 最值得观察的机制 |
 |---|---|---|---|---|
@@ -194,10 +195,11 @@ Agent Effectiveness
 | Cline | IDE-first | Apache-2.0 | 很容易 | Plan/Act、Browser、Terminal、MCP、BYOK、人机确认 |
 | Kilo Code | Multi-surface platform | MIT | 很容易 | VS Code / JetBrains / CLI、Subagents、Browser、Marketplace |
 | Hermes Agent | Persistent general-purpose agent | MIT | 很容易 | Memory、Skills、Cron、Gateway、Browser、Subagents、多 Runtime |
+| WorkBuddy | Workspace / Office / Cloud Agent | 产品专有，Skill 生态开放 | 容易 | 本地 Workspace、Skill Marketplace、MCP、自定义模型、云端 Runtime / Sandbox、文件/终端/浏览器产物 |
 
 “接入难易”只表示当前企业自建 / 第三方模型 API 的配置便利度，不是综合能力评分。
 
-## 4.1 用四种路线讲，而不是连续讲九款软件
+## 4.1 用五种路线讲，而不是连续讲十款软件
 
 **厂商旗舰 Harness：**
 
@@ -228,7 +230,127 @@ DSH 展示“Everything is a Plugin”，Pi 展示 Minimal Harness。
 
 它把 Coding Agent 进一步扩展到 Persistent Memory、Skills、Cron、Messaging Gateway、Browser、Subagent 和多种执行后端。
 
-## 4.2 对部门内网 Qwen，真正值得测的是 Harness，而不是“能不能接”
+**Workspace / 办公 Agent + Skill 生态路线：**
+
+- WorkBuddy。
+
+它特别适合用来解释另一个正在变得重要的产品形态：
+
+> **前端看起来仍然像“聊天”，但后端已经不只是一次模型调用，而是绑定了 Workspace、文件、终端、浏览器、Skill、权限和可执行 Runtime。**
+
+WorkBuddy 当前官方文档同时展示了：
+
+- 本地授权文件夹和终端执行；
+- Skill Marketplace，可安装官方和社区 Skill；
+- MCP 与自定义 Skill；
+- 自定义模型 / 自定义 API；
+- 任务右侧 Workspace 文件、变更、产物和内置浏览器；
+- 企业智能体 Runtime：独立云端沙箱实例，包含完整 Linux 文件系统与终端，并支持 Session、Checkpoint / Version。
+
+这使它成为“Chat Surface → Executable Workspace”非常直观的教学案例。
+
+## 4.2 WorkBuddy：为什么一个“聊天界面”后面会逐渐长出一台可执行计算机
+
+WorkBuddy 值得加入这一章，不是为了再多介绍一款工具，而是因为它能把三个抽象概念同时变得很直观。
+
+### 第一层：Chat Surface
+
+用户看到的仍然是：
+
+~~~text
+输入需求
+→ 对话
+→ 查看结果
+→ 继续追问
+~~~
+
+这与常见 Chat 产品在表面上很接近。
+
+### 第二层：Workspace + Tools
+
+但任务背后已经可以有：
+
+~~~text
+Files
++ Terminal
++ Browser
++ Diff
++ Artifacts
++ MCP
++ Skills
+~~~
+
+因此同一个“对话窗口”可以生成并修改文件、运行脚本、预览网页、调用外部服务，而不仅仅输出一段文字。
+
+### 第三层：Runtime / Sandbox
+
+WorkBuddy 的企业智能体官方文档把 Runtime 定义为 Session 背后真正运行的云端沙箱环境，并明确包含：
+
+- 独立云端沙箱；
+- Linux 文件系统；
+- Terminal；
+- Manifest；
+- 一个或多个 Session；
+- Checkpoint / Version。
+
+这可以用来讲一个很重要的变化：
+
+~~~text
+传统 Chat
+User → Model → Text
+
+增强型 Chat / Agent
+User
+  ↓
+Chat Surface
+  ↓
+Harness
+  ├── Model
+  ├── Workspace
+  ├── Files
+  ├── Shell
+  ├── Browser
+  ├── Skills / MCP
+  └── Sandbox / Runtime
+        ↓
+   Artifact / Action
+~~~
+
+但培训中必须加一句边界：
+
+> **不能说“所有 Chat 的后端天然就是一个虚拟容器”。更准确的是：越来越多 Agent 或增强型 Chat 产品，会为会话绑定可执行 Workspace / Sandbox；是否存在、能力多大、是否持久化，要看具体产品和模式。**
+
+OpenAI 当前公开的 Sandbox Agent / hosted sandbox 文档也采用了类似的分层：Harness 负责模型调用、工具路由、审批和状态；Sandbox 负责文件、命令、包、端口和实际计算。这说明“聊天入口 + 执行环境”已经成为一种通用 Agent 架构，而不是 WorkBuddy 的孤例。
+
+### Skill 生态为什么也值得截图
+
+WorkBuddy 官方 Skill Marketplace 支持安装官方和社区 Skill，也支持导入、查找和创建 Skill；其开放平台把 Skill 作为正式生态能力。
+
+这里最适合展示的不是 Skill 数量，而是：
+
+> **Agent 的能力正在从“产品内置功能”转向“核心 Harness + 可安装能力包 + 社区经验资产”。**
+
+用户后续可补四类截图：
+
+- `AGENT-WB-01`：WorkBuddy 对话 / 任务界面；
+- `AGENT-WB-02`：右侧 Workspace 文件 / 变更 / 浏览器 / 产物；
+- `AGENT-WB-03`：Skill Marketplace / 社区 Skill；
+- `AGENT-WB-04`：云端 Runtime / 企业智能体界面（如果账号可见）。
+
+这四张图可以连续讲出：
+
+~~~text
+Chat
+→ Workspace
+→ Skill
+→ Runtime
+~~~
+
+比单独解释四个术语更容易建立直觉。
+
+---
+
+## 4.3 对部门内网 Qwen，真正值得测的是 Harness，而不是“能不能接”
 
 部门内网模型已经有 OpenAI Chat、Responses、Anthropic Messages、Streaming、Tool Loop 等实测，因此多数 Harness 已经存在接入路径。
 
@@ -377,6 +499,32 @@ Read
 因此：
 
 > **Workspace 不只是“一个文件夹”，而是 Agent 执行任务的世界状态。**
+
+一个很重要的教学变化是：**Chat Surface 和 Workspace 不再互斥**。
+
+过去容易把两者理解成：
+
+~~~text
+Chat = 对话
+Agent = IDE / Terminal
+~~~
+
+现在更准确的是：
+
+~~~text
+Chat / Desktop / IDE / CLI
+        ↓
+只是不同 Surface
+        ↓
+背后都可能连接同一个 Agent Harness
+        ↓
+Workspace + Tools + Runtime
+~~~
+
+因此 WorkBuddy 这类产品，以及带沙盒执行能力的现代 Chat / Agent 产品，都很适合说明：
+
+> **决定“能不能真正做事”的不是界面像不像聊天框，而是这个会话背后有没有可执行 Workspace、Tools 和受控 Runtime。**
+
 
 需要让学员理解：
 
@@ -999,6 +1147,20 @@ Hermes 当前就把 terminal backend 显式拆成 local、docker、ssh、Modal�
 
 > **Agent Surface 在本地，不代表执行环境一定在本地。**
 
+WorkBuddy 是这里非常直观的现成案例：其桌面端可以操作本地授权 Workspace，而企业智能体的 Runtime 又可以是独立云端 Sandbox；官方描述中，云端 Runtime 带完整 Linux 文件系统和终端，并可维护 Session 与版本 / Checkpoint。
+
+OpenAI 当前公开的 Sandbox Agents / OpenAI-hosted sandbox 也把执行层明确建模为隔离的 Unix/Linux Workspace，提供文件、命令、包和端口。这说明一个重要趋势：
+
+> **“对话界面”正在越来越多地成为 Harness 的入口，而真正干活的地方可能是本地工作区、容器、远程服务器或云端沙箱。**
+
+但这不是说每个 Chat 请求都必然启动一台完整虚拟机。培训中应始终区分：
+
+~~~text
+Surface：人在哪里输入
+Harness：谁组织模型、工具和状态
+Runtime：工具和代码到底在哪里执行
+~~~
+
 这对部门未来内网部署尤其重要。
 
 ## 20.5 Hooks / Events / Automation
@@ -1125,7 +1287,7 @@ Persistent Memory
 
 # 二十二、培训中建议做的统一演示
 
-不要拿 8 个 Agent 逐个点菜单。
+不要拿 10 个 Agent 逐个点菜单。
 
 推荐建立同一个最小 Repo：
 
@@ -1158,6 +1320,21 @@ demo-project/
 
 > **工具名字在变，但 Agent 工作循环非常相似。**
 
+### WorkBuddy 补充演示：同一个 Chat Surface 后面的 Workspace
+
+这一段不需要做 Benchmark，重点用截图或现场界面建立结构直觉：
+
+1. 从一个普通对话任务开始；
+2. 打开右侧 Workspace / 文件 / 变更；
+3. 展示生成的文件或网页产物；
+4. 打开内置 Browser 预览；
+5. 打开 Skill Marketplace，展示 Skill 不是模型参数，而是可安装任务能力；
+6. 如果企业云端 Runtime 可用，再展示会话背后的云端执行环境。
+
+一句话收束：
+
+> **表面上仍然在 Chat，实际上已经进入“会话 + Workspace + Skill + Runtime”的 Agent 工作模式。**
+
 ---
 
 # 二十三、这一章最后只留下六个结论
@@ -1172,6 +1349,16 @@ demo-project/
 ---
 
 # 二十四、参考资料
+
+- WorkBuddy Product / Runtime / Skill：
+  - https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Product-Guide
+  - https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/CloudAgent
+  - https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market
+  - https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Model
+  - https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Right-Sidebar
+- WorkBuddy Open Platform：https://open.workbuddy.cn/
+- OpenAI Sandbox Agents：https://developers.openai.com/api/docs/guides/agents/sandboxes
+- OpenAI-hosted sandboxes：https://developers.openai.com/api/docs/guides/agents-api/environments/openai-hosted
 
 补充运行时与生命周期参考：
 
