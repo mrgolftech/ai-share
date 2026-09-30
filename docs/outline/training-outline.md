@@ -1653,57 +1653,26 @@ Agent 可以把功能测试、浏览器操作和视觉检查结合起来。
 
 ## 8.3 案例三：API 开发与自动测试
 
-真实材料：
+- 自编 Postman：GET / POST 手工请求；
+- Cherry Studio Network：真实应用请求；
+- `qwen_api_training_test_v3.py`：自动化断言与回归；
+- 当前基线：`20260930_095033`，28 PASS / 1 SKIP；
+- model-metric：从单请求继续延伸到服务运行状态。
 
-- Postman；
-- `qwen_api_training_test.py`；
-- model-metric。
+```text
+Postman → Cherry Network → Python Test → Tool/Vision Ground Truth → /metrics → model-metric
+```
 
-流程：
-
-API 文档  
-→ 手工请求  
-→ Python 自动化  
-→ SSE  
-→ Token  
-→ 并发  
-→ 性能  
-→ 回归。
-
-### 要传递的观点
-
-> 从一次手工验证到可重复测试，是 AI 辅助工程化的重要价值。
-
+> **从“手工调通一次”到“自动回归 + 持续观测”，才是 API 工程化。**
 ---
 
 ## 8.4 案例四：model-metric
 
-重点不是介绍页面功能，而是讲问题：
+项目已在内网部署上线。当前仓库可展示 `/metrics` 多实例采集、running/waiting、service TPS、KV、TTFT/Queue/Prefill/Decode/TPOT/ITL、覆盖率，以及 API Benchmark、Context Window、Endpoint Compatibility。
 
-> **模型“能调用”不等于“好用”。**
+> **模型“能调用”不等于共享服务“好用”；要把单请求、服务遥测和主动压测放在一起看。**
 
-可展示：
-
-- TTFT；
-- 输出速度；
-- 并发；
-- KV Cache；
-- 长上下文；
-- 实例覆盖；
-- 性能变化。
-
-### 要传递的观点
-
-大模型需要建立：
-
-> **运行观测 + 性能评测 + 实际用户体验**
-
-之间的联系。
-
-同时呼应模块一：
-
-> Token、Context、Prefill、Decode、KV Cache 不是抽象概念，它们最终会变成真实体验差异。
-
+详细教学案例：`docs/cases/model-metric-api-observability.md`。
 ---
 
 ## 8.5 案例五：Web 应用开发
@@ -2087,6 +2056,11 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 截至本基线形成时：
 
 ## 已有
+
+- **Qwen 当前正式实测基线**：`api/qwen/results/20260930_095033/`（r4；28 PASS / 1 SKIP；Responses Vision 正式 PASS；旧结果进入 `archive/`）
+- **当前 API 实测报告**：`api/qwen/reports/qwen36_api_test_report_20260930.md`
+- **API 教学链**：Postman GET/POST → Cherry Studio Network → Python 自动测试 → `/metrics` → 内网已部署 model-metric
+- **model-metric 案例**：`docs/cases/model-metric-api-observability.md`（当前仓库 FastAPI 2.3.2）
 
 - 根目录项目规则：`AGENTS.md`（可用于培训：可直接作为“项目规则/可复用资产”案例）
 - Qwen API 自动测试脚本（已有实测证据）

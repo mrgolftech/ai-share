@@ -316,6 +316,53 @@ Cherry Studio 一边接收，一边渲染到聊天框
 
 这也是后续分析 Cherry Studio、Open WebUI、Agent 和各种第三方客户端时建议学员掌握的第一种工程方法。
 
+### 3.3 现场 Demo：Postman 把 GET / POST 讲透
+
+Cherry Studio Network 让大家看到“真实应用在发什么”；Postman 则把请求从 UI 中剥离出来，让 API 本身更容易观察。
+
+建议固定两个最小 Demo：
+
+```text
+GET /v1/models
+→ URL / Method / Header / Status / JSON Response
+
+POST /v1/chat/completions
+→ Body / messages / stream / Thinking / usage
+```
+
+然后把 Postman 和 Cherry Studio Network 并排：
+
+> **一个是我们手工构造的请求，一个是实际 AI 应用自动构造的请求；底层仍然是同一套 HTTP API。**
+
+【截图占位 API-POST-01｜P0】自编 Postman `GET /v1/models`。
+
+【截图占位 API-POST-02｜P0】自编 Postman `POST /v1/chat/completions`。
+
+【录屏占位 API-R09｜P0】GET models → POST chat → 对照 Cherry Studio Network。
+
+### 3.4 Python 自动测试：怎么证明一个接口真的 PASS
+
+现场运行：`api/qwen/qwen_api_training_test_v3.py`。
+
+| 测试项 | 脚本实际验证 |
+|---|---|
+| `/v1/models` | HTTP 2xx + model id + `max_model_len` |
+| SSE | 完成标记 + delta 重建文本 |
+| Thinking | reasoning 是否随开关出现/消失；**不是回答质量评分** |
+| Tool Calling | 结构化函数名与 JSON 参数 |
+| Tool Loop | Tool Result 回灌后最终回答必须使用工具数据 |
+| Vision | 与脚本生成的 Ground Truth 对比 |
+
+当前正式基线：`api/qwen/results/20260930_095033/`，**28 PASS / 1 SKIP / 0 FAIL / 0 ERROR**；所有实际请求 `attempts=1`。
+
+> **Network / Postman 给出原始事实；自动化脚本把事实变成可重复断言；人仍然要理解断言边界。**
+
+本轮 Thinking OFF / ON 都判 PASS，但两条都 `finish_reason=length`：PASS 只说明“开关行为符合预期”，不代表回答完整。
+
+【截图占位 API-TEST-01｜P0】v3 终端 28 PASS / 1 SKIP。
+
+【截图占位 API-TEST-02｜P0】单条 record：Request / Response / attempts / analysis。
+
 ## 四、非流式与 SSE
 
 非流式：
@@ -330,7 +377,7 @@ Request → 完整推理 → 完整 JSON
 Request → 生成 → SSE chunk → SSE chunk → DONE
 ~~~
 
-简单 Chat SSE 实测总耗时约 2.37 s，首个文本约 1.83 s。
+最新正式基线中，Chat SSE 总耗时约 **0.80 s**、TTFT 约 **0.72 s**；Responses SSE 总耗时约 **1.37 s**、TTFT 约 **1.08 s**。这是单次能力验收观测，不是稳定性能基准。
 
 因此 TTFT 和总耗时是两个不同指标。
 
@@ -416,11 +463,11 @@ System Prompt
 
 能装进去，不代表值得每次都装满。
 
-## 六、Thinking / CoT：不是 DeepSeek 才出现的
+## 七、Thinking / CoT：不是 DeepSeek 才出现的
 
 这里需要先区分两个经常混用的词。
 
-### 6.1 CoT 是什么
+### 7.1 CoT 是什么
 
 Chain-of-Thought（CoT，思维链）通常指模型在得到最终答案前生成一系列中间推理步骤，或通过 Prompt 引导模型产生这类中间步骤。
 
@@ -438,7 +485,7 @@ Let's think step by step.
 
 > **CoT 不是从 DeepSeek-R1 才出现。**
 
-### 6.2 为什么很多人会觉得“从 DeepSeek 开始”
+### 7.2 为什么很多人会觉得“从 DeepSeek 开始”
 
 时间线更准确地说是：
 
@@ -460,7 +507,7 @@ DeepSeek-R1 的重要性不在于“发明 CoT”。
 
 这也是为什么 2025 年之后“模型先想一会儿再回答”开始成为大众非常直观的体验。
 
-### 6.3 Qwen 的 Thinking 与 CoT 是什么关系
+### 7.3 Qwen 的 Thinking 与 CoT 是什么关系
 
 Qwen3 已公开采用 Thinking / Non-Thinking 双模式，并在训练中使用长 CoT、Reasoning RL 等方法；Qwen3.6 又增加了 Thinking Preservation 等能力。
 
@@ -483,7 +530,7 @@ Thinking = 把模型真实脑内过程打印出来
 - 测试；
 - 外部证据。
 
-### 6.4 什么任务值得开 Thinking
+### 7.4 什么任务值得开 Thinking
 
 优先考虑：
 
@@ -509,54 +556,26 @@ Thinking = 把模型真实脑内过程打印出来
 
 这就是模型路由意识。
 
-### 6.5 内网专项实测：Thinking 的代价不是抽象概念
+### 7.5 最新内网实测：Thinking 的代价不是抽象概念
 
-Thinking OFF：
+当前正式基线 `20260930_095033`：
 
-- 4.75 s / 105 tokens
-- 20.01 s / 512 tokens
-- 6.35 s / 146 tokens
+Thinking OFF：`reasoning=null`，512 completion tokens，`finish_reason=length`，约 70.82 s。
 
-Thinking ON：
+Thinking ON：存在 reasoning，1536 completion tokens，`finish_reason=length`，最终 `content=null`，约 78.16 s。
 
-- 43.48 s / 1331 tokens
-- 50.90 s / 1536 tokens
-- 298.59 s / 1536 tokens
+这组数据最重要的不是比较两者快几秒，而是区分：
 
-所以真正结论是：
+1. **开关是否生效**：OFF 无 reasoning，ON 有 reasoning；
+2. **输出预算是否足够**：ON 把 1536 completion tokens 全部用在 reasoning 上，最终答案没有开始输出。
 
-> **Thinking 是计算预算；它会增加 Token、时间和尾延迟，而且可能挤占最终回答空间。**
+> **Thinking 是计算和 Token Budget；能力测试 PASS 不等于业务回答完整。**
 
-第三轮更值得展示：
+历史 2026-09-29 的 43～299 s 长尾已归档，只用于解释为什么需要重复压测和 P95/P99。
 
-【截图占位 API-03｜P0】Thinking OFF / ON 三组实测的耗时与 Token 对比表，优先由测试报告/原始结果整理。
+【截图占位 API-03｜P0】最新 OFF / ON record：reasoning、tokens、finish_reason、content。
 
-【录屏占位 API-R06｜P1｜30–60 秒】同一问题关闭/开启 Thinking，录到等待、首次输出和完成的体感差异；如耗时过长只用预录。
-
-
-~~~text
-Thinking ON：298.6 s
-↓
-/version：4.5 ms
-↓
-简单 PING Chat：70.2 s
-↓
-稍后恢复：0.81 s
-~~~
-
-说明：
-
-> **服务可达 ≠ 推理资源空闲。**
-
-这比简单说“网络不稳定”更接近当前证据。
-
-参考：
-
-- Wei et al., Chain-of-Thought Prompting：https://arxiv.org/abs/2201.11903
-- Kojima et al., Zero-shot CoT：https://arxiv.org/abs/2205.11916
-- OpenAI o1（2024-09-12）：https://openai.com/index/learning-to-reason-with-llms/
-- DeepSeek-R1：https://github.com/deepseek-ai/DeepSeek-R1
-- Qwen3 Thinking / Non-Thinking：https://qwenlm.github.io/blog/qwen3/
+【录屏占位 API-R06｜P1】同一 Prompt OFF/ON；等待过长时使用预录。
 
 ## 八、Tool Calling：从 Chat 走向 Agent
 
@@ -606,36 +625,26 @@ Final Answer
 
 ## 九、三套协议是一张能力矩阵
 
-| 能力 | OpenAI Chat | Responses | Anthropic |
+| | OpenAI Chat | Responses / Codex | Anthropic Messages |
 |---|---|---|---|
 | 文本 | ✅ | ✅ | ✅ |
 | SSE | ✅ | ✅ | ✅ |
 | Tool Call | ✅ | ✅ | ✅ |
-| Tool Result | ✅ | ✅ | ✅ |
-| Vision | ✅ | 待修正复测 | ✅ |
-| Thinking 关闭 | ✅ | — | ⚠️ |
+| Tool Result 闭环 | ✅ | ✅ | ✅ |
+| Vision | ✅ 单图/多图/SSE | ✅ `input_image + detail` | ✅ Base64 image |
+| Thinking 关闭 | ✅ Chat Template 开关 | `reasoning.effort=none` 本轮正常 | ⚠️ `thinking.type=disabled` 未生效 |
 
-兼容不是 Yes / No，而是 Endpoint、Schema、Streaming、Thinking、Tool Calling、Tool Result 等逐项验证。
+> **兼容是一张能力矩阵：Endpoint、Schema、Streaming、Thinking、Tool Call、Tool Result、Vision 都要分别验证。**
 
 ## 十、Anthropic 真正的问题
 
-旧测试里 Tool Use 没有形成，是因为 Thinking 持续消耗输出预算。
+最新基线：Messages、SSE、count_tokens、tool_use、tool_result、Vision 全部 PASS。
 
-提高 max_tokens 后：
+但请求 `{"thinking":{"type":"disabled"}}` 后仍真实返回 thinking block；SSE 中也存在 `thinking_delta`。
 
-~~~text
-tool_use ✅
-tool_result ✅
-final answer ✅
-~~~
+> **Anthropic 协议主体可用，Tool Loop 也已闭环；但关闭 Thinking 的参数存在兼容异常。**
 
-所以不能再说“Anthropic Tool Use 不支持”。
-
-真正异常是：
-
-> thinking.type=disabled 没有真正关闭 Thinking。
-
-这就是“协议能跑通”和“体验好不好”之间的差别。
+历史归档曾出现一次 `stop_reason=tool_use` 但缺少标准 `tool_use` block；本轮 r4 已正常，因此保留为稳定性回归案例，不作为当前失败项。
 
 ## 十一、多模态现在已经是现网实测能力
 
@@ -695,27 +704,19 @@ description = 必须逐字 OCR 顶部英文
 
 > Tool Schema 本身也是 Prompt。字段名和 description 写得差，也会制造“模型失败”。
 
-## 十三、Responses Vision 为什么还不能下结论
+## 十三、Responses Vision：从旧 FAIL 到正式 PASS
 
-专项重测连续 HTTP 400，一开始很容易说“不支持图片”。
+历史 HTTP 400 的原因是旧请求漏掉当前 OpenAPI 必填字段 `detail`。正确结构：
 
-但服务自己的 OpenAPI 告诉我们 ResponseInputImageParam 需要：
+```json
+{"type":"input_image","detail":"auto","image_url":"data:image/png;base64,..."}
+```
 
-~~~json
-{
-  "type": "input_image",
-  "detail": "auto",
-  "image_url": "data:image/png;base64,..."
-}
-~~~
+最新 r4：HTTP 200、`object=response`、`status=completed`，3 红圆、2 蓝方块、右下绿三角、`AI TEST 2026` 全部匹配。
 
-测试请求漏掉 detail，错误 Body 也明确出现 Field required。
+> **Responses Vision 当前正式结论为 PASS。**
 
-所以正确结论是：
-
-> 测试请求不符合服务 Schema，修正后复测。
-
-而不是“模型不支持”。
+这也是一个很好的工程案例：400 先查 Error Body / OpenAPI，不要直接说“模型不支持”。
 
 ## 十四、自动化测试本身也会错
 
@@ -732,24 +733,41 @@ description = 必须逐字 OCR 顶部英文
 
 > 模型负责判断和生成，工具负责执行，自动测试负责验证，人负责目标、约束和最终判断。
 
-## 十五、/metrics：从“能用”走向“好用”
+## 十五、/metrics + model-metric：从“能调用”走向“共享服务好不好用”
 
-初始 Metrics 快照可看到 running、waiting、KV Cache、Prompt Tokens 等指标，并显示 Prefix Cache 未启用。
+Postman、Cherry Network、Python Test 主要站在**单请求/客户端**视角；`/metrics` 和 model-metric 站在**服务端/持续运行**视角。
 
-【截图占位 API-08｜P0】`/metrics` 原始文本中 running / waiting / KV Cache / prompt tokens / prefix cache 相关片段。
+### 15.1 原始 `/metrics`
 
-【截图占位 API-09｜P1】同一时刻 model-metric 可视化页面，对照“原始指标 → 可读仪表盘”。
+当前脚本确认存在 `num_requests_running`、`num_requests_waiting`、`kv_cache_usage_perc`、`prefix_cache_hits_total`、`prompt_tokens_total` 等指标。
 
+### 15.2 我们自己的 model-metric
 
-API 测试回答：
+项目：`mrgolftech/model-metric`。本次读取仓库 HEAD 为 `562c587be2bf4d2a77f59c16fcd5e929756cb3b5`，当前 FastAPI 源码 version 为 `2.3.2`；项目已经在内网部署上线。
 
-> 能不能调？
+它把原始 metrics 变成持续观测系统：running/waiting、实例覆盖、Prompt/Generation TPS、KV Cache max/avg、TTFT/E2E/Queue/Prefill/Decode/TPOT/ITL、HTTP 状态、WebSocket 实时图，并提供 API Benchmark、Context Window 验证、Endpoint Compatibility。
 
-Metrics + 压测回答：
+特别注意：**单请求 tokens/s ≠ 整个服务聚合 output TPS。**
 
-> 多人连续用的时候还能不能好用？
+### 15.3 一条完整教学链
 
-这就是后续 Model-Metric 案例的入口。
+```text
+Postman GET / POST
+→ Cherry Studio Network
+→ Python Test 自动断言
+→ /metrics 原始指标
+→ model-metric 持续观测 / 压测
+```
+
+这样学员能看到：接口调通，只是共享模型服务工程的起点。
+
+【截图占位 API-08｜P0】原始 `/metrics`。
+【截图占位 MM-01｜P0】model-metric 总览：running / waiting / TPS / KV / coverage。
+【截图占位 MM-02｜P0】API Benchmark。
+【截图占位 MM-03｜P1】Context Window / Endpoint Compatibility。
+【录屏占位 MM-R01｜P0】Postman 发请求 → model-metric 指标变化。
+
+详细案例：`docs/cases/model-metric-api-observability.md`。
 
 ## 十六、当前内网模型的统一表述
 
@@ -757,7 +775,7 @@ Metrics + 压测回答：
 
 > 部门当前内网部署 qwen3.6，服务端配置约 128K Context。实测已支持 OpenAI Chat、Responses 和 Anthropic Messages 三套文本协议，并验证了三套 Tool Call → Tool Result 基础闭环；OpenAI Chat 与 Anthropic 已实测支持图片，Chat 侧支持单图、多图、Vision Streaming 和 Vision + Tool Calling。Thinking 可开关，但 Anthropic 风格关闭 Thinking 存在兼容异常，重 Thinking 任务还表现出明显尾延迟。
 
-## 十六、统一模型能力 Demo：鹈鹕骑自行车
+## 十七、统一模型能力 Demo：鹈鹕骑自行车
 
 统一使用：
 
@@ -784,7 +802,7 @@ Metrics + 压测回答：
 
 这正好为下一章 Agent 铺垫。
 
-### 16.1 第一轮：模型能力对比
+### 17.1 第一轮：模型能力对比
 
 固定同一 Prompt、相近参数和运行条件，只比较第一次输出。
 
@@ -800,7 +818,7 @@ Metrics + 压测回答：
 
 > **Model Capability**
 
-### 16.2 第二轮：同模型 Chat vs Agent
+### 17.2 第二轮：同模型 Chat vs Agent
 
 必须使用同一个模型。
 
@@ -837,7 +855,7 @@ demos/pelican-bicycle/README.md
 
 ---
 
-## 十七、与下一章 Agent 的衔接
+## 十八、与下一章 Agent 的衔接
 
 我们现在已经证明：
 

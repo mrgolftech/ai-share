@@ -81,10 +81,15 @@ AGENT-R05-tool-loop.mp4
 |---|---|---|---|---|
 | API-01 | 截图 | /v1/models + /version | 第一章 API | ⬜ |
 | API-NET-01~07 | 截图 | Cherry Network：models / Chat / Context / Vision / SSE | 第一章 API | ⬜ |
+| API-POST-01~02 | 截图 | 自编 Postman：GET models / POST chat | 第一章 API | ⬜ |
+| API-TEST-01~02 | 截图 | v3 自动测试总览 + record 断言 | 第一章 API | ⬜ |
+| MM-01~03 | 截图 | model-metric 总览 / Benchmark / Context&Endpoint | 第一章 API / 案例 | ⬜ |
 | API-03 | 截图 | Thinking OFF/ON 实测 | 第一章 API | ⬜ |
 | API-04~05 | 截图 | Tool Call + Tool Result | 第一章 API | ⬜ |
 | API-08 | 截图 | /metrics 原始指标 | 第一章 API | ⬜ |
 | API-R01~04 | 录屏 | models / 多轮 Context / Vision / SSE | 第一章 API | ⬜ |
+| API-R09 | 录屏 | Postman GET/POST → Cherry Network 对照 | 第一章 API | ⬜ |
+| MM-R01~02 | 录屏 | Postman/API Benchmark → model-metric 指标变化 | 第一章 API / 案例 | ⬜ |
 | API-R07 | 录屏 | 完整 Tool Loop | 第一章 API | ⬜ |
 | API-R08 | 录屏 | 同模型 Chat vs Agent | 第一章 / Chat→Agent | ⬜ |
 | CHAT-01~03 | 截图/图示 | Chat vs Agent 核心差异 | Chat→Agent | ⬜ |
@@ -127,11 +132,18 @@ AGENT-R05-tool-loop.mp4
 | API-NET-04A~C | P0 | 第一/第二轮 Request + Diff | 明确上下文如何附加 | ⬜ |
 | API-NET-05~06 | P0 | Vision Payload | 文本+图像实际结构 | ⬜ |
 | API-NET-07 | P0 | SSE/EventStream | 能看到流式事件 | ⬜ |
+| API-POST-01 | P0 | 自编 Postman GET /v1/models | Method/URL/Status/Response | ⬜ |
+| API-POST-02 | P0 | 自编 Postman POST /v1/chat/completions | Body/messages/stream/usage | ⬜ |
+| API-TEST-01 | P0 | v3 终端结果 | 28 PASS / 1 SKIP | ⬜ |
+| API-TEST-02 | P0 | 单条 record JSON | Request/Response/attempts/analysis | ⬜ |
 | API-02 | P1 | Token speed Race Mode | 5/30/120 tok/s | ⬜ |
 | API-03 | P0 | Thinking OFF/ON | 来自真实测试 | ⬜ |
 | API-04~05 | P0 | Tool Call / Tool Result | 完整闭环两张图 | ⬜ |
 | API-06~07 | P1 | Vision / Vision Tool | 固定 Ground Truth | ⬜ |
 | API-08~09 | P0/P1 | metrics + model-metric | 原始指标与 UI 对照 | ⬜ |
+| MM-01 | P0 | model-metric 总览 | running/waiting/TPS/KV/coverage | ⬜ |
+| MM-02 | P0 | API Benchmark | 并发/TTFT/吞吐/Token | ⬜ |
+| MM-03 | P1 | Context Window + Endpoint Compatibility | 与 API 章节对应 | ⬜ |
 | API-10~11 | P1 | 鹈鹕 Chat / Agent | 同模型同 Prompt | ⬜ |
 
 ## 4.2 录屏
@@ -146,6 +158,9 @@ AGENT-R05-tool-loop.mp4
 | API-R06 | P1 | Thinking OFF/ON 体感 | ⬜ |
 | API-R07 | P0 | 完整 Tool Loop | ⬜ |
 | API-R08 | P0 | Chat vs Agent | ⬜ |
+| API-R09 | P0 | Postman GET/POST → Cherry Network 对照 | ⬜ |
+| MM-R01 | P0 | Postman 请求 → model-metric 实时变化 | ⬜ |
+| MM-R02 | P1 | API Benchmark → 总览并发/吞吐变化 | ⬜ |
 
 ---
 
@@ -288,7 +303,7 @@ AGENT-R05-tool-loop.mp4
 
 1. **Cherry Studio 一次录完**：API-NET、API-R01~04、CH-01~05、WB-R02、KB-04/05、KB-12~14、KB-R01/02；
 2. **Open WebUI 一次录完**：OW-01~06、WB-R01、KB-15~17、KB-R03/04；
-3. **API / model-metric 一次录完**：API-01、API-03~09、API-R06/07；
+3. **API / Postman / model-metric 一次录完**：API-01、API-POST-01~02、API-TEST-01~02、API-03~09、MM-01~03、API-R06/07/09、MM-R01~02；
 4. **统一鹈鹕 Demo 一次录完**：API-10/11、CHAT-01/02/04、CHAT-R01~03、API-R08；
 5. **WorkBuddy 一次录完**：AGENT-WB-01~04、AGENT-R02/03；
 6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10；

@@ -1,0 +1,25 @@
+{
+  "baseline": "20260930_095033",
+  "generated_at": "2026-09-30T10:07:10+08:00",
+  "python": "3.10.11",
+  "platform": "Windows Server / kernel 17763",
+  "requests": "2.32.3",
+  "pillow": "10.3.0",
+  "model": "qwen3.6",
+  "base_url": "<INTERNAL_QWEN_BASE_URL>",
+  "declared_context_length": 131072,
+  "script_version": "2026-09-30-r4",
+  "executed_script_sha256": "106727cae3e73dd7f5947e439a68b1be88b2d79c41f62413e5baa6b05ecb303b",
+  "source_zip_sha256": "89c1fe652cc8ac3a59967e1a7d0bde1d3fe4b019dcaa0a8551d6d62bef1c508e",
+  "network_policy": {
+    "connect_timeout_s": 15,
+    "read_timeout_s": 900,
+    "retries": 2,
+    "retry_backoff_s": 15,
+    "retry_read_timeout": false
+  },
+  "notes": [
+    "公开仓库版本已脱敏真实内网地址与 API Key。",
+    "本轮所有实际执行请求 attempts=1，没有真实触发 retry。"
+  ]
+}

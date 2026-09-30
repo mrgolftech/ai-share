@@ -29,3 +29,15 @@
 - 集成开源 Token 输出速率体感 Demo：基于 `aaravchour/token-speed-visualiser`（Apache-2.0）进行培训版改造。
 - Demo 去除外部 CDN/字体依赖，改为离线可运行；去掉容易过时的固定模型速度标签，保留单速率和 Race Mode。
 - 模块一讲义新增 TTFT / Tokens/s / Total Latency 的现场体感演示环节。
+
+## 2026-09-30
+
+- 将 `20260930_095033` r4 全面测试确立为当前 Qwen 能力基线：28 PASS / 1 SKIP / 0 FAIL / 0 ERROR。
+- Responses Vision 使用 `detail:"auto"` 后正式 PASS；旧 HTTP 400 归档为历史 Schema 问题。
+- 明确 Thinking 开关 PASS 与回答完成度不同：本轮 OFF/ON 均触发 `finish_reason=length`。
+- Anthropic Tool Loop 本轮完整 PASS；`thinking.type=disabled` 兼容异常仍保留。
+- 旧 2026-09-29 测试和报告迁入 `archive/`。
+- 新增 v3 测试脚本公共脱敏版及 CI 编译检查。
+- 第一章新增 Postman → Cherry Network → Python Test → `/metrics` → model-metric 教学链。
+- 新增 `docs/cases/model-metric-api-observability.md`。
+- 截图/录屏清单新增 Postman、自动测试与 model-metric 素材。
