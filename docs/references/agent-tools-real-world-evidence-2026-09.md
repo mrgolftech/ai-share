@@ -279,3 +279,78 @@ Puppeteer 当前官方定义为 JavaScript browser automation library；Chrome �
 > 当前 coding-agent 浏览器工具链里，Playwright CLI/MCP、Puppeteer 等工具使 Node.js 成为很有价值的标准运行时。
 
 因此内网 Agent 标准环境建议同时预置 Python 与 Node.js，而不是二选一。
+
+
+---
+
+## Host Browser / CDP / Playwright 接入证据
+
+### CDP 不需要“安装协议”，但需要客户端
+
+Chrome DevTools Protocol 是 Chromium 内建的调试/控制协议。Chrome 开启 remote debugging 后，会暴露 WebSocket endpoint；客户端通过该 endpoint 发送协议命令、接收事件。
+
+来源：
+- https://chromedevtools.github.io/devtools-protocol/
+- https://developer.chrome.com/docs/devtools/agents/get-started/configuration
+
+因此培训中应区分：
+
+- CDP：浏览器协议；
+- CDP Client：Playwright、Puppeteer、Chrome DevTools MCP、自定义 WebSocket client 等。
+
+### Chrome 现有会话的接入方式
+
+Chrome 当前官方支持通过 Remote Debugging 连接现有浏览器实例。新版本还支持在 chrome://inspect/#remote-debugging 中显式允许远程调试连接。
+
+浏览器扩展也可以通过 chrome.debugger API 向目标 tab 发送 CDP 命令。
+
+来源：
+- https://developer.chrome.com/docs/devtools/agents/get-started/configuration
+- https://developer.chrome.com/docs/extensions/reference/api/debugger
+
+### Playwright CLI
+
+Playwright 当前官方把 playwright-cli 定位为面向 coding agents 的 token-efficient browser automation。
+
+前置条件：
+
+- Node.js 20+
+
+来源：
+- https://playwright.dev/docs/getting-started-cli
+
+### Playwright MCP
+
+Playwright MCP 当前：
+
+- 需要 Node.js 20+；
+- 典型启动方式为 npx @playwright/mcp@latest；
+- 通过结构化 accessibility snapshots 给 LLM 提供浏览器工具；
+- 支持连接自己启动的浏览器、现有 Chrome/Edge、CDP endpoint、浏览器 Extension。
+
+来源：
+- https://playwright.dev/docs/getting-started-mcp
+- https://playwright.dev/mcp/configuration/browser-extension
+- https://playwright.dev/mcp/introduction
+
+### Playwright Library
+
+Node.js Playwright library 需要安装 Playwright package；如果由 Playwright 启动浏览器，还需要安装相匹配的 browser binaries。
+
+Python Playwright 官方安装：
+
+- pip install playwright
+- playwright install
+
+来源：
+- https://playwright.dev/docs/library
+- https://playwright.dev/python/docs/library
+- https://playwright.dev/python/docs/browsers
+
+### 培训结论
+
+1. CDP 是协议，不等于某个 Python/Node package。
+2. Agent 不一定需要自己写 Python/Node 去发 CDP；Harness、MCP、Playwright 或 Extension 都可以代做。
+3. 现有 Host Chrome 的常见接入方式包括浏览器 Extension 和 Remote Debugging/CDP。
+4. Playwright CLI/MCP 当前官方都明确要求 Node.js 20+。
+5. 没有 Node.js 时，Python Playwright 仍然可用；但 Agent 自带 Browser Use 时甚至不需要额外 Playwright。
