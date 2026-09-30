@@ -562,7 +562,7 @@ Context 可能同时包含：
 
 ---
 
-## 1.4A 脱离 Cherry 再手工发一次 GET / POST：证明 UI 只是客户端
+## 1.4C 脱离 Cherry 再手工发一次 GET / POST：证明 UI 只是客户端
 
 现在再使用 Postman 或 curl。
 
