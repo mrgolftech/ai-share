@@ -1,7 +1,7 @@
 # 培训截图与录屏总清单
 
 > 日期：2026-09-30  
-> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`、`06-api-mcp-skill-plugin-command-hook.md`。  
+> 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`、`06-api-mcp-skill-plugin-command-hook.md`、`07-reusable-agent-assets.md`。  
 > 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。
 
 ---
@@ -118,6 +118,8 @@ AGENT-R05-tool-loop.mp4
 | CONNECT-01~04 | 图示 | API/Tool/MCP/Skill 分层与关系 | Agent 工具接入 | ⬜ |
 | CONNECT-06~09 | 图示/截图 | 端到端示例、Skill 目录、权限拆分、决策表 | Agent 工具接入 | ⬜ |
 | CONNECT-R01~03 | 录屏 | Raw API → MCP Tool → Skill+MCP | Agent 工具接入 | ⬜ |
+| ASSET-01~08 | 图示/截图 | 仓库资产地图、资产路由、规则/Skill/Memory/CI 边界 | 可复用资产 | ⬜ |
+| ASSET-R01~02 | 录屏 | 资产路由互动 + 长 Prompt → Skill 对比 | 可复用资产 | ⬜ |
 
 ---
 
@@ -375,7 +377,39 @@ AGENT-R05-tool-loop.mp4
 
 ---
 
-# 11. 推荐的实际采集顺序
+# 11. 如何形成可复用资产
+
+完整占位：
+
+`docs/chapters/07-reusable-agent-assets.md`
+
+## 11.1 静态
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| ASSET-01 | P0 | ai-share 仓库资产地图 | ⬜ |
+| ASSET-02 | P0 | 信息/经验 → 资产类型路由图 | ⬜ |
+| ASSET-03 | P0 | 本仓库 AGENTS.md 关键规则 | ⬜ |
+| ASSET-04 | P0 | Always-on Rules vs On-demand Skill | ⬜ |
+| ASSET-05 | P0 | Prompt → Script → Test → CI 成熟化路径 | ⬜ |
+| ASSET-06 | P0 | Session / Memory / Project Rules / Knowledge Base 边界 | ⬜ |
+| ASSET-07 | P0 | Always-on / On-demand / Executable 三层资产 | ⬜ |
+| ASSET-08 | P0 | Qwen API 资产升级时间线 | ⬜ |
+| ASSET-09 | P1 | Source of Truth / 资产治理图 | ⬜ |
+
+## 11.2 录屏
+
+| 编号 | 优先级 | 内容 | 状态 |
+|---|---:|---|---|
+| ASSET-R01 | P0 | 四条信息应该沉淀到哪里：互动判断 | ⬜ |
+| ASSET-R02 | P0 | 长 Prompt → Skill 的前后对比 | ⬜ |
+| ASSET-R03 | P1 | 修改 AGENTS.md / Skill → Git Diff → Commit | ⬜ |
+| ASSET-R04 | P1 | Script / Test / CI 三层确定性升级 | ⬜ |
+
+
+---
+
+# 12. 推荐的实际采集顺序
 
 不要严格按讲义章节逐张拍，按“环境”批量采集效率更高：
 
@@ -387,13 +421,14 @@ AGENT-R05-tool-loop.mp4
 6. **工程 Agent Repo 一次录完**：AGENT-03~17、AGENT-R04~10、TOOL-01~07、TOOL-10~11、TOOL-R01~02、TOOL-R04；
 7. **服务器训练环境一次录完**：TOOL-08、TOOL-R03；
 8. **API/MCP/Skill 统一训练 Demo 一次录完**：CONNECT-01~09、CONNECT-R01~05；
-9. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
+9. **资产沉淀一次录完**：ASSET-01~09、ASSET-R01~04（优先直接使用 ai-share 仓库与 project-acceptance Skill）；
+10. **Knowledge Agent 多源任务最后录**：KB-18/19/22、KB-R05/06。
 
 这样可以减少反复切换环境、账号、模型和测试资料。
 
 ---
 
-# 12. 后续落盘约定
+# 13. 后续落盘约定
 
 实际素材建议逐步落到：
 
