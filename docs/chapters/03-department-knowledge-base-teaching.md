@@ -1179,6 +1179,11 @@ Agent 可能这样工作：
 
 ## 13.1 Cherry Studio：个人知识工作台
 
+【录屏占位 KB-R01｜P0｜60–90 秒】Cherry Studio 从零建立同源知识库：新建 KB → 添加资料 → 检查 Parsed Text/Chunk → Embedding=None/BM25 → Retrieval Test → 在 Chat 中使用 KB。录屏重点是流程，不要长时间停留在等待索引。
+
+【录屏占位 KB-R02｜P0｜60–90 秒】同一资料、同一问题，对比 BM25 与 Embedding；如当前版本支持清晰的 Rerank 对比，再追加 Rerank。必须保留 Retrieval 命中的实际片段，不能只录最终回答。
+
+
 适合演示：
 
 ```text
@@ -1216,6 +1221,11 @@ Agent 可能这样工作：
 ---
 
 ## 13.2 Open WebUI：部门共享知识入口
+
+【录屏占位 KB-R03｜P0｜60–90 秒】Open WebUI：管理员/有权限用户创建或打开 Shared Knowledge → 绑定 Model/入口 → 不同用户或 Group 验证可见性。敏感账号信息脱敏。
+
+【录屏占位 KB-R04｜P1｜60–90 秒】同一个 Shared KB，依次展示 Focused/Pipeline Retrieval 与 Native Knowledge Tool/Agentic Retrieval（以当前部署实际支持为准）。重点录模型是否主动决定再次检索，而不是只看最终答案。
+
 
 Open WebUI 更适合讲：
 
@@ -1259,6 +1269,9 @@ Open WebUI 更适合讲：
 ---
 
 ## 13.3 Agent：知识的编排和执行层
+
+【录屏占位 KB-R05｜P0｜90–150 秒】Agent 多源取证：先查共享 KB → 判断证据不足 → grep/read Git 原始报告 → 如需要再调用 API/Metrics → 带来源回答。建议预先设计一个确实需要跨源核验的问题，避免录成“工具乱调用”。
+
 
 Agent 不一定先把所有东西建成向量库。
 
@@ -1570,6 +1583,9 @@ Microsoft Azure AI Search 等企业搜索系统已经把 Document-Level ACL / Se
 
 # 18. 知识库不能保证“不幻觉”
 
+【录屏占位 KB-R06｜P1｜60–90 秒】无答案/证据不足场景：知识库中故意不放答案，观察系统是否明确说“证据不足”以及引用了什么。后续可与版本冲突测试合并为知识库回归测试录屏。
+
+
 即使 Retriever 找到了正确资料，模型仍然可能：
 
 - 漏用证据；
@@ -1730,6 +1746,21 @@ RAGTruth、ALCE、RAGChecker 等研究都说明：
 | KB-20 | 部门最终架构 | 后续正式绘图 | 收束设计 |
 | KB-21 | ACL 正误对比 | 后续绘图 | 安全边界 |
 | KB-22 | 带引用回答 | 后续实测 | 可追溯性 |
+
+---
+
+## 21.1 录屏准备清单
+
+| 编号 | 优先级 | 录什么 | 必须看到的关键动作 | 状态 |
+|---|---:|---|---|---|
+| KB-R01 | P0 | Cherry 从建库到问答 | Source → Parse/Chunk → BM25 → Retrieval Test → Chat | ⬜ |
+| KB-R02 | P0 | BM25 vs Embedding / Rerank | 同一资料、同一问题、命中片段发生变化 | ⬜ |
+| KB-R03 | P0 | Open WebUI Shared Knowledge + ACL | Shared KB、用户/Group 权限、实际可见性 | ⬜ |
+| KB-R04 | P1 | Pipeline vs Agentic Retrieval | 固定检索一次 vs 模型主动继续检索 | ⬜ |
+| KB-R05 | P0 | Agent 跨源逐步取证 | Shared KB → Git 原文 → API/Metrics → 引用回答 | ⬜ |
+| KB-R06 | P1 | 无答案 / 版本冲突回归 | 证据不足时不编、冲突时说明版本 | ⬜ |
+
+> 建议实际备课时优先完成 `KB-R01`、`KB-R02`、`KB-R03`、`KB-R05`。它们基本能覆盖“个人知识库 → 部门共享知识 → Agent 编排”的完整教学链。
 
 ---
 
