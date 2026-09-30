@@ -336,6 +336,8 @@ AGENT-R05-tool-loop.mp4
 | TOOL-05 | P0 | 静态检查/自动测试/运行态/UI 四层验证图 | ⬜ |
 | TOOL-06 | P0 | Browser Use / Playwright / Computer Use / Crawler 对比图 | ⬜ |
 | TOOL-06A | P0 | Built-in Browser / Browser Use / Host Chrome / Computer Use 分层图 | ⬜ |
+| TOOL-06B | P0 | Browser Tool → Playwright CLI/MCP/Library → CDP → Host Chrome 技术栈 | ⬜ |
+| TOOL-06C | P1 | Host Chrome 三种接入：Extension / Remote Debugging CDP / 独立 Playwright Browser | ⬜ |
 | TOOL-07 | P0 | Browser + Console + Screenshot + 修复对照 | ⬜ |
 | TOOL-08 | P0 | SSH + Docker + logs + health request | ⬜ |
 | TOOL-09 | P1 | UI 自动操作 vs Structured API Tool | ⬜ |
