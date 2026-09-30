@@ -107,15 +107,9 @@ Response
 
 > **聊天软件并不是模型。聊天软件首先是一个模型 API 的客户端。**
 
-为了进一步把这个关系讲直观，可以现场用 Postman 或 curl 发出同样的请求。
+为了进一步把这个关系讲直观，下一步不再依赖 Chat UI，而是直接用 Postman 或 curl 构造 GET / POST 请求。
 
-【截图占位 API-POST-01｜Postman GET /v1/models】
-
-【截图占位 API-POST-02｜Postman POST /v1/chat/completions】
-
-【录屏占位 API-R09｜Postman GET/POST 与 Cherry Network 对照】
-
-这组演示最终不要让学员记住一长串 JSON 字段，只留下一个认识：
+先留下一个认识：
 
 ```text
 用户
