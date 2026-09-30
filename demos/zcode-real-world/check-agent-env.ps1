@@ -6,7 +6,7 @@ $checks = @(
     @{ Name = "node"; Commands = @("node"); Args = @("--version"); Required = $true },
     @{ Name = "npm"; Commands = @("npm"); Args = @("--version"); Required = $true },
     @{ Name = "curl"; Commands = @("curl.exe", "curl"); Args = @("--version"); Required = $true },
-    @{ Name = "ssh"; Commands = @("ssh"); Args = @("-V"); Required = $true },
+    @{ Name = "ssh"; Commands = @("ssh"); Args = @("-V"); Required = $false },
     @{ Name = "docker"; Commands = @("docker"); Args = @("--version"); Required = $false }
 )
 
