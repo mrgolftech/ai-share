@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.7  
+> 状态：Final Lecture Draft v1.8  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -3020,33 +3020,239 @@ Thinking / Reasoning 可以先这样理解：
 
 ---
 
-# 5. 为什么同一个模型“快不快”不能只凭感觉
+# 5. 为什么同一个模型“快不快”不能只凭感觉——TTFT、Tokens/s 和总时延怎样影响应用
 
 很多人评价模型时会说：
 
 > “我感觉这个模型挺快。”
 
-但模型服务是共享计算资源。
+但“快”至少包含两个完全不同的体验：
 
-真正影响体验的至少包括：
+```text
+多久开始回答？
+→ TTFT
+
+开始回答以后吐得多快？
+→ Decode Tokens/s
+```
+
+最终用户真正等待的是：
+
+> **Total Latency / 整个任务完成时间。**
+
+可以先给一个足够实用的近似关系：
+
+```text
+Total Latency
+≈ TTFT
++ Output Tokens / Decode Tokens/s
++ Tool / Network / Queue 等额外时间
+```
+
+【图示占位 API-SPEED-00｜TTFT + Decode → Total Latency】
+
+这里要强调：
+
+> 这只是建立工程直觉的近似式，不是所有推理服务内部时延组成的精确公式。
+
+---
+
+## 5.1 先用现有 Token 输出速率 Demo 建立“人的体感”
+
+仓库里已经有一个离线可运行的 Token 输出速率体感 Demo，现在统一归入第一讲 API 应用体验套件：
+
+```text
+demos/api-applications/token-output-speed/index.html
+```
+
+原路径：
+
+```text
+demos/token-output-speed/index.html
+```
+
+保留兼容跳转。
+
+这个页面不调用真实模型，也不是 Benchmark。
+
+它只做一件事：
+
+> **让大家直观看见，同一段内容在不同 Decode Tokens/s 下是什么感觉。**
+
+【截图占位 API-SPEED-01｜Token 输出速率体感 Demo：单速率】
+
+现场建议：
+
+```text
+5 tok/s
+→ 20 tok/s
+→ 50 tok/s
+→ 100 tok/s
+```
+
+然后切 Race Mode：
+
+```text
+5 / 30 / 120 tok/s
+```
+
+【录屏占位 API-SPEED-R01｜5 → 20 → 50 → 100 tok/s + Race Mode】
+
+不要把这些数字讲成：
+
+> “某个模型必须达到 50 tok/s 才合格。”
+
+它们只是帮助学员建立速度体感。
+
+---
+
+## 5.2 输出速率为什么对不同应用影响完全不同？
+
+前面刚刚跑过四个 Python 小应用：
+
+```text
+Translation
+→ JSON Extraction
+→ Vision OCR
+→ Visual QA
+```
+
+这正好可以用来说明：
+
+> **模型性能指标必须结合应用形态看。**
+
+| 应用 | 典型输出长度 | 更敏感的指标 | 为什么 |
+|---|---:|---|---|
+| 分类 / 路由 | 很短 | TTFT、稳定性 | 可能只输出一个标签，Decode 再快也省不了多少时间 |
+| JSON 抽取 | 短 | TTFT、结构正确率 | 业务更关心尽快拿到可解析结果 |
+| Vision OCR / 标签识别 | 很短 | Vision 前处理、TTFT、正确率 | 只输出几个字符，Tokens/s 通常不是主瓶颈 |
+| 短文本翻译 | 短～中 | TTFT + Tokens/s | 第一屏等待和持续输出都会影响交互感受 |
+| Visual QA 报告 | 中～长 | TTFT + Tokens/s | 问题列表和建议较长，Decode 会明显影响完成时间 |
+| 长文 / 代码生成 | 长 | Tokens/s 很重要 | 输出 Token 越多，Decode 时间占比越高 |
+| Agent | 多次短/中输出 | 每步 TTFT + Tool 延迟 + 累计时延 | 一个任务会串联多次模型和工具调用，单步延迟会不断累积 |
+
+【图示占位 API-SPEED-02｜不同应用对 TTFT / Tokens/s / Tool Latency 的敏感度】
+
+所以更准确的判断不是：
+
+> “Tokens/s 越高，这个模型所有应用都一定越快。”
+
+而是：
+
+> **短输出应用通常先看 TTFT；输出越长，Decode Tokens/s 越重要；Agent 还要看多步调用和工具执行的累计时延。**
+
+这个判断对模型选型非常重要。
+
+例如一个只需要返回：
+
+```json
+{"category":"REVIEW"}
+```
+
+的业务接口，即使模型能从 40 tok/s 提升到 100 tok/s，用户可能也几乎感觉不到。
+
+因为真正花时间的可能是：
+
+- 排队；
+- Prefill；
+- Vision Encoder；
+- TTFT；
+- 网络。
+
+但如果要生成：
+
+- 2000 Token 报告；
+- 大段代码；
+- 长篇分析；
+
+Decode Tokens/s 的差异就会直接进入总等待时间。
+
+---
+
+## 5.3 Agent 为什么更容易把“小延迟”放大？
+
+普通 Chat：
+
+```text
+User
+→ Model
+→ Answer
+```
+
+Agent 更像：
+
+```text
+Model
+→ Search
+→ Model
+→ Read
+→ Model
+→ Edit
+→ Test
+→ Model
+→ Verify
+```
+
+如果每一步模型调用都多等待一点：
+
+> **几十次循环以后，这些延迟会累计。**
+
+而且 Agent 总时延还包括：
+
+- Shell；
+- Browser；
+- Git；
+- Search；
+- API；
+- Build；
+- Test。
+
+因此 Agent 体验不能只盯着单次 Tokens/s。
+
+应该同时看：
+
+```text
+Per-step TTFT
++ Decode Tokens/s
++ Tool Latency
++ Number of Steps
++ Queue / Concurrency
+```
+
+【图示占位 API-SPEED-03｜Chat 单次时延 vs Agent 多步累计时延】
+
+这也解释了为什么：
+
+> **有些 Agent 任务不一定需要每一步都使用最强、最慢的旗舰模型。**
+
+模型路由、Thinking 预算和工具效率都会影响整个任务速度。
+
+---
+
+## 5.4 再回到真实共享服务：速度不能只看一个人的输出
+
+模型服务是共享计算资源。
+
+真正影响体验的还包括：
 
 - Prefill；
 - Decode；
 - TTFT；
-- TPS；
+- 单请求 Decode Tokens/s；
+- Aggregate Output TPS；
 - KV Cache；
 - running requests；
 - waiting requests；
 - 并发。
 
-不需要讲复杂推理框架内部实现，只需要把这些指标翻译成人话。
+把指标翻译成人话：
 
 ```text
 TTFT
-≈ 我按下发送以后，多久看到第一个字
+≈ 我按下发送以后，多久看到第一个 Token
 
-TPS
-≈ 开始输出以后，每秒吐多少 Token
+Decode Tokens/s
+≈ 这一条请求开始输出后，每秒产生多少 Token
 
 running
 ≈ 现在有多少请求正在算
@@ -3056,7 +3262,22 @@ waiting
 
 KV Cache
 ≈ 长上下文和并发正在占用多少推理缓存资源
+
+Aggregate Output TPS
+≈ 整个共享服务所有并发请求合起来每秒生成多少 Token
 ```
+
+这里一定要明确：
+
+> **单请求 Decode Tokens/s ≠ 服务端 Aggregate Output TPS。**
+
+前者回答：
+
+> “我这一条请求输出得快不快？”
+
+后者回答：
+
+> “整个模型服务当前吞吐有多大？”
 
 【截图占位 API-08｜原始 /metrics 指标】
 
@@ -3068,9 +3289,9 @@ KV Cache
 
 【录屏占位 MM-R02｜提高并发后 running/waiting/TPS 的变化】
 
-这里要把第一讲的一个核心观点讲出来：
+这一段最后收束：
 
-> **大模型不是传统 SaaS。每一次输入、长 Context、Thinking 和并发都对应真实计算资源。**
+> **大模型不是传统 SaaS。每一次输入、Prefill、长 Context、Thinking、Decode 和并发都对应真实计算资源；性能指标必须放到具体应用和共享服务环境里理解。**
 
 ---
 
