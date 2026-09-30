@@ -2,7 +2,8 @@
 
 > 日期：2026-09-30  
 > 适用范围：当前仓库已有讲义 `01-intranet-qwen-api.md`、`02-chat-to-agent-harness.md`、`02-chat-workbenches-and-rag.md`、`03-department-knowledge-base*.md`、`04-agent-common-mechanisms.md`、`05-agent-tools-real-world.md`、`06-api-mcp-skill-plugin-command-hook.md`、`07-reusable-agent-assets.md`。  
-> 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。
+> 目的：把“讲什么”转成“需要提前准备什么证据和演示素材”，避免制作 PPT 时临时补截图。  
+> 当前现场授课按四场组织：第一讲 1+3、第二讲 2、第三讲 4+5、第四讲 6+7+8。素材编号仍按原内容单元保留，制作 PPT 时再归并到四场。
 
 ---
 
@@ -72,6 +73,15 @@ AGENT-R05-tool-loop.mp4
 ~~~
 
 ---
+
+# 2.5 四场讲座素材归并原则
+
+- **第一讲**：优先准备 API、Cherry Network、Qwen 实测、model-metric、Chat vs Agent 最小闭环；
+- **第二讲**：优先准备知识库同源三层 Demo、BM25/Vector/Hybrid、版本冲突、代码 Search/Read；
+- **第三讲**：优先准备多 Agent 共性界面、AGENTS/Memory/Context、Shell/Git/Browser/Server、MCP/Skill；
+- **第四讲**：优先准备 BMQuiz、FileCheck、CI/CD、部署、IPsec、HyperFrames 等真实项目证据。
+
+原则：同一份素材可以跨场复用，但在不同场次承担不同教学目的。
 
 # 3. P0：优先一次性准备的素材
 
