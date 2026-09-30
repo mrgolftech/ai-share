@@ -123,6 +123,7 @@ AGENT-R05-tool-loop.mp4
 | CONNECT-R01~03 | 录屏 | Raw API → MCP Tool → Skill+MCP | Agent 工具接入 | ⬜ |
 | ASSET-01~08 | 图示/截图 | 仓库资产地图、资产路由、规则/Skill/Memory/CI 边界 | 可复用资产 | ⬜ |
 | ASSET-R01~02 | 录屏 | 资产路由互动 + 长 Prompt → Skill 对比 | 可复用资产 | ⬜ |
+| ASSET-ZC-01~03 | 截图 | ZCode AGENTS.md/Memory、Command/Skill、Plugin 资产边界 | 可复用资产 | ⬜ |
 
 ---
 
@@ -377,6 +378,10 @@ AGENT-R05-tool-loop.mp4
 
 `demos/agent-tool-integration/README.md`
 
+第一套实现使用 **ZCode 作为 MCP Host**：
+
+`demos/agent-tool-integration/zcode-implementation-plan.md`
+
 ## 10.1 静态
 
 | 编号 | 优先级 | 内容 | 状态 |
@@ -423,6 +428,9 @@ AGENT-R05-tool-loop.mp4
 | ASSET-07 | P0 | Always-on / On-demand / Executable 三层资产 | ⬜ |
 | ASSET-08 | P0 | Qwen API 资产升级时间线 | ⬜ |
 | ASSET-09 | P1 | Source of Truth / 资产治理图 | ⬜ |
+| ASSET-ZC-01 | P0 | ZCode AGENTS.md vs Project Memory | ⬜ |
+| ASSET-ZC-02 | P0 | ZCode Command vs Skill | ⬜ |
+| ASSET-ZC-03 | P1 | ZCode Plugin 组成：Skill / Command / MCP / Hook | ⬜ |
 
 ## 11.2 录屏
 
