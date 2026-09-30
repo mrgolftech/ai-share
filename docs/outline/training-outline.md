@@ -180,15 +180,18 @@
 
 内容逻辑仍然分为六个核心模块，并在最后进行方法论收束；但**授课组织不再按“一次讲座”设计**。
 
-截至 2026-09-30，培训正式改为系列化组织，建议拆为 7 次：
+截至 2026-09-30，培训正式改为系列化组织，建议拆为 **8 次**：
 
 1. 模型调用与 API；
-2. Chat → Knowledge/RAG → Agent；
-3. Agent Harness、工具、Runtime 与服务器；
-4. API / MCP / Skill 与可复用资产；
-5. 完整 Web 工程案例：BMQuiz V2 + model-metric 对照；
-6. 完整本地客户端 / GUI 工程案例：FileCheck；
-7. IPsec 数据分析、HyperFrames、授权研究、网站安全测试等跨领域案例与最终方法论收束。
+2. **部门知识库专题：知识资产、RAG、检索、治理、权限、评测与落地架构**；
+3. Chat 工作台 → Agent Harness；
+4. Agent 工具、Runtime 与服务器；
+5. API / MCP / Skill 与可复用资产；
+6. 完整 Web 工程案例：BMQuiz V2 + model-metric 对照；
+7. 完整本地客户端 / GUI 工程案例：FileCheck；
+8. IPsec 数据分析、HyperFrames、授权研究、网站安全测试等跨领域案例与最终方法论收束。
+
+其中第 2 次知识库专题作为部门知识库建设的独立培训，不再作为 Chat→Agent 章节中的附属内容。
 
 详细场次设计：
 
@@ -2217,7 +2220,7 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - 模块五主讲稿：`docs/chapters/07-reusable-agent-assets.md`（可用于培训；以“资产路由”组织 Prompt、Project Rules、Plan、Skill、Script、Test/Eval、CI、Template、Memory、Knowledge Base、Evidence、Git，并明确反过度沉淀原则；案例与素材后补）
 - 模块五证据基线：`docs/references/reusable-agent-assets-evidence-2026-09.md`（已有素材；核验 AGENTS.md open format、Codex 当前 AGENTS/Context 指引、OpenAI Skills/ExecPlan、Hermes Memory/Context/Skills 等当前资料）
 - 方法论收束主讲稿：`docs/chapters/08-agent-engineering-methodology.md`（可用于培训；覆盖任务路由、Problem→Release 工程链、Agent 执行闭环、模型/Thinking/Context 预算、人机分工、交付与资产沉淀；METHOD-01～07 图示后补）
-- 系列授课拆分方案：`docs/outline/training-series-plan.md`（已有基线；当前建议 7 次，每次围绕一个核心问题组织）
+- 系列授课拆分方案：`docs/outline/training-series-plan.md`（已有基线；当前建议 8 次，第 2 次固定为部门知识库专题，每次围绕一个核心问题组织）
 - 完整工程案例框架：`docs/cases/end-to-end-agent-engineering-cases.md`（已有框架；BMQuiz V2 与 FileCheck 固定为两个纵向主案例）
 - BMQuiz V2 完整工程案例：`docs/cases/bmquiz-end-to-end-agent-development.md`（已有第一版主讲底稿；已按真实仓库与 Git 历史串联需求、约束、架构、AGENTS、Plan、实现、测试、Visual QA、Server CI、Docker/GHCR、部署、验证与资产沉淀；待补原始对话与截图/录屏）
 - Agent 服务器运维案例：`docs/cases/agent-server-operations.md`（已有案例设计；BMQuiz Docker + model-metric systemd，待真实录屏与执行证据）
