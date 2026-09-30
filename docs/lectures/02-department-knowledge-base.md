@@ -1,6 +1,6 @@
 # 第二讲：部门知识库建设——让 AI 可靠使用我们的知识
 
-> 状态：Final Lecture Draft v1.0  
+> 状态：Final Lecture Draft v1.1  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 2  
@@ -683,21 +683,176 @@ Agent 可以：
 
 【截图占位 KB-13｜Cherry Retrieval 配置 / 测试】
 
-## 13.2 Open WebUI：共享知识入口
+## 13.2 Open WebUI v0.11.0：既是共享知识入口，也可以承载个人知识
 
-更适合：
+这里需要基于当前内网实际部署更新一个认识：
 
-- 集中式模型入口；
-- 多用户；
-- Shared Knowledge；
-- 权限；
-- 团队共享。
+> **Open WebUI 不只是“管理员维护共享知识库”。当前内网 v0.11.0 已实测支持普通用户维护自己的笔记、上传文档，并把知识绑定到 Workspace / 可复用模型配置中使用。**
 
-【截图占位 KB-15｜Open WebUI Shared Knowledge】
+当前已经走通的实际路径包括：
 
-【截图占位 KB-16｜Open WebUI Knowledge / Retrieval 设置】
+```text
+个人 Note / Markdown
+或上传 Document
+        ↓
+Knowledge
+        ↓
+Full Context
+或 Focused Retrieval
+        ↓
+Workspace / Model 绑定
+        ↓
+选择对应 Workspace
+        ↓
+基于资料问答
+```
 
-【截图占位 KB-21｜ACL / Group 权限】
+【截图占位 KB-15｜当前内网 Open WebUI v0.11.0 Workspace / Knowledge 总览】
+
+### 个人笔记也是一种知识资产
+
+用户可以先记录自己的 Markdown 笔记，再把它作为后续对话上下文使用。
+
+这很适合：
+
+- 临时实验结论；
+- 调试记录；
+- 个人 FAQ；
+- 还没有进入正式文控体系的工作知识。
+
+但要强调：
+
+> **个人 Note 是个人知识资产，不自动等于部门 Source of Truth。**
+
+部门级知识仍然需要：
+
+- Owner；
+- Version；
+- ACL；
+- 生效状态；
+- 正式来源。
+
+【截图占位 KB-15A｜个人 Note / Markdown】
+
+### 同一文档可以选择 Full Context 或 Focused Retrieval
+
+当前内网实测可以针对 Markdown / 文档选择：
+
+```text
+Full Context
+vs
+Focused Retrieval
+```
+
+【截图占位 KB-16｜同一文档的 Full Context / Focused Retrieval】
+
+这正好和本讲前面的理论一一对应。
+
+**Full Context**
+
+```text
+整篇文档
+↓
+直接进入 Context
+↓
+Model
+```
+
+优点：
+
+- 不依赖向量召回；
+- 短文档信息完整。
+
+缺点：
+
+- 长文档占 Context；
+- 多文档时容易挤占历史和其他证据。
+
+**Focused Retrieval**
+
+```text
+Question
+↓
+Retriever
+↓
+Relevant Evidence
+↓
+Context
+↓
+Model
+```
+
+优点：
+
+- 更适合长资料；
+- 每轮只提供相关片段。
+
+缺点：
+
+- 需要验证 Retrieval 有没有找对。
+
+### 当前没有 Embedding，也能回答意味着什么？
+
+当前内网 v0.11.0 **尚未配置 Embedding Model**，界面会提示文档没有向量化。
+
+【截图占位 KB-16A｜未配置 Embedding / 未向量化提示】
+
+但实际已经验证：
+
+- Knowledge 仍可被 Workspace 引用；
+- 选择对应 Workspace 后；
+- 模型能够依据其中资料回答。
+
+这里必须避免一个错误结论：
+
+> “所以没有 Embedding 也已经完成 Vector RAG。”
+
+更严谨的解释是：
+
+1. **如果使用 Full Context**：整篇正文直接进入 Context，本来就不需要向量检索；
+2. **如果使用 Focused Retrieval**：没有向量索引意味着 Vector Retrieval 这一条能力没有建立；当前到底使用了关键词/BM25、Knowledge Tool 或其他回退路径，需要通过实际 Retrieval Trace 再确认。
+
+因此这一现象本身就是很好的验收案例：
+
+> **回答正确，只能证明模型最终看到了有用证据；不能仅凭答案反推出底层一定用了哪种 Retrieval。**
+
+这和第一讲 API 测试中的：
+
+> “HTTP 200 不等于语义正确”
+
+是同一个工程思想。
+
+### Workspace 的价值：把一次性附件变成持续可复用知识
+
+一次聊天上传文件：
+
+> 解决“这次问答需要这份资料”。
+
+Workspace / Model 绑定 Knowledge：
+
+> 解决“这一类工作以后都需要这批资料”。
+
+【截图占位 KB-16B｜Workspace 绑定 Knowledge】
+
+【截图占位 KB-16C｜选择 Workspace 后基于知识回答】
+
+因此当前部门可以把 Open WebUI 分成两类用途：
+
+```text
+个人
+→ Note / Personal Knowledge
+
+团队
+→ Shared Knowledge / Workspace / ACL
+```
+
+这比简单说：
+
+> “Open WebUI 是管理员建知识库的工具”
+
+更符合当前内网 v0.11.0 的实际使用情况。
+
+【截图占位 KB-21｜Shared Knowledge / Group / ACL】
 
 ## 13.3 Agent：知识编排层
 
@@ -793,26 +948,81 @@ MCP
 
 ---
 
-## Demo B：Open WebUI——看共享和治理
+## Demo B：Open WebUI——先看个人知识，再看共享治理
 
-同一批资料进入 Shared Knowledge。
+这次不要一上来就由管理员创建 Shared Knowledge。
 
-重点不是再重复讲 Embedding。
+先使用当前内网 v0.11.0 已经走通的真实个人流程。
 
-展示：
+### B1：个人 Note / Document → Workspace
 
-- 创建 Shared KB；
+固定资料仍使用本培训的 Qwen API 资料。
+
+步骤：
+
+1. 新建一条个人 Markdown Note；
+2. 上传一份测试报告；
+3. 展示同一文档的 Full Context / Focused Retrieval；
+4. 展示当前“未配置 Embedding / 未向量化”提示；
+5. 把 Knowledge 绑定到 Workspace / Model；
+6. 选择该 Workspace；
+7. 问固定问题；
+8. 展示回答依据资料。
+
+【录屏占位 KB-R03A｜Open WebUI Note/Document → Workspace → 问答】
+
+这一段首先证明：
+
+> **知识使用不一定从管理员集中建库开始，个人可以先形成自己的可复用知识工作空间。**
+
+### B2：Full Context vs Focused Retrieval
+
+固定同一 Markdown。
+
+问题尽量设计成：
+
+- 一个答案在短文档中明确存在；
+- 一个问题需要文档局部证据。
+
+分别切换：
+
+```text
+Full Context
+Focused Retrieval
+```
+
+观察：
+
+- 是否有 Retrieval Trace；
+- 引用；
+- 上下文行为；
+- 当前未向量化提示。
+
+【录屏占位 KB-R03B｜同一文档 Full Context vs Focused Retrieval】
+
+如果 Focused Retrieval 在未配置 Embedding 的当前实例中仍能回答：
+
+> 先记录现象，再检查 Tool / Retrieval Trace，不在课堂上直接宣称它走的是 Vector Search。
+
+这正好演示：
+
+> **产品模式名、用户看到的答案和底层 Retrieval 实现需要分别验证。**
+
+### B3：再进入 Shared Knowledge / Governance
+
+最后再展示部门级能力：
+
+- Shared Knowledge；
 - 用户 / Group；
 - Knowledge 绑定；
-- 检索；
-- 引用；
-- ACL。
+- ACL；
+- 引用。
 
-【录屏占位 KB-R03｜Open WebUI Shared KB + ACL】
+【录屏占位 KB-R03C｜Open WebUI Shared Knowledge + ACL】
 
 结论：
 
-> **共享知识库的价值不仅是 Retrieval，还有 Governance。**
+> **Open WebUI 同时可以承载个人知识工作和共享知识治理；两者不能混成一个权限模型。**
 
 ---
 
@@ -1243,13 +1453,17 @@ Failure Type
 - Retrieval Config / Test；
 - 引用结果。
 
-### KB-15～16：Open WebUI
+### KB-15～16C：Open WebUI v0.11.0
 
-拍：
+按当前内网实测准备：
 
-- Shared Knowledge；
-- 绑定入口；
-- Retrieval / Citation。
+- KB-15：Workspace / Knowledge 总览；
+- KB-15A：个人 Note / Markdown；
+- KB-16：Full Context / Focused Retrieval；
+- KB-16A：未配置 Embedding / 未向量化提示；
+- KB-16B：Workspace 绑定 Knowledge；
+- KB-16C：选择 Workspace 后依据资料回答；
+- Shared Knowledge / Citation 作为部门共享场景继续补拍。
 
 ### KB-21：ACL
 
@@ -1300,15 +1514,35 @@ Failure Type
 
 不要为了展示效果临时换 Corpus。
 
-## KB-R03：Open WebUI Shared KB + ACL
+## KB-R03A～C：Open WebUI v0.11.0
+
+### KB-R03A：个人知识 → Workspace
 
 步骤：
 
-1. 管理员创建 / 查看 Shared KB；
-2. 绑定 Group；
-3. 用户 A 查询成功；
-4. 若条件允许，用户 B 无权限或看不到；
-5. 展示引用。
+1. 新建个人 Note；
+2. 上传 Markdown / 文档；
+3. 展示 Knowledge；
+4. 绑定 Workspace；
+5. 选择 Workspace；
+6. 固定问题；
+7. 展示依据资料回答。
+
+### KB-R03B：Full Context vs Focused Retrieval
+
+同一 Markdown、同一问题切两种模式。
+
+必须把当前“未配置 Embedding / 未向量化”状态一起录入，并观察 Retrieval / Tool Trace。
+
+### KB-R03C：Shared Knowledge + ACL
+
+再由共享知识场景展示：
+
+1. Shared Knowledge；
+2. Group / User；
+3. ACL；
+4. 用户可见性；
+5. 引用。
 
 ## KB-R05：Agent 多源逐步取证
 
