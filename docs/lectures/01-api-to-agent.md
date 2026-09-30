@@ -1,6 +1,6 @@
 # 第一讲：从模型 API 到 Agent——看懂 AI 应用背后的工作逻辑
 
-> 状态：Final Lecture Draft v1.1  
+> 状态：Final Lecture Draft v1.2  
 > 日期：2026-09-30  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 1 + 3  
@@ -231,7 +231,271 @@ Agent
 
 ---
 
-## 1.3 为什么“我手工调通一次”还不够？
+## 1.3 同一个“问模型”动作，为什么会有三种 API 形态？
+
+到这里学员已经看懂最基本的 OpenAI Chat 请求。
+
+接下来正好利用我们的内网服务回答一个非常现实的问题：
+
+> **为什么同一个 qwen3.6，在不同客户端里会出现 OpenAI Chat、OpenAI Responses、Anthropic Messages 三种接口？**
+
+这三种接口不是三个模型。
+
+更准确地说，它们是：
+
+> **应用与模型服务之间三种不同的协议 / 数据结构约定。**
+
+当前内网 qwen3.6 已经用正式测试脚本分别验证了这三类接口，所以这里不需要只讲官方概念，可以直接拿我们自己的 Request / Response 对照。
+
+### OpenAI Chat Completions
+
+典型 Endpoint：
+
+```text
+POST /v1/chat/completions
+```
+
+核心输入结构：
+
+```json
+{
+  "model": "qwen3.6",
+  "messages": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."}
+  ]
+}
+```
+
+主要观察：
+
+- `messages`；
+- `role`；
+- `choices`；
+- `message.content`；
+- `tool_calls`；
+- `stream=true` 时的 SSE chunk。
+
+可以把它理解为：
+
+> **以“多轮聊天消息”为中心的接口形态。**
+
+它目前仍然是大量 OpenAI-compatible 客户端和开源服务最常见的兼容方式之一。
+
+【截图占位 API-PROTO-01｜OpenAI Chat：Request messages + Response choices/tool_calls】
+
+---
+
+### OpenAI Responses
+
+典型 Endpoint：
+
+```text
+POST /v1/responses
+```
+
+我们当前内网实测使用的核心输入类似：
+
+```json
+{
+  "model": "qwen3.6",
+  "input": "请只回答：RESPONSES_OK",
+  "reasoning": {
+    "effort": "none"
+  }
+}
+```
+
+它的返回不再围绕 `choices[].message`，而更强调：
+
+- `response`；
+- `output[]`；
+- `function_call`；
+- 流式时的 `response.created`、`response.completed` 等事件。
+
+在培训中不要把 Responses 简单说成：
+
+> “Chat Completions 的新版本，旧的马上不能用。”
+
+更稳妥的说法是：
+
+> **Responses 是 OpenAI 体系中面向更统一输入/输出、工具与 Agent 场景的新接口形态；但大量现有系统仍然使用 Chat Completions，因此工程上需要根据客户端和服务端兼容性选择。**
+
+我们的内网测试已经验证：
+
+- 非流式；
+- SSE；
+- Function Call；
+- Tool Result Loop；
+- Vision。
+
+【截图占位 API-PROTO-02｜OpenAI Responses：input + output/function_call + SSE event】
+
+---
+
+### Anthropic Messages
+
+典型 Endpoint：
+
+```text
+POST /v1/messages
+```
+
+典型结构与 OpenAI Chat 不完全一样。
+
+例如：
+
+```json
+{
+  "model": "qwen3.6",
+  "max_tokens": 256,
+  "messages": [
+    {
+      "role": "user",
+      "content": "请只回答：CLAUDE_OK"
+    }
+  ]
+}
+```
+
+工具调用也使用自己的 Content Block 语义：
+
+- `tool_use`；
+- `tool_result`；
+- 流式 `message_start` / `message_stop`；
+- reasoning/thinking 也有自己的协议结构。
+
+我们的内网 r4 已验证：
+
+- Messages；
+- SSE；
+- count_tokens；
+- tool_use；
+- tool_result；
+- Vision；
+
+但同时发现：
+
+> `thinking.type=disabled` 当前没有按预期彻底关闭 thinking。
+
+这正好说明：
+
+> **“支持 Anthropic API”不能只看 Endpoint 能不能返回 200，还要验证各个具体语义是否真的兼容。**
+
+【截图占位 API-PROTO-03｜Anthropic Messages：messages/content block + tool_use/tool_result】
+
+---
+
+### 三种接口一张表看懂
+
+| 对比项 | OpenAI Chat Completions | OpenAI Responses | Anthropic Messages |
+|---|---|---|---|
+| 典型 Endpoint | `/v1/chat/completions` | `/v1/responses` | `/v1/messages` |
+| 主要输入 | `messages[]` | `input` / input items | `messages[]` / content blocks |
+| 普通输出 | `choices[].message` | `output[]` | `content[]` |
+| 工具调用 | `tool_calls` | `function_call` | `tool_use` |
+| 工具结果 | tool role/message | function-call output item | `tool_result` |
+| 流式事件 | Chat SSE delta | Responses event stream | Anthropic message/content events |
+| 当前内网基础闭环 | 已实测 | 已实测 | 已实测 |
+
+【图示占位 API-PROTO-04｜同一 qwen3.6 → 三种协议 Adapter → 不同客户端】
+
+这一页最重要的结论：
+
+> **模型能力和接口协议是两层。**
+
+模型可能本身会 Tool Calling / Vision，但客户端还必须：
+
+1. 知道该用哪种协议；
+2. 按对应 Schema 组织 Request；
+3. 正确解析 Response；
+4. 把 Tool Result 再按该协议回灌。
+
+所以后面看到不同 Agent 要求“OpenAI Responses”或“Anthropic Endpoint”时，就不会再觉得这是三个不同的模型世界。
+
+---
+
+## 1.4 用 Cherry Studio 直接演示三种 API 接入：同一个 UI，后端协议可以不同
+
+Cherry Studio 很适合用来把这个问题可视化。
+
+当前 Cherry Studio 的实现已经明确区分不同 Endpoint Type，例如：
+
+- `openai-chat-completions`；
+- `openai-responses`；
+- `anthropic-messages`。
+
+部分多协议 Provider / Gateway 还可以在同一个服务配置下根据模型 Endpoint Type 自动选择对应 Adapter。
+
+因此本培训建议直接用内网 qwen3.6 做三个配置/模型项，分别代表：
+
+```text
+Qwen - OpenAI Chat
+Qwen - OpenAI Responses
+Qwen - Anthropic Messages
+```
+
+具体名称按你当前 Cherry Studio 实际界面设置，不要求与上面完全一致。
+
+【截图占位 CH-API-01｜Cherry 模型服务：同一个内网 Base URL 的三种协议配置/模型 Endpoint Type】
+
+如果当前 Cherry 版本允许在 Provider / Model 高级设置里选择 Endpoint Type，就直接截这个选择项。
+
+如果当前版本是通过不同 Provider / Adapter 配置实现，则截图真实配置，不为了培训强行做成同一 UI。
+
+教学重点是：
+
+> **三条配置最终指向同一个内网模型服务，但 Cherry 会按照不同协议组织 Request。**
+
+### 演示方法：同一个 Prompt，切三次模型/协议
+
+固定问题：
+
+> 请只回答：PROTOCOL_OK
+
+依次选择：
+
+1. OpenAI Chat；
+2. OpenAI Responses；
+3. Anthropic Messages。
+
+每次都同时打开 DevTools Network。
+
+最终应该看到三个不同 Endpoint：
+
+```text
+/v1/chat/completions
+/v1/responses
+/v1/messages
+```
+
+【截图占位 CH-API-02A｜Cherry → /v1/chat/completions】
+
+【截图占位 CH-API-02B｜Cherry → /v1/responses】
+
+【截图占位 CH-API-02C｜Cherry → /v1/messages】
+
+【录屏占位 CH-R03｜Cherry 同 Prompt 切三种 API → Network 显示三个不同 Endpoint】
+
+这是第一讲非常值得做的一段录屏。
+
+因为学员可以直接看到：
+
+> **前端还是同一个聊天框，但后端协议已经换了。**
+
+随后再打开 Request Body，对照：
+
+```text
+messages / choices
+input / output
+messages / content blocks
+```
+
+就能把前面的协议表彻底讲活。
+
+---
+
+## 1.5 为什么“我手工调通一次”还不够？
 
 手工 GET / POST 非常适合学习和调试。
 
@@ -358,7 +622,7 @@ API Key 在落盘前自动脱敏。
 
 ---
 
-## 1.4 当前内网 Qwen 到底测出了什么？
+## 1.6 当前内网 Qwen 到底测出了什么？
 
 当前正式基线：
 
@@ -489,7 +753,7 @@ r4 改成：
 
 ---
 
-## 1.5 建议现场真正运行一次自动测试，但不要把 29 项全等完
+## 1.7 建议现场真正运行一次自动测试，但不要把 29 项全等完
 
 【录屏占位 API-R10｜运行 qwen_api_training_test.py → PASS 输出 → 打开 summary / record】
 
@@ -530,7 +794,7 @@ r4 改成：
 
 ---
 
-## 1.6 从测试脚本得到一个很重要的方法论
+## 1.8 从测试脚本得到一个很重要的方法论
 
 这套 Qwen 测试真正应该让大家学会的，不是 Python 语法。
 
@@ -552,7 +816,7 @@ r4 改成：
 
 ---
 
-## 1.7 从“接口能不能用”继续追问：共享服务到底好不好用？
+## 1.9 从“接口能不能用”继续追问：共享服务到底好不好用？
 
 到这里我们已经回答：
 
@@ -590,7 +854,7 @@ Request / Response
 
 ---
 
-## 1.8 为什么我们又做了 model-metric？
+## 1.10 为什么我们又做了 model-metric？
 
 原始 Prometheus Metrics 对开发和运维有价值，但直接给大部分用户看，会遇到：
 
@@ -648,7 +912,7 @@ Request / Response
 
 ---
 
-## 1.9 第一讲最值得做的一段录屏：一条请求怎样在 model-metric 上“留下痕迹”
+## 1.11 第一讲最值得做的一段录屏：一条请求怎样在 model-metric 上“留下痕迹”
 
 【录屏占位 MM-R01｜Postman POST → model-metric 实时指标变化】
 
@@ -812,6 +1076,336 @@ model-metric
 所以长上下文不是一个“免费无限记忆”。
 
 这为第三讲理解 Agent Context Management 做准备。
+
+---
+
+# 3.4 Cherry Studio：一个 Chat 工作台到底替我们做了哪些事？
+
+在第一讲前面，我们已经从 Network 里看到：
+
+> Chat UI 背后是 API Request。
+
+现在可以反过来再看一次 Cherry Studio 的界面。
+
+你会发现一个成熟的 Chat 工作台并不只是：
+
+> 文本框 + 发送按钮。
+
+它实际上正在帮用户组织：
+
+- 模型；
+- System Prompt / Instructions；
+- 模型参数；
+- 对话历史；
+- 知识库；
+- 联网搜索；
+- 文件 / 图片；
+- MCP / Tool；
+- Context 管理。
+
+这些东西最后都会以不同方式影响：
+
+```text
+Model
+Context
+Tools
+Request Parameters
+```
+
+所以这一段的目的不是教“Cherry Studio 全功能使用手册”，而是让学员理解：
+
+> **我们在 UI 里勾选的每一个能力，背后都对应某种上下文、参数或工具变化。**
+
+---
+
+## 3.4.1 助手指令：为什么不需要每轮都重新说“你是谁”
+
+Cherry Studio 的“助手”可以保存：
+
+- 默认模型；
+- 模型参数；
+- 提示词 / Instructions；
+- 关联知识库；
+- MCP 工具。
+
+例如创建一个：
+
+> “内网 Qwen API 培训助手”。
+
+在提示词中写：
+
+```text
+你是部门内网模型 API 培训助手。
+回答必须优先依据已关联的内网 API 测试资料。
+如果资料中没有证据，应明确说明。
+```
+
+【截图占位 CH-ASSIST-01｜Cherry 新建/编辑助手：基础 + 默认模型】
+
+【截图占位 CH-ASSIST-02｜Cherry 助手“提示词/Instructions”页】
+
+然后新建两个对话。
+
+让大家看到：
+
+> 对话变了，但助手的系统指令仍然保留。
+
+这可以直观对应：
+
+```text
+Assistant
+≈ 一组可复用的角色 / Prompt / Model / Knowledge / Tool 预设
+
+Conversation
+≈ 在这个预设下的一段独立对话
+```
+
+这一点也为第三讲的 Project Instructions / AGENTS.md 做铺垫：
+
+> 都是在解决“长期规则不要每轮重新说”的问题，只是作用范围不同。
+
+---
+
+## 3.4.2 模型配置：同一个问题为什么可以临时切模型？
+
+Cherry 的助手可以指定默认模型，对话中也可以临时切换模型。
+
+这里建议现场演示：
+
+1. 助手默认使用内网 qwen3.6；
+2. 打开对话；
+3. 从顶部模型选择器切换另一个已配置模型；
+4. 再切回内网模型。
+
+【截图占位 CH-ASSIST-03｜助手默认模型 + 对话顶部模型切换】
+
+教学点：
+
+> **Model 是应用可以路由和替换的一层，不等于整个 Chat 应用。**
+
+这与第一讲的“模型 ≠ Chat”形成呼应。
+
+---
+
+## 3.4.3 模型参数：UI 里的 Temperature、Top-P、Max Tokens 到底改了什么？
+
+在 Cherry 的助手模型设置中，可以展示：
+
+- Temperature；
+- Top-P；
+- Max Tokens；
+- Streaming；
+- Context 管理；
+- Reasoning / Thinking（若当前模型/Endpoint 支持）；
+- 自定义参数。
+
+【截图占位 CH-ASSIST-04｜Cherry 助手模型参数】
+
+不要讲成：
+
+> Temperature=0.7 最好。
+
+而要讲：
+
+> **这些都是 Request Parameters。**
+
+例如：
+
+- Temperature：影响随机性；
+- Max Tokens：限制本轮最大输出预算；
+- Streaming：决定是否边生成边返回；
+- Thinking / Reasoning：是否给模型更多推理预算；
+- Context 管理：应用怎样处理越来越长的历史。
+
+然后打开 Network 对比一次参数前后的 Request。
+
+【录屏占位 CH-R04｜修改 Max Tokens / Thinking / Stream → Network Request 对比】
+
+这样“模型参数”不再是 UI 黑盒。
+
+---
+
+## 3.4.4 知识库：勾一下之后，模型真的“学会”这些资料了吗？
+
+Cherry 对话输入区可以选择已经创建的知识库，助手也可以预先关联知识库。
+
+建议第一讲只做一个最小演示。
+
+### 创建一个训练知识库
+
+资料只放：
+
+- 当前 Qwen API 正式测试报告；
+- 一份 API 说明。
+
+创建时展示：
+
+- 知识库名称；
+- Embedding 模型，或选择不使用 Embedding；
+- 添加文件 / 笔记 / 目录 / 链接；
+- 资料处理；
+- 召回测试。
+
+【截图占位 CH-KB-01｜Cherry 新建知识库】
+
+【截图占位 CH-KB-02｜添加资料 + Chunk/处理结果】
+
+【截图占位 CH-KB-03｜召回测试】
+
+然后进入普通对话，在输入框工具栏勾选这个知识库。
+
+固定问题：
+
+> 当前内网 Qwen 的 Responses Vision 正式测试结论是什么？
+
+【截图占位 CH-KB-04｜对话输入区勾选知识库】
+
+【录屏占位 CH-R05｜不选知识库 vs 选择知识库 → 回答与引用变化】
+
+这里第一讲只讲一个现象：
+
+```text
+Knowledge Base
+↓
+先检索相关资料
+↓
+Relevant Chunks
+↓
+进入本轮 Context
+↓
+Model Answer
+```
+
+然后明确告诉学员：
+
+> **勾选知识库不是把资料重新训练进模型。它首先是在回答前把相关资料检索出来，再作为 Context 提供给模型。**
+
+至于：
+
+- BM25；
+- Embedding；
+- Chunk；
+- Rerank；
+- 长上下文；
+- 版本治理；
+
+第二讲再完整展开。
+
+这样第一讲负责“看见机制”，第二讲负责“设计机制”。
+
+---
+
+## 3.4.5 联网搜索：为什么这和知识库不是一回事？
+
+Cherry 对话输入区还可以打开网络搜索。
+
+【截图占位 CH-WEB-01｜Cherry 对话输入区网络搜索按钮】
+
+固定问一个有时间性的公开问题，例如：
+
+> 某个开源项目当前最新 Release 是什么？
+
+打开联网前后对比。
+
+【录屏占位 CH-R06｜普通回答 vs 开启联网搜索 → Search Result / Citation】
+
+这里不要把“联网”讲成模型突然拥有互联网。
+
+更准确：
+
+```text
+User Question
+↓
+Search Tool / Search Provider
+↓
+Web Results
+↓
+Context / Tool Result
+↓
+Model
+```
+
+Cherry 当前支持配置搜索服务和 URL 获取服务，并且联网能力可以通过配置的搜索服务或模型自身支持的搜索能力实现；具体走哪条路径取决于当前版本、Provider 和配置。
+
+因此：
+
+> **Knowledge Base 和 Web Search 都是在补外部知识，但一个主要面向受控内部资料，一个主要面向实时公开信息。**
+
+第二讲会继续比较它们的知识边界。
+
+---
+
+## 3.4.6 MCP / 工具调用：勾选工具以后发生了什么？
+
+Cherry 助手可以关联 MCP，模型支持工具调用时，对话中就可以获得外部工具。
+
+【截图占位 CH-TOOL-01｜Cherry 助手 MCP / Tool 配置】
+
+【截图占位 CH-TOOL-02｜对话中的 Tool Call / Tool Result】
+
+这时再回到第一讲已经讲过的 Tool Loop：
+
+```text
+User
+↓
+Model
+↓
+Tool Call
+↓
+Cherry / Harness 执行 Tool
+↓
+Tool Result
+↓
+Model
+↓
+Answer
+```
+
+因此 Tool Calling 的能力至少需要三层同时成立：
+
+1. 模型支持；
+2. API 协议支持；
+3. 客户端 / Harness 能提供并执行 Tool。
+
+这句话非常重要：
+
+> **模型会 Tool Calling，不代表任何 Chat 客户端都自动拥有真实工具。**
+
+---
+
+## 3.4.7 一个 Cherry 对话到底可能包含哪些东西？
+
+讲完所有选项以后，可以截一张最终界面。
+
+【截图占位 CH-ASSIST-05｜同一对话：模型 + Knowledge + Web Search + Tool/MCP + 附件入口】
+
+然后把它翻译成模型真正看到/能够调用的结构：
+
+```text
+Assistant Instructions
++ Conversation History
++ Current User Message
++ Knowledge Retrieval Results
++ Web Search Results
++ File / Image Content
++ Tool Definitions
++ Tool Results
++ Model Parameters
+↓
+Model API
+```
+
+【图示占位 CH-ASSIST-06｜Cherry UI 开关 → Context / Parameter / Tool 映射】
+
+这一张图可以作为第一讲理解 Chat Application / Harness 的关键过渡图。
+
+最终结论：
+
+> **Cherry Studio 这样的 Chat 工作台，本质上是在帮助普通用户可视化地配置 Model、Context、Parameters 和 Tools。**
+
+而 Agent 进一步做的事情是：
+
+> 把这些能力放进一个能够围绕 Goal 持续执行、观察和验证的循环里。
 
 ---
 
@@ -1435,6 +2029,47 @@ api/qwen/results/20260930_095033/
 - 模型继续生成。
 
 不要只录最终答案。
+
+## CH-R03：Cherry 三协议
+
+固定同一个 Prompt：
+
+> 请只回答：PROTOCOL_OK
+
+依次切换：
+
+- OpenAI Chat；
+- OpenAI Responses；
+- Anthropic Messages。
+
+录到 Network Endpoint 与 Request Body 差异。
+
+## CH-R04：Cherry 模型参数
+
+修改：
+
+- Max Tokens；
+- Stream；
+- Thinking / Reasoning（当前配置支持时）。
+
+然后对比 Network Request。
+
+## CH-R05：Cherry Knowledge
+
+步骤：
+
+1. 不勾知识库提问；
+2. 勾选 Qwen API 训练知识库；
+3. 再问当前内部实测问题；
+4. 展示检索/引用差异。
+
+## CH-R06：Cherry Web Search
+
+固定一个时效性公开问题：
+
+1. 普通问；
+2. 开启联网；
+3. 展示 Search Tool / Result / Citation。
 
 ## API-R10：自动测试脚本
 
