@@ -17,6 +17,9 @@ GET /v1/models 实际返回：
 
 GET /version 返回 0.23.0。
 
+【截图占位 API-01｜P0】`/v1/models` 与 `/version` 的真实 Response。要求：模型 ID、`max_model_len`、版本号清晰可见；API Key、内网地址按培训范围决定是否脱敏。
+
+
 培训第一原则：
 
 > 官方资料说明模型本体能做什么；现网 Request / Response、Metrics 和压力测试说明我们部署出来的服务到底能做什么。
@@ -173,6 +176,9 @@ JSON Response
 - `API-NET-01`：Cherry Studio 模型列表；
 - `API-NET-02`：Network 中的 models Request / Response。
 
+【录屏占位 API-R01｜P0｜20–40 秒】Cherry Studio 触发“刷新模型列表” → Network 出现 `GET /v1/models` → 打开 Response → 回到模型下拉框。目的：一次讲清“UI 中的模型列表来自 API”。
+
+
 #### Demo B：发送第一条普通文本消息
 
 使用一个非常短、容易识别的固定问题，例如：
@@ -250,6 +256,9 @@ System
 - `API-NET-04B`：第二轮 Request；
 - `API-NET-04C`：两轮 Payload Diff / 标注图。
 
+【录屏占位 API-R02｜P0｜45–60 秒】连续发送两轮固定问答，同时依次打开两次 Request。必须录到历史消息或会话引用的变化，用来解释 Context 不是“模型凭空记住”。
+
+
 #### Demo D：多模态图片是怎么进入请求的
 
 再发送一张非常简单、答案确定的测试图片。
@@ -272,6 +281,9 @@ System
 - `API-NET-05`：Vision Request Payload；
 - `API-NET-06`：文本 content 与 image content 的结构标注。
 
+【录屏占位 API-R03｜P0｜30–45 秒】上传固定测试图片并发送问题 → 打开 Request Payload → 展开文本块与图片块。必须保留图片实际编码/引用形式，不预设一定是 Base64。
+
+
 #### Demo E：流式输出在 Network 里是什么样
 
 最后观察一次流式请求：
@@ -291,6 +303,9 @@ Cherry Studio 一边接收，一边渲染到聊天框
 截图占位：
 
 - `API-NET-07`：流式 Response / EventStream。
+
+【录屏占位 API-R04｜P0｜20–30 秒】发送较长问题，一边录聊天窗口逐步输出，一边展示 Network 的流式 Response/EventStream，把“逐字显示”和 SSE 对应起来。
+
 
 ### 3.2 这一组抓包 Demo 最终只留下四个结论
 
@@ -352,6 +367,11 @@ Request → 生成 → SSE chunk → SSE chunk → DONE
 ~~~
 
 这个 Demo 的目的不是测模型，而是先建立一个直觉：
+
+【截图占位 API-02｜P1】Token 输出速率 Demo 的 5 / 30 / 120 tok/s 并排画面。
+
+【录屏占位 API-R05｜P1｜20–30 秒】Race Mode 同时展示 5 / 30 / 120 tok/s 的体感差异。
+
 
 > **Tokens/s 描述的是模型开始生成以后，内容往外输出有多快。**
 
@@ -509,6 +529,11 @@ Thinking ON：
 
 第三轮更值得展示：
 
+【截图占位 API-03｜P0】Thinking OFF / ON 三组实测的耗时与 Token 对比表，优先由测试报告/原始结果整理。
+
+【录屏占位 API-R06｜P1｜30–60 秒】同一问题关闭/开启 Thinking，录到等待、首次输出和完成的体感差异；如耗时过长只用预录。
+
+
 ~~~text
 Thinking ON：298.6 s
 ↓
@@ -566,6 +591,13 @@ Final Answer
 
 现在已经验证：
 
+【截图占位 API-04｜P0】一次完整 Tool Call JSON：工具名与 arguments。
+
+【截图占位 API-05｜P0】Tool Result 回灌后的下一轮请求/最终回答，与 API-04 配套。
+
+【录屏占位 API-R07｜P0｜40–60 秒】完整 Tool Loop：用户请求 → tool_call → Runtime 执行 → tool_result 回灌 → Final Answer。现场不稳定时使用预录。
+
+
 - OpenAI Chat Tool Loop PASS
 - Responses Tool Loop PASS
 - Anthropic Tool Loop PASS
@@ -617,6 +649,11 @@ AI TEST 2026
 ~~~
 
 已通过：
+
+【截图占位 API-06｜P1】固定 Vision 测试图 + 模型回答同屏，能看到标准答案。
+
+【截图占位 API-07｜P1】Vision + Tool Calling 的结构化 JSON，用于说明视觉结果可继续进入 Tool Schema。
+
 
 - Base64 单图
 - Vision SSE
@@ -698,6 +735,11 @@ description = 必须逐字 OCR 顶部英文
 ## 十五、/metrics：从“能用”走向“好用”
 
 初始 Metrics 快照可看到 running、waiting、KV Cache、Prompt Tokens 等指标，并显示 Prefix Cache 未启用。
+
+【截图占位 API-08｜P0】`/metrics` 原始文本中 running / waiting / KV Cache / prompt tokens / prefix cache 相关片段。
+
+【截图占位 API-09｜P1】同一时刻 model-metric 可视化页面，对照“原始指标 → 可读仪表盘”。
+
 
 API 测试回答：
 
@@ -782,6 +824,13 @@ Goal → 写文件 → 打开浏览器 → 观察 → 修改 → 再验证 → �
 
 完整 Demo 规范：
 
+【截图占位 API-10｜P1】“鹈鹕骑自行车”Chat 一次生成结果的浏览器画面。
+
+【截图占位 API-11｜P1】Agent 修复后的最终浏览器画面 + Git Diff / 测试结果，与 API-10 前后对照。
+
+【录屏占位 API-R08｜P0｜60–120 秒】同一模型、同一 Prompt：Chat 生成代码后停住；Agent 自动写文件 → 启动 → Browser 观察 → 修改 → 再验证。只录关键节点，完整长过程可另存备用。
+
+
 ~~~text
 demos/pelican-bicycle/README.md
 ~~~
@@ -816,3 +865,29 @@ Model
 ~~~
 
 API 是模型走出聊天框的第一步，Tool Calling 是 Chat 走向 Agent 的关键桥梁。
+
+
+---
+
+# 附：本章素材准备清单
+
+> 状态统一使用：⬜ 未准备 / 🟨 已截待整理 / ✅ 可用于培训。P0 必须，P1 强烈建议，P2 可选。截图/录屏前检查 API Key、Token、账号、内网地址和真实业务数据的脱敏范围。
+
+| 编号 | 类型 | 优先级 | 内容 | 建议来源 | 状态 |
+|---|---|---:|---|---|---|
+| API-01 | 截图 | P0 | `/v1/models` + `/version` | Cherry / Postman / curl | ⬜ |
+| API-NET-01~07 | 截图 | P0 | models、首轮、多轮、Vision、SSE | Cherry DevTools | ⬜ |
+| API-02 | 截图 | P1 | Token speed Race Mode | token-output-speed Demo | ⬜ |
+| API-03 | 截图 | P0 | Thinking OFF/ON 实测对比 | qwen reports/results | ⬜ |
+| API-04~05 | 截图 | P0 | Tool Call + Tool Result 回灌 | API 实测 | ⬜ |
+| API-06~07 | 截图 | P1 | Vision + Vision Tool Calling | API 实测 | ⬜ |
+| API-08~09 | 截图 | P0/P1 | /metrics 原始指标 + model-metric UI | API / model-metric | ⬜ |
+| API-10~11 | 截图 | P1 | 鹈鹕 Chat vs Agent 结果 | 统一 Demo | ⬜ |
+| API-R01 | 录屏 | P0 | 刷新模型列表 → GET /v1/models | Cherry DevTools | ⬜ |
+| API-R02 | 录屏 | P0 | 两轮对话 Request 对比 | Cherry DevTools | ⬜ |
+| API-R03 | 录屏 | P0 | 图片如何进入 Request | Cherry DevTools | ⬜ |
+| API-R04 | 录屏 | P0 | SSE 逐步输出 | Cherry DevTools | ⬜ |
+| API-R05 | 录屏 | P1 | Tokens/s 体感 | HTML Demo | ⬜ |
+| API-R06 | 录屏 | P1 | Thinking OFF/ON | Cherry / API Client | ⬜ |
+| API-R07 | 录屏 | P0 | 完整 Tool Loop | API / Agent Runtime | ⬜ |
+| API-R08 | 录屏 | P0 | 同模型 Chat vs Agent | 鹈鹕统一 Demo | ⬜ |
