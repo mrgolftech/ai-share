@@ -787,6 +787,47 @@ L4 用户界面验证
 
 ## 7.2 Playwright：程序化、可重复、可断言的 Web 自动化
 
+### Playwright 不是“CDP 的简单封装”
+
+一个常见误解是：
+
+> Playwright = 把 Chrome DevTools Protocol 再包一层。
+
+更准确的关系是：
+
+~~~text
+Chrome / Chromium
+  ├─ CDP：Chrome 自己提供的底层调试/控制协议
+  └─ Playwright：更高层的浏览器自动化框架
+       ├─ Locator / Auto-wait
+       ├─ BrowserContext
+       ├─ Assertions / Test Runner
+       ├─ Trace / Screenshot / Download
+       ├─ Chromium
+       ├─ Firefox
+       └─ WebKit
+~~~
+
+CDP 是 Chromium/Chrome 的底层协议，按 DOM、Network、Runtime、Debugger、Performance 等 domain 暴露命令和事件。
+
+Playwright 则提供更稳定、更面向任务的自动化 API，并支持 Chromium、Firefox、WebKit。Playwright 在需要时也允许直接创建 CDP Session，或者通过 `connectOverCDP()` 接入一个已经运行的 Chromium。
+
+Playwright 官方明确指出：
+
+> 通过 CDP 连接现有 Chromium 的方式，能力保真度低于 Playwright 自己的原生连接协议。
+
+因此：
+
+- **普通 Web 自动化 / E2E / Agent Browser：优先 Playwright**
+- **需要 Chrome 特有的 Network / Performance / Debugger / Runtime 底层信息：再下沉到 CDP**
+- **需要控制已经启动、只暴露 CDP 的 Chrome / Edge / WebView2 / Electron：CDP 很有价值**
+
+一句话：
+
+> **CDP 更像“浏览器底层控制总线”，Playwright 更像“面向自动化任务的浏览器 SDK / Harness”。**
+
+
+
 Playwright 的教学重点不是“它也能点击网页”，而是：
 
 > **它能够把浏览器过程写成可重复执行和可断言的测试。**
