@@ -9,15 +9,29 @@
 
 - docs/chapters/01-intranet-qwen-api.md
 - api/qwen/README.md
-- api/qwen/reports/qwen36_api_test_report_20260929.md
-- api/qwen/results/20260929_v2/evidence.md
-- api/qwen/results/20260929_105316/evidence.md
+- api/qwen/reports/qwen36_api_test_report_20260930.md（当前正式报告）
+- api/qwen/results/20260930_095033/evidence.md（当前正式证据；r4）
+- api/qwen/results/archive/20260929_v2/evidence.md（仅用于演示历史版本与冲突）
+- api/qwen/results/archive/20260929_105316/evidence.md（仅用于历史对照）
 
 不要为三个工具准备三套事实资料。
 
 这样可以固定：
 
 > Source of Truth 不变，只改变 Retrieval 与 Orchestration。
+
+
+## 1.1 内网无法访问公网的对照演示（待实施、待实测）
+
+知识库同源三层 Demo 之外，可用同一问题做一次联网边界实验：
+
+> 我们当前内网 Qwen 的 Responses Vision 是否实测通过？最新依据是什么？你能否直接从公网获取当前模型服务的内部状态？
+
+先不给内部资料，再提供上述 **2026-09-30 正式实测报告**；最后让具有内网权限的 Agent 查 Git 报告、必要时调内网 API / Metrics，并把访问公网工具的实际可用性、网络错误和数据来源分开记录。不能预先假定公网 WebSearch、WebFetch 或包下载在本部门网络可用。
+
+**工具运行环境必须注明：** 模型 API 在哪里、搜索工具在哪台服务器执行、Shell/Git 工具在哪个机器执行。Codex 缓存搜索与 Claude Code WebSearch 为厂商托管能力；内网兼容模型协议并不自动提供这些托管工具。详情见 `docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`。
+
+【图示占位 KB-23｜三类网络连接；录屏占位 KB-R07｜无公网搜索与内网取证对比】
 
 ## 2. 统一问题集
 
