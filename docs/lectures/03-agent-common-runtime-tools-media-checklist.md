@@ -30,7 +30,7 @@
 | TOOL-07~08 | P0/P1 | Browser Visual QA、SSH / Server | ⬜ |
 | CONNECT-* | P0 | API → Tool → MCP → Skill | ⬜ |
 | AGENT-08~13 | P0 | MCP、Skill、Approval、Verification | ⬜ |
-| ASSET-* | P1 | Prompt / Rules / Skill / Script / Test / CI 路由 | ⬜ |
+| ASSET-* | P1 | Prompt / Rules / Skill / Script / Test / CI 路由；ASSET-03 同模型同 Agent 的长期资产对比图 | ⬜ |
 | AGENT-R* / TOOL-R* / CONNECT-R* | P0 | 第三讲核心动态闭环 | ⬜ |
 
 > 第三讲实时演示面尽量控制为一个主 Agent；其他 Agent 用截图/短录屏证明“机制相同、界面不同”。
@@ -176,6 +176,16 @@ Approval / Sandbox。
 ### AGENT-13
 
 Diff + Test + Browser QA。
+
+---
+
+## 31.7 ASSET-03：从一次性输出到可复用工程能力【P1，新增】
+
+- **形式**：一页 PPT 静态对照图，优先使用仓库已有 Qwen API 测试和 model-metric 的真实证据；
+- **左侧**：同模型、同 Agent，人工单次完成任务，结果分散在聊天记录里；
+- **右侧**：同模型、同 Agent，连接项目真实数据 → 执行脚本 → 自动测试/日志 → 验证 → Git 留痕 → 下次复用；
+- **讲述要点**：不要宣称工具或工作流完全不重要；解释为什么可维护数据、验证与反馈机制能形成累积效果；
+- **素材状态**：⬜ 待制作，不能把示意图当成已实测的效率提升数据。
 
 ---
 

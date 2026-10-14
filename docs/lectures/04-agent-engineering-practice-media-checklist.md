@@ -22,7 +22,7 @@
 
 | 素材组 | 优先级 | 主要内容 | 状态 |
 |---|---:|---|---|
-| METHOD-* | P0 | Prompt→Code vs 完整工程链、最终工程闭环 | ⬜ |
+| METHOD-* | P0 | Prompt→Code vs 完整工程链、最终工程闭环；METHOD-08 长期工程能力对照 | ⬜ |
 | BM-01~12 | P0 | BMQuiz 需求、架构、Rules、Test、Visual QA、CI/CD | ⬜ |
 | BM-R01~03 | P0 | BMQuiz Visual QA / Deploy / 小需求完整闭环 | ⬜ |
 | SERVER-* | P0 | Docker / logs / health / smoke | ⬜ |
@@ -242,6 +242,16 @@ model-metric：
 
 ---
 
+## 39.4 METHOD-08：完成一次任务 vs 建成工程能力【P1，新增】
+
+- **形式**：一张总结页，使用已有 BMQuiz、FileCheck、Qwen API / model-metric 的真实仓库截图或流程素材；
+- **一次性输出侧**：生成代码/文档、人工确认、任务结束；
+- **持续闭环侧**：Source of Truth、规则、自动验证、Git/CI、运行数据、回归和版本化资产；
+- **边界**：不要虚构提效倍数，不把组织能力与个人职位回报画等号；
+- **素材状态**：⬜ 待制作。
+
+---
+
 # 40. 第四讲录屏执行脚本
 
 ## BM-R01：BMQuiz Visual QA
@@ -427,7 +437,7 @@ model-metric / IPsec / HyperFrames 快速切换。
 
 ## 第五段：收束 5～10 min
 
-METHOD-06 + METHOD-07。
+METHOD-06 + METHOD-07 + METHOD-08（最后一页的长期工程能力收束）。
 
 这一讲应该是四场里截图和录屏比例最高的一场。
 
