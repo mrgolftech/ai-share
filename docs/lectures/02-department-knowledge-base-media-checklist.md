@@ -1,6 +1,6 @@
 # 第二讲素材清单：部门知识库建设
 
-> 日期：2026-09-30  
+> 更新：2026-10-14（新增 KB-23 / KB-R07）  
 > 对应讲义：`docs/lectures/02-department-knowledge-base.md`  
 > 状态：Working Checklist v1.0  
 > 使用原则：**正文决定“为什么需要这份素材、插在哪里”；本清单决定“具体拍什么、怎么拍、优先级、状态和备用方案”。**
@@ -32,6 +32,7 @@
 | KB-R03A~C | P0 | Open WebUI 个人知识、Retrieval 模式、Shared ACL | ⬜ |
 | KB-R05 | P0 | Agent：KB → Git → API/Metrics | ⬜ |
 | KB-R06 | P1 | 版本冲突 + No-answer | ⬜ |
+| KB-23 / KB-R07 | P1 | 内网无公网：三类网络连接图、内网取证对照演示 | ⬜ |
 
 > 第二讲所有工具尽量使用**同一套 Qwen API / model-metric 真实资料**，避免因语料变化干扰比较。
 
@@ -223,6 +224,16 @@ No-answer：
 
 1. 问 Corpus 中没有的问题；
 2. 检查系统是否明确证据不足。
+
+---
+
+## KB-23 / KB-R07：内网知识与网络边界（新增，P1）
+
+**KB-23 图示（非实测截图）：** 模型 API、托管 Web Search、Shell/Git 网络三条独立连接；第一层 Source of Truth、第二层 Knowledge Access、第三层 Tools & Runtime 与入口。标注“内网知识可以访问，公网服务不可默认访问”，不能将某个网络故障泛化成所有工具失效。
+
+**KB-R07（录屏，待授权环境核验）：** 固定问题“内网 Qwen 的 Responses Vision 正式测试状态是什么”。同问题先无资料，再读取最新 2026-09-30 内网实测报告，最后由 Agent 查 Git、可访问的内网 API。只在获得网络/安全审批和许可时测试外部访问；记录明确的网络权限、搜索后端、工具执行端与原始报错。不能用厂商官网的现成演示视频冒充本部门实测。
+
+**备用：** 讲解官方已核验架构 + 本仓库真实报告的静态前后对照；对未实测的联网状态只保留“待验证”标识。参考：`docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`。
 
 ---
 
