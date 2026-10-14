@@ -1,7 +1,7 @@
 # 第二讲：部门知识库建设——让 AI 可靠使用我们的知识
 
-> 状态：Final Lecture Draft v1.1  
-> 日期：2026-09-30  
+> 状态：Final Lecture Draft v1.2  
+> 更新：2026-10-14（新增内网离线知识供给与 Agent 联网边界）  
 > 建议时长：100～120 分钟  
 > 内容映射：原内容单元 2  
 > 主线：**先回答部门为什么要建知识库，再回答不同知识怎么处理、怎么检索、怎么进入 Context、怎么治理，最后形成可落地的部门建设方案。**
@@ -69,6 +69,35 @@
 > **部门知识不能只依赖模型参数，必须有模型之外、可更新、可追溯的知识源。**
 
 这个“知识源”才是知识库建设真正的起点。
+
+---
+
+## 1.1 内网不能访问公网，为什么知识供给更重要
+
+**问题：** 公网 Agent 遇到没见过的库、协议或报错，可以查官网、搜索 GitHub、检索社区案例；内网 Agent 不具备这条默认信息通道，该怎么办？
+
+首先要区分：**模型能否调用内网 API、Web Search 是否有可访问的搜索服务、Agent 的 Shell/Git 是否具有网络权限**，是三个独立问题。没有公网访问，模型依然能推理，也仍能在授权范围内通过内网文件、Git、禅道、数据库和服务 API 工作；缺少的是外部知识的持续更新、第三方依赖获取以及部分厂商托管检索工具。
+
+因此，在内网知识库的必要性更高，但不能简单推导出“所有材料都应向量化”。应采用：
+
+```text
+已授权、可追溯的知识源（内部制度/工程文档/Git/禅道/测试/依赖镜像）
+       ↓
+版本 / 权限 / 解析 / 全文检索 / 语义检索
+       ↓
+Cherry / Open WebUI / Agent
+       ↘  仍可调用内网 Git、Shell、SQL、API/MCP 查询最新事实
+```
+
+- **可存档的知识**：制度、技术规范、SDK 文档、典型案例。以有效版本的内网源文件和检索索引提供访问。
+- **需要真实操作的数据**：代码、构建结果、测试统计、实时状态。优先访问 Git、SQL、Shell 和 API，知识库只提供说明和入口。
+- **外部知识更新和软件依赖**：采用经过单位批准的离线快照、受控资料交换、内部包/制品镜像与审核发布；没有审批的网络隔离不能因为 Agent 需要而绕过。
+
+【图示占位 KB-23｜内网 Agent 的三种网络连接与知识/工具供给架构】
+
+**教学结论：内网知识库不是“替代互联网的百科全书”，而是可信来源、检索、内部工具和受控更新共同构成的知识供给体系。**
+
+详细事实与官方资料：`docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`。
 
 ---
 
@@ -904,6 +933,26 @@ MCP
 > **Agent 可以使用 RAG，但 Agent 不等于 RAG。**
 
 【图示占位 KB-19｜同一 Source，Cherry / Open WebUI / Agent 三种入口】
+
+---
+
+## 13.4 Codex 与 Claude Code 的“联网”究竟发生在哪里？
+
+如果把 Agent 说成“模型自己打开网页”，听众很容易误解。以官方文档为依据，应将三类访问分开对照：
+
+| 网络能力 | Codex 的公开机制 | Claude Code 的公开机制 | 本部门内网含义 |
+|---|---|---|---|
+| 模型服务 | CLI/Agent 经配置访问模型提供方或网关 | 客户端访问 Claude 服务、受支持提供方或模型网关 | 可使用内网模型 API，但协议兼容不保证所有原厂工具可用 |
+| 受托管的网页搜索 | Codex 本地 Web Search 可选 cached/indexed/live/disabled；cached 是 OpenAI 维护的索引，不是本机离线搜索 | WebSearch 请求 Anthropic 搜索后端，WebFetch 读取网页；默认搜索后端不能简单更换 | 纯内网不能默认使用厂商的互联网搜索后端；需要独立可访问的内部 Search/MCP 工具 |
+| Agent 执行工具访问网络 | 本地沙盒对 Shell 命令有单独网络策略；云沙盒可设置出口限制 | Bash/curl、Git 等命令在其执行环境和权限内访问网络；支持企业代理设置 | 即使 Shell 不可访问公网，仍可在获授权时访问内网 Git、制品库、业务 API |
+
+官方区分很具体：Codex 的 `web_search = "cached"` 使用 OpenAI 托管搜索缓存；本地 CLI 的 `workspace-write` 命令沙盒通常不默认开放网络。Claude Code 的 `WebSearch` 请求 Anthropic 搜索后端，只返回候选标题和 URL；`WebFetch` 进一步访问页面，`Bash` 在本机或沙盒运行。它们是不同工具与不同网络路径，不应把“有内置 WebSearch”讲成“任意内网模型自己就能上网”。
+
+**尤其注意**：Qwen 的 OpenAI Responses / Anthropic Messages 协议兼容性，是**消息格式和工具调用协议**的验证，不代表厂商托管 `web_search` 在部门内网也已经可用；目前尚未做该项联通性实测。
+
+演示建议：让 Agent 面对同一个“当前内网 Qwen Responses Vision 的实际状态”问题，分别尝试无资料回答、读取最新内部 API 报告、调用内网 API（如有授权）、尝试外部资料检索并记录失败原因。要展示工具调用轨迹、证据与网络边界，不以虚构联网结果替代实测。
+
+参阅官方文档：[Codex 基础配置](https://developers.openai.com/zh-Hans/docs/config-file/config-basic)、[Claude Code 工具参考](https://code.claude.com/docs/en/tools-reference)、[Claude Code 企业网络配置](https://code.claude.com/docs/en/network-config)。完整证据见 `docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`。
 
 ---
 
