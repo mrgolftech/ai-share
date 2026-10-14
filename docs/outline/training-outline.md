@@ -886,6 +886,7 @@ Cherry Studio 当前官方知识库支持：
 20. 为什么 Top-K 不是越大越好，如何用 Rerank / Metadata / 去重 / Evidence Budget 控制最终 Context；
 21. Full Context、Pipeline RAG 和 Agentic Retrieval 应该怎样按资料规模与问题类型路由；
 22. 部门近期应该怎样从一个可控专题开始试点。
+23. 内网无法访问公网时，如何补齐知识更新、包/制品镜像和内网工具能力，并区分模型 API、受托管 Web Search、Shell/Git 执行网络？（第二讲新增，参考 `docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`）
 
 统一架构原则：
 
@@ -2385,6 +2386,8 @@ Agent 可以执行大量工作，但不把最终技术判断外包给模型。
 - API 官方参考资料（已有素材）
 
 ## 待建设
+
+- **第二讲离线环境补充（2026-10-14）**：正式讲义更新至 v1.2，加入“内网不能访问公网时的知识与工具供给”及 Codex/Claude Code 联网机制差异（模型 API / hosted Web / 本地 Shell 分离）；官方资料证据已落盘 `docs/references/intranet-offline-agent-network-and-knowledge-2026-10.md`；同源 Demo 已将主证据升级为 2026-09-30 Qwen r4，并设计 KB-23 / KB-R07。当前属于“已有教学素材/官方证据”，内网联网边界、实测截图/录屏仍**未完成**，不得宣称可用于正式演示。
 
 - 模块二：Chat → Knowledge/RAG → Agent（已有初稿：`docs/chapters/02-chat-to-agent-harness.md`、`docs/chapters/02-chat-workbenches-and-rag.md`；知识库现采用“双稿制”：`docs/chapters/03-department-knowledge-base-teaching.md` 为培训主讲教学版，按“问题→例子→原理→结论”重构并预留 KB-01～KB-22 截图/图示占位；`docs/chapters/03-department-knowledge-base.md` 保留为完整技术稿和深入阅读材料；架构文档为 `docs/architecture/department-knowledge-architecture.md`；已形成同源三层 Knowledge Demo 规范 `demos/knowledge-retrieval/README.md`；已完成知识库/RAG 学术论文、官方产品与成熟实现的专项证据核验，证据基线为 `docs/references/knowledge-base-rag-evidence-2026-09.md`，涵盖 Lost in the Middle、RULER、NoLiMa、LongBench v2、2025 “Perfect Retrieval 仍受 Context Length 影响”等长上下文证据，以及 External Retrieval Recall vs In-context Context Utilization、Context Budget / Evidence Budget；教学版已完成 v0.2 第一轮“首次学习者降阶”重构：新增开卷考试统一类比、RAG“先查再给再答”、Embedding/Vector Index 非知识本体解释、Parse 与 Chunk 分拆、长上下文证据下沉、Top-K/Rerank/Evidence Budget 统一直觉、Agentic Retrieval“逐步取证”解释、问题类型→检索方式速查表和讲师节奏分层；当前待补 KB-01～KB-22 及扩展占位截图/图示，并在后续验证阶段补 BM25/Vector/Hybrid/Agentic Retrieval、no-answer/版本冲突/ACL 与内网 qwen3.6 实测）
 - Agent 共性机制专题（已有初稿：`docs/chapters/04-agent-common-mechanisms.md`；10 个 Agent（新增 WorkBuddy）横向对比与 FrontierHarness/Kimi K3 受控评测已迁入本章；已覆盖 Harness、Identity、Project Instructions、Workspace、Context、Plan、Memory、Tools、MCP/API、Skill、Browser/Computer Use、Permission/Sandbox、Verification、Sub-agent、CLI/GUI/IDE，以及 Provider/Protocol Adapter、Session/Checkpoint/Resume、Context Compaction、Runtime Backend、Hooks/Automation、Secrets、Observability、Reasoning vs Plan；待补内网 qwen3.6 跨 Harness 实测、截图和统一 Demo；WorkBuddy 的 Chat→Workspace→Skill→Runtime 截图已规划为 AGENT-WB-01～04）
